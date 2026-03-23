@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Controle Financeiro Familiar</title>
+  <style>
+    :root {
+      --bg: #eef6ff;
+      --bg-2: #f7fbff;
+      --surface: rgba(255,255,255,.9);
+      --surface-strong: #ffffff;
+      --text: #10213a;
+      --muted: #6f85a3;
+      --border: rgba(37,99,235,.10);
+      --primary: #60a5fa;
+      --primary-2: #3b82f6;
+      --primary-3: #2563eb;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 20px 45px rgba(37,99,235,.12);
+      --shadow-soft: 0 10px 24px rgba(37,99,235,.08);
+      --nav-h: 86px;
+      --fab-size: 62px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.28), transparent 30%),
+        radial-gradient(circle at top right, rgba(59,130,246,.18), transparent 24%),
+        linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+    }
+    body { padding-bottom: calc(var(--nav-h) + 28px); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; border: 0; }
+
+    .app { width: 100%; max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative; }
+    .screen { display: none; padding: 18px 16px 12px; animation: fadeIn .18s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .hello small, .muted { color: var(--muted); }
+    .hello small { display: block; font-size: .82rem; margin-bottom: 4px; }
+    .hello strong { font-size: 1.18rem; letter-spacing: -.02em; }
+
+    .icon-circle {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(255,255,255,.85); box-shadow: var(--shadow-soft);
+      color: var(--primary-3); display: grid; place-items: center; font-size: 1.05rem;
+    }
+
+    .hero-card {
+      position: relative; overflow: hidden; border-radius: 30px; padding: 22px; color: #fff;
+      background: linear-gradient(135deg, #82c3ff 0%, #4f9cff 45%, #2563eb 100%);
+      box-shadow: 0 24px 48px rgba(37,99,235,.28); margin-bottom: 16px;
+    }
+    .hero-card::before, .hero-card::after {
+      content: ""; position: absolute; border-radius: 50%; background: rgba(255,255,255,.13); pointer-events: none;
+    }
+    .hero-card::before { width: 180px; height: 180px; right: -46px; top: -58px; }
+    .hero-card::after { width: 110px; height: 110px; left: -18px; bottom: -30px; }
+    .hero-top, .hero-bottom { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .hero-balance { position: relative; z-index: 1; font-size: 2rem; font-weight: 800; letter-spacing: -.04em; margin: 8px 0 14px; }
+    .hero-actions { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .glass-btn { background: rgba(255,255,255,.18); color: #fff; border-radius: 18px; padding: 12px 8px; font-weight: 700; backdrop-filter: blur(8px); }
+    .hero-chip-wrap { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .hero-chip { background: rgba(255,255,255,.16); border-radius: 18px; padding: 10px 12px; }
+    .hero-chip small, .hero-top small { color: rgba(255,255,255,.82); }
+
+    .cards-2, .cards-3 { display: grid; gap: 10px; margin-bottom: 18px; }
+    .cards-2 { grid-template-columns: repeat(2, 1fr); }
+    .cards-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .mini-card, .list-card, .alert-item, .month-card, .sheet, .report-card, .forecast-card {
+      background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-soft); backdrop-filter: blur(10px);
+    }
+    .mini-card { border-radius: 20px; padding: 14px; }
+    .mini-card small { display: block; font-size: .75rem; color: var(--muted); margin-bottom: 6px; }
+    .mini-card strong { display: block; font-size: .98rem; letter-spacing: -.02em; }
+
+    .section { margin-bottom: 18px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .section-head h2, .sheet h2, .report-card h3 { margin: 0; font-size: 1rem; letter-spacing: -.01em; }
+    .text-btn { background: transparent; color: var(--primary-3); font-weight: 700; padding: 0; }
+
+    .stack { display: grid; gap: 12px; }
+    .alert-item, .list-card, .month-card, .report-card, .sheet, .forecast-card { border-radius: 22px; padding: 16px; }
+
+    .list-card { display: flex; align-items: center; gap: 12px; }
+    .list-icon {
+      width: 48px; height: 48px; flex: 0 0 48px; border-radius: 16px; display: grid; place-items: center;
+      color: var(--primary-3); background: linear-gradient(135deg, rgba(96,165,250,.18), rgba(37,99,235,.08));
+      font-size: 1.1rem; font-weight: 700;
+    }
+    .list-main { min-width: 0; flex: 1; }
+    .list-row { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; margin-bottom: 4px; }
+    .list-title { font-weight: 800; letter-spacing: -.01em; }
+    .list-sub { color: var(--muted); font-size: .8rem; line-height: 1.35; }
+    .amount { font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
+    .amount.in { color: var(--success); }
+    .amount.out { color: var(--danger); }
+    .amount.neutral { color: var(--primary-3); }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+      font-size: .75rem; font-weight: 700; background: #eaf3ff; color: var(--primary-3);
+    }
+    .chip.ok { background: #eaf8ef; color: #15803d; }
+    .chip.warn { background: #fff4df; color: #c2410c; }
+    .chip.danger { background: #fdecec; color: #b91c1c; }
+
+    .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      white-space: nowrap; padding: 9px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--border);
+      color: var(--muted); font-weight: 700;
+    }
+    .filter-btn.active { background: var(--primary-3); color: #fff; }
+
+    .progress-track { width: 100%; height: 10px; border-radius: 999px; background: #dfebff; overflow: hidden; margin-top: 8px; }
+    .progress-bar { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--primary), var(--primary-3)); width: 0; }
+
+    .month-picker { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin-bottom: 14px; }
+    .month-switcher {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .month-switcher-center {
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 10px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+    }
+    .month-switcher-label {
+      display: block;
+      font-size: .74rem;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .month-switcher-value {
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+    .month-nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border);
+      color: var(--primary-3);
+      box-shadow: var(--shadow-soft);
+      font-size: 1.1rem;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    label { font-size: .84rem; font-weight: 700; color: var(--text); }
+
+    input, select, textarea {
+      width: 100%; border: 1px solid rgba(37,99,235,.10); border-radius: 16px; background: rgba(255,255,255,.92);
+      padding: 13px 14px; color: var(--text); outline: none;
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: rgba(37,99,235,.35); box-shadow: 0 0 0 4px rgba(96,165,250,.12); }
+
+    .btn-primary, .btn-secondary, .btn-danger, .btn-light {
+      min-height: 46px; border-radius: 16px; padding: 12px 14px; font-weight: 800;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-3) 100%); color: #fff; box-shadow: 0 14px 28px rgba(37,99,235,.18); }
+    .btn-secondary { background: linear-gradient(135deg, #2dd4bf 0%, #0891b2 100%); color: #fff; }
+    .btn-danger { background: linear-gradient(135deg, #fb7185 0%, #ef4444 100%); color: #fff; }
+    .btn-light { background: rgba(255,255,255,.92); color: var(--text); border: 1px solid var(--border); }
+    .btn-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .btn-group-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .screen-title { margin: 0 0 14px; font-size: 1.05rem; letter-spacing: -.01em; }
+
+    .fab {
+      position: fixed; left: 50%; bottom: calc(var(--nav-h) - 24px); transform: translateX(-50%);
+      width: var(--fab-size); height: var(--fab-size); border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-3) 100%); color: #fff;
+      box-shadow: 0 18px 36px rgba(37,99,235,.28); font-size: 1.8rem; z-index: 40;
+    }
+    .bottom-nav {
+      position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; width: 100%; max-width: 430px; height: var(--nav-h);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.86); backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(37,99,235,.08); box-shadow: 0 -8px 30px rgba(37,99,235,.08);
+      display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; z-index: 30;
+    }
+    .nav-btn {
+      background: transparent; color: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px; font-size: .7rem; font-weight: 700; padding-top: 4px;
+    }
+    .nav-btn.active { color: var(--primary-3); }
+    .nav-btn .icon { font-size: 1.15rem; line-height: 1; }
+
+    .modal {
+      position: fixed; inset: 0; background: rgba(10,22,40,.32); display: none; align-items: flex-end; justify-content: center; z-index: 60; backdrop-filter: blur(3px);
+    }
+    .modal.show { display: flex; }
+    .modal-sheet {
+      width: 100%; max-width: 430px; background: #f8fbff; border-radius: 26px 26px 0 0; padding: 14px 16px 22px;
+      box-shadow: 0 -20px 40px rgba(16,33,58,.18); max-height: 88vh; overflow: auto; animation: sheetUp .2s ease;
+    }
+    @keyframes sheetUp { from { transform: translateY(18px); opacity: .85; } to { transform: translateY(0); opacity: 1; } }
+    .modal-handle { width: 54px; height: 6px; border-radius: 999px; background: #dbeafe; margin: 2px auto 14px; }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .close-btn { width: 38px; height: 38px; border-radius: 50%; background: #eef5ff; color: var(--primary-3); font-size: 1rem; }
+    .hidden { display: none !important; }
+    .footer-note { color: var(--muted); font-size: .76rem; margin-top: 10px; text-align: center; }
+
+    @media (max-width: 380px) {
+      .cards-2, .cards-3, .field-row, .field-row-3, .hero-actions, .hero-chip-wrap, .btn-group, .btn-group-3 { grid-template-columns: 1fr; }
+      .hero-balance { font-size: 1.7rem; }
+      .bottom-nav { grid-template-columns: repeat(5, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="screen active" id="screen-home">
+      <div class="topbar">
+        <div class="hello">
+          <small>Controle do mês</small>
+          <strong>Finanças da Família</strong>
+        </div>
+        <button class="icon-circle" type="button" id="btnOpenQuickMonth">📅</button>
+      </div>
+
+      <div class="month-switcher">
+        <button class="month-nav-btn" type="button" id="btnPrevMonth">‹</button>
+        <button class="month-switcher-center" type="button" id="btnOpenMonthModal">
+          <span class="month-switcher-label">Mês selecionado</span>
+          <span class="month-switcher-value" id="selectedMonthLabel">--/--</span>
+        </button>
+        <button class="month-nav-btn" type="button" id="btnNextMonth">›</button>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-top">
+          <div>
+            <small>Saldo disponível</small>
+            <div class="hero-balance" id="heroSaldo">R$ 0,00</div>
+          </div>
+          <div class="chip" style="background: rgba(255,255,255,.18); color:#fff;">Mês <span id="heroMes"></span></div>
+        </div>
+
+        <div class="hero-actions">
+          <button class="glass-btn" type="button" id="btnHeroGasto">Gasto</button>
+          <button class="glass-btn" type="button" id="btnHeroEntrada">Entrada</button>
+          <button class="glass-btn" type="button" data-nav="cartao">Fatura</button>
+        </div>
+
+        <div class="hero-chip-wrap">
+          <div class="hero-chip">
+            <small>Entradas</small>
+            <strong id="heroEntradas">R$ 0,00</strong>
+          </div>
+          <div class="hero-chip">
+            <small>Saídas</small>
+            <strong id="heroSaidas">R$ 0,00</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="cards-3" id="homeMiniStats"></div>
+      <div class="cards-2" id="homeForecast"></div>
+
+      <div class="section">
+        <div class="section-head">
+          <h2>Alertas automáticos</h2>
+          <button class="text-btn" type="button" data-nav="relatorio">Ver mais</button>
+        </div>
+        <div class="stack" id="listaAlertas"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <h2>Últimos lançamentos</h2>
+          <button class="text-btn" type="button" data-nav="lancamentos">Ver tudo</button>
+        </div>
+        <div class="stack" id="listaRecentes"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-lancamentos">
+      <div class="topbar">
+        <div class="hello">
+          <small>Movimentações</small>
+          <strong>Lançamentos do mês</strong>
+        </div>
+        <button class="icon-circle" type="button" id="btnLancamentosNovo">＋</button>
+      </div>
+
+      <div class="month-card">
+        <div class="month-picker">
+          <div class="field" style="margin:0;">
+            <label for="mesRef">Mês de referência</label>
+            <input type="month" id="mesRef" />
+          </div>
+          <button class="btn-light" id="btnAtualizarMes" type="button">Atualizar</button>
+        </div>
+        <div class="filter-bar" id="filterBar"></div>
+      </div>
+
+      <div class="stack" id="listaLancamentosCompleta"></div>
+      <div class="footer-note">Toque no item para editar. Use o botão + para novo lançamento.</div>
+    </section>
+
+    <section class="screen" id="screen-cartao">
+      <div class="topbar">
+        <div class="hello">
+          <small>Cartão de crédito</small>
+          <strong>Fatura do mês</strong>
+        </div>
+        <button class="icon-circle" type="button" data-nav="lancamentos">↕</button>
+      </div>
+      <div class="stack" id="painelCartao"></div>
+    </section>
+
+    <section class="screen" id="screen-fixas">
+      <div class="topbar">
+        <div class="hello">
+          <small>Rotina mensal</small>
+          <strong>Contas fixas</strong>
+        </div>
+        <button class="icon-circle" type="button" id="btnFixaOpen">＋</button>
+      </div>
+
+      <div class="sheet">
+        <h2 class="screen-title">Resumo das fixas</h2>
+        <div class="btn-group">
+          <button class="btn-primary" type="button" id="btnLancarFixas">Lançar no mês</button>
+          <button class="btn-light" type="button" id="btnPopularDemo">Exemplo</button>
+        </div>
+      </div>
+
+      <div class="stack" id="listaFixas"></div>
+    </section>
+
+    <section class="screen" id="screen-reserva">
+      <div class="topbar">
+        <div class="hello">
+          <small>Planejamento</small>
+          <strong>Reserva e metas</strong>
+        </div>
+        <button class="icon-circle" type="button" id="btnReservaOpen">✎</button>
+      </div>
+
+      <div class="stack" id="painelReserva"></div>
+    </section>
+
+    <section class="screen" id="screen-relatorio">
+      <div class="topbar">
+        <div class="hello">
+          <small>Análise mensal</small>
+          <strong>Relatório</strong>
+        </div>
+        <button class="icon-circle" type="button" id="btnLimparTudo">🗑</button>
+      </div>
+
+      <div class="stack" id="relatorioMensal"></div>
+      <div class="footer-note">Os dados ficam salvos no navegador do aparelho.</div>
+    </section>
+
+    <button class="fab" id="fabAdd" type="button">＋</button>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" type="button" data-nav="home"><span class="icon">⌂</span><span>Início</span></button>
+      <button class="nav-btn" type="button" data-nav="lancamentos"><span class="icon">↕</span><span>Movs</span></button>
+      <button class="nav-btn" type="button" data-nav="cartao"><span class="icon">◫</span><span>Cartão</span></button>
+      <button class="nav-btn" type="button" data-nav="fixas"><span class="icon">◎</span><span>Fixas</span></button>
+      <button class="nav-btn" type="button" data-nav="reserva"><span class="icon">◔</span><span>Metas</span></button>
+    </nav>
+  </div>
+
+  <div class="modal" id="modalLancamento">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-head">
+        <div>
+          <strong id="modalLaunchTitle">Novo lançamento</strong>
+          <div class="muted" style="font-size:.82rem;">Escolha entrada ou gasto</div>
+        </div>
+        <button class="close-btn" type="button" data-close="modalLancamento">✕</button>
+      </div>
+
+      <div class="btn-group" style="margin-bottom:14px;">
+        <button class="btn-primary" type="button" id="btnTabEntrada">Entrada</button>
+        <button class="btn-light" type="button" id="btnTabGasto">Gasto</button>
+      </div>
+
+      <form id="formEntrada" class="sheet">
+        <h2 class="screen-title">Adicionar entrada</h2>
+        <input type="hidden" name="editId" />
+        <div class="field-row">
+          <div class="field">
+            <label>Descrição</label>
+            <input type="text" name="descricao" placeholder="Ex: Salário" required />
+          </div>
+          <div class="field">
+            <label>Categoria</label>
+            <select name="categoria" required>
+              <option value="Salário">Salário</option>
+              <option value="Vale alimentação">Vale alimentação</option>
+              <option value="Renda extra">Renda extra</option>
+              <option value="Reembolso">Reembolso</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Valor</label>
+            <input type="number" name="valor" step="0.01" min="0" required />
+          </div>
+          <div class="field">
+            <label>Data</label>
+            <input type="date" name="data" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Quem lançou</label>
+          <input type="text" name="responsavel" placeholder="Ex: Cleider" />
+        </div>
+
+        <div class="field">
+          <label>Observação</label>
+          <textarea name="observacao" placeholder="Opcional"></textarea>
+        </div>
+
+        <div class="btn-group-3">
+          <button type="submit" class="btn-secondary">Salvar entrada</button>
+          <button type="button" class="btn-light hidden" id="btnEntradaCancelarEdicao">Cancelar</button>
+          <button type="button" class="btn-danger hidden" id="btnEntradaExcluir">Excluir</button>
+        </div>
+      </form>
+
+      <form id="formGasto" class="sheet hidden">
+        <h2 class="screen-title">Adicionar gasto</h2>
+        <input type="hidden" name="editId" />
+        <input type="hidden" name="grupoParcelamentoId" />
+        <div class="field-row">
+          <div class="field">
+            <label>Descrição</label>
+            <input type="text" name="descricao" placeholder="Ex: Supermercado" required />
+          </div>
+          <div class="field">
+            <label>Categoria</label>
+            <select name="categoria" id="categoriaGasto" required></select>
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label>Valor</label>
+            <input type="number" name="valor" step="0.01" min="0" required />
+          </div>
+          <div class="field">
+            <label>Data</label>
+            <input type="date" name="data" required />
+          </div>
+          <div class="field">
+            <label>Pagamento</label>
+            <select name="formaPagamento" id="formaPagamentoGasto">
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão débito">Cartão débito</option>
+              <option value="Cartão crédito">Cartão crédito</option>
+              <option value="Boleto">Boleto</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row" id="linhaStatusParcelas">
+          <div class="field hidden" id="campoParcelasGasto">
+            <label>Parcelas</label>
+            <input type="number" name="parcelas" id="parcelasGasto" min="1" max="24" value="1" />
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select name="status" id="statusGasto">
+              <option value="Pago">Pago</option>
+              <option value="A vencer">A vencer</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Responsável</label>
+            <input type="text" name="responsavel" placeholder="Ex: Esposa" />
+          </div>
+          <div class="field">
+            <label>Observação</label>
+            <input type="text" name="observacao" placeholder="Opcional" />
+          </div>
+        </div>
+
+        <div class="btn-group-3">
+          <button type="submit" class="btn-primary">Salvar gasto</button>
+          <button type="button" class="btn-light hidden" id="btnGastoCancelarEdicao">Cancelar</button>
+          <button type="button" class="btn-danger hidden" id="btnGastoExcluir">Excluir</button>
+        </div>
+        <div class="btn-group" style="margin-top:10px;">
+          <button type="button" class="btn-light hidden" id="btnExcluirGrupo">Excluir compra inteira</button>
+          <button type="button" class="btn-light hidden" id="btnEditarGrupo">Editar compra inteira</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="modalFixa">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-head">
+        <div>
+          <strong>Nova conta fixa</strong>
+          <div class="muted" style="font-size:.82rem;">Cadastre despesas recorrentes</div>
+        </div>
+        <button class="close-btn" type="button" data-close="modalFixa">✕</button>
+      </div>
+
+      <form id="formFixa" class="sheet">
+        <div class="field-row">
+          <div class="field">
+            <label>Descrição</label>
+            <input type="text" name="descricao" placeholder="Ex: Aluguel" required />
+          </div>
+          <div class="field">
+            <label>Categoria</label>
+            <select name="categoria" id="categoriaFixa"></select>
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label>Valor</label>
+            <input type="number" name="valor" step="0.01" min="0" required />
+          </div>
+          <div class="field">
+            <label>Vencimento</label>
+            <input type="number" name="diaVencimento" min="1" max="31" required />
+          </div>
+          <div class="field">
+            <label>Status padrão</label>
+            <select name="statusPadrao">
+              <option value="Pago">Pago</option>
+              <option value="A vencer">A vencer</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%;">Salvar conta fixa</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="modalMes">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-head">
+        <div>
+          <strong>Selecionar mês</strong>
+          <div class="muted" style="font-size:.82rem;">Troque rapidamente para consultar meses anteriores</div>
+        </div>
+        <button class="close-btn" type="button" data-close="modalMes">✕</button>
+      </div>
+
+      <div class="sheet">
+        <div class="field">
+          <label for="mesRefModal">Mês de referência</label>
+          <input type="month" id="mesRefModal" />
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn-primary" id="btnAplicarMesModal">Aplicar mês</button>
+          <button type="button" class="btn-light" id="btnMesAtual">Mês atual</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalReserva">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-head">
+        <div>
+          <strong>Reserva financeira</strong>
+          <div class="muted" style="font-size:.82rem;">Atualize meta mensal e acumulado</div>
+        </div>
+        <button class="close-btn" type="button" data-close="modalReserva">✕</button>
+      </div>
+
+      <form id="formReserva" class="sheet">
+        <div class="field-row">
+          <div class="field">
+            <label>Meta mensal</label>
+            <input type="number" name="metaMensal" step="0.01" min="0" required />
+          </div>
+          <div class="field">
+            <label>Meta anual</label>
+            <input type="number" name="metaAnual" step="0.01" min="0" required />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Guardado no mês</label>
+            <input type="number" name="guardadoMes" step="0.01" min="0" required />
+          </div>
+          <div class="field">
+            <label>Total acumulado</label>
+            <input type="number" name="acumulado" step="0.01" min="0" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%;">Salvar reserva</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'controle_financeiro_familiar_v3_moderno';
+
+    const categoriasBase = ['Aluguel', 'Água', 'Luz', 'Internet', 'Mercado', 'Farmácia', 'Bebê', 'Lazer', 'Transporte', 'Dívidas', 'Reserva', 'Outros'];
+    const categoriaIcone = {
+      'Aluguel': '🏠',
+      'Água': '💧',
+      'Luz': '💡',
+      'Internet': '📶',
+      'Mercado': '🛒',
+      'Farmácia': '💊',
+      'Bebê': '🍼',
+      'Lazer': '🎉',
+      'Transporte': '🚗',
+      'Dívidas': '📄',
+      'Reserva': '💰',
+      'Outros': '•'
+    };
+
+    const defaultData = () => ({ entradas: [], gastos: [], contasFixas: [], reserva: {} });
+
+    let db = loadData();
+    let mesAtual = getCurrentMonth();
+    let activeScreen = 'home';
+    let launchMode = 'entrada';
+    let filtroLancamento = 'todos';
+
+    const el = (id) => document.getElementById(id);
+    const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : defaultData();
+      } catch (error) {
+        console.warn('Falha ao carregar dados salvos. Banco local reiniciado.', error);
+        return defaultData();
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    }
+
+    function getCurrentMonth() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function todayISO() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function sameMonth(dateStr, monthRef) {
+      return String(dateStr || '').slice(0, 7) === monthRef;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const [y, m, d] = dateStr.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function formatMonthLabel(monthRef) {
+      const [y, m] = monthRef.split('-').map(Number);
+      return new Date(y, m - 1, 1).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+    }
+
+    function addMonthsToMonthRef(monthRef, delta) {
+      const [y, m] = monthRef.split('-').map(Number);
+      const d = new Date(y, m - 1 + delta, 1);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function setMesAtual(monthRef) {
+      mesAtual = monthRef;
+      if (el('mesRef')) el('mesRef').value = monthRef;
+      if (el('mesRefModal')) el('mesRefModal').value = monthRef;
+      if (el('selectedMonthLabel')) el('selectedMonthLabel').textContent = formatMonthLabel(monthRef);
+      renderAll();
+    }
+
+    function addMonthsToISODate(dateStr, monthsToAdd) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const base = new Date(year, month - 1 + monthsToAdd, 1);
+      const lastDay = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+      const finalDay = String(Math.min(day, lastDay)).padStart(2, '0');
+      const finalMonth = String(base.getMonth() + 1).padStart(2, '0');
+      return `${base.getFullYear()}-${finalMonth}-${finalDay}`;
+    }
+
+    function getEntradasMes(monthRef = mesAtual) {
+      return db.entradas.filter((item) => sameMonth(item.data, monthRef));
+    }
+
+    function getGastosMes(monthRef = mesAtual) {
+      return db.gastos.filter((item) => sameMonth(item.data, monthRef));
+    }
+
+    function sum(arr, fn) {
+      return arr.reduce((acc, item) => acc + Number(fn(item) || 0), 0);
+    }
+
+    function getResumoMes(monthRef = mesAtual) {
+      const entradas = getEntradasMes(monthRef);
+      const gastos = getGastosMes(monthRef);
+      const totalEntradas = sum(entradas, (item) => item.valor);
+      const totalSaidas = sum(gastos, (item) => item.valor);
+      const guardadoMes = Number((db.reserva[monthRef] || {}).guardadoMes || 0);
+      const saldo = totalEntradas - totalSaidas;
+      const restante = saldo - guardadoMes;
+      return { totalEntradas, totalSaidas, saldo, restante, guardadoMes };
+    }
+
+    function createInstallmentEntries(payload) {
+      const { descricao, categoria, valorTotal, dataBase, formaPagamento, responsavel, observacao, status, totalParcelas } = payload;
+      const parcelas = Math.max(1, Number(totalParcelas || 1));
+      const grupoParcelamentoId = uid();
+
+      if (formaPagamento !== 'Cartão crédito' || parcelas === 1) {
+        return [{
+          id: uid(), grupoParcelamentoId, descricao, categoria,
+          valor: Number(valorTotal), valorTotalOriginal: Number(valorTotal), data: dataBase,
+          formaPagamento, status, responsavel, observacao, parcelaAtual: 1, totalParcelas: 1
+        }];
+      }
+
+      const valorBase = Number((Number(valorTotal) / parcelas).toFixed(2));
+      const entries = [];
+      let acumulado = 0;
+
+      for (let i = 1; i <= parcelas; i += 1) {
+        let valorParcela = valorBase;
+        if (i === parcelas) valorParcela = Number((Number(valorTotal) - acumulado).toFixed(2));
+        acumulado += valorParcela;
+        entries.push({
+          id: uid(), grupoParcelamentoId, descricao, categoria,
+          valor: valorParcela, valorTotalOriginal: Number(valorTotal), data: addMonthsToISODate(dataBase, i - 1),
+          formaPagamento, status: 'A vencer', responsavel, observacao, parcelaAtual: i, totalParcelas: parcelas
+        });
+      }
+      return entries;
+    }
+
+    function popularSelectsCategorias() {
+      ['categoriaGasto', 'categoriaFixa'].forEach((id) => {
+        const select = el(id);
+        if (!select) return;
+        select.innerHTML = categoriasBase.map((categoria) => `<option value="${categoria}">${categoria}</option>`).join('');
+      });
+    }
+
+    function openModal(id) { el(id).classList.add('show'); }
+    function closeModal(id) { el(id).classList.remove('show'); }
+
+    function switchLaunchTab(kind) {
+      launchMode = kind;
+      const isEntrada = kind === 'entrada';
+      el('formEntrada').classList.toggle('hidden', !isEntrada);
+      el('formGasto').classList.toggle('hidden', isEntrada);
+      el('btnTabEntrada').className = isEntrada ? 'btn-primary' : 'btn-light';
+      el('btnTabGasto').className = isEntrada ? 'btn-light' : 'btn-primary';
+    }
+
+    function switchScreen(name) {
+      activeScreen = name;
+      document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.toggle('active', btn.dataset.nav === name));
+      const target = el(`screen-${name}`);
+      if (target) target.classList.add('active');
+    }
+
+    function resetEntradaFormState() {
+      const form = document.forms.formEntrada;
+      form.reset();
+      form.data.value = todayISO();
+      form.editId.value = '';
+      el('btnEntradaCancelarEdicao').classList.add('hidden');
+      el('btnEntradaExcluir').classList.add('hidden');
+    }
+
+    function resetGastoFormState() {
+      const form = document.forms.formGasto;
+      form.reset();
+      form.data.value = todayISO();
+      form.editId.value = '';
+      form.grupoParcelamentoId.value = '';
+      el('parcelasGasto').value = 1;
+      el('campoParcelasGasto').classList.add('hidden');
+      el('statusGasto').disabled = false;
+      el('statusGasto').value = 'Pago';
+      el('btnGastoCancelarEdicao').classList.add('hidden');
+      el('btnGastoExcluir').classList.add('hidden');
+      el('btnExcluirGrupo').classList.add('hidden');
+      el('btnEditarGrupo').classList.add('hidden');
+    }
+
+    function buildChipStatus(item) {
+      if (item.tipo === 'Entrada') return '<span class="chip ok">Entrada</span>';
+      if (item.status === 'A vencer') return '<span class="chip warn">A vencer</span>';
+      return '<span class="chip danger">Pago</span>';
+    }
+
+    function getNextMonthRef() {
+      const [y, m] = mesAtual.split('-').map(Number);
+      const d = new Date(y, m, 1);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function getFixedTotal() {
+      return sum(db.contasFixas, (item) => item.valor);
+    }
+
+    function getCardInvoice(monthRef = mesAtual) {
+      const items = getGastosMes(monthRef).filter((item) => item.formaPagamento === 'Cartão crédito');
+      const total = sum(items, (item) => item.valor);
+      return { items, total };
+    }
+
+    function getComprometidoMes(monthRef = mesAtual) {
+      const fixas = getFixedTotal();
+      const cartao = getCardInvoice(monthRef).total;
+      return { fixas, cartao, total: fixas + cartao };
+    }
+
+    function getForecastNextMonth() {
+      const nextRef = getNextMonthRef();
+      const cartao = getCardInvoice(nextRef).total;
+      const fixas = getFixedTotal();
+      const reserva = Number((db.reserva[nextRef] || {}).metaMensal || (db.reserva[mesAtual] || {}).metaMensal || 0);
+      return { nextRef, fixas, cartao, reserva, total: fixas + cartao + reserva };
+    }
+
+    function getAllMonthItems() {
+      return [
+        ...getEntradasMes().map((item) => ({ ...item, tipo: 'Entrada' })),
+        ...getGastosMes().map((item) => ({ ...item, tipo: 'Gasto' }))
+      ].sort((a, b) => (a.data < b.data ? 1 : -1));
+    }
+
+    function applyLancamentoFilter(itens) {
+      switch (filtroLancamento) {
+        case 'entradas': return itens.filter((i) => i.tipo === 'Entrada');
+        case 'gastos': return itens.filter((i) => i.tipo === 'Gasto');
+        case 'avencer': return itens.filter((i) => i.tipo === 'Gasto' && i.status === 'A vencer');
+        case 'cartao': return itens.filter((i) => i.tipo === 'Gasto' && i.formaPagamento === 'Cartão crédito');
+        case 'fixas': return itens.filter((i) => i.tipo === 'Gasto' && i.origemFixa);
+        default: return itens;
+      }
+    }
+
+    function renderFilterBar() {
+      const filtros = [
+        ['todos', 'Todos'],
+        ['entradas', 'Entradas'],
+        ['gastos', 'Gastos'],
+        ['avencer', 'A vencer'],
+        ['cartao', 'Cartão'],
+        ['fixas', 'Fixas']
+      ];
+      el('filterBar').innerHTML = filtros.map(([key, label]) => `<button class="filter-btn ${filtroLancamento === key ? 'active' : ''}" type="button" data-filter="${key}">${label}</button>`).join('');
+      document.querySelectorAll('[data-filter]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filtroLancamento = btn.dataset.filter;
+          renderFilterBar();
+          renderLancamentos();
+        });
+      });
+    }
+
+    function renderHome() {
+      const resumo = getResumoMes();
+      const comprometido = getComprometidoMes();
+      const forecast = getForecastNextMonth();
+      el('heroSaldo').textContent = money(resumo.restante);
+      el('heroEntradas').textContent = money(resumo.totalEntradas);
+      el('heroSaidas').textContent = money(resumo.totalSaidas);
+      el('heroMes').textContent = formatMonthLabel(mesAtual);
+
+      el('homeMiniStats').innerHTML = `
+        <div class="mini-card"><small>Guardado</small><strong>${money(resumo.guardadoMes)}</strong></div>
+        <div class="mini-card"><small>Comprometido</small><strong>${money(comprometido.total)}</strong></div>
+        <div class="mini-card"><small>Pode gastar</small><strong>${money(Math.max(resumo.restante, 0))}</strong></div>
+      `;
+
+      el('homeForecast').innerHTML = `
+        <div class="forecast-card">
+          <small class="muted">Fatura atual</small>
+          <div class="list-title">${money(comprometido.cartao)}</div>
+          <div class="list-sub">Cartão em ${formatMonthLabel(mesAtual)}</div>
+        </div>
+        <div class="forecast-card">
+          <small class="muted">Próximo mês</small>
+          <div class="list-title">${money(forecast.total)}</div>
+          <div class="list-sub">Fixas + cartão + reserva</div>
+        </div>
+      `;
+
+      const recentes = getAllMonthItems().slice(0, 5);
+      el('listaRecentes').innerHTML = recentes.length
+        ? recentes.map((item) => buildLancamentoCard(item, false)).join('')
+        : '<div class="alert-item"><div class="muted">Nenhum lançamento no mês.</div></div>';
+    }
+
+    function buildLancamentoCard(item, withActions = true) {
+      const valorClasse = item.tipo === 'Entrada' ? 'in' : 'out';
+      const prefix = item.tipo === 'Entrada' ? '+' : '-';
+      const detalhe = item.tipo === 'Gasto'
+        ? `${item.categoria} • ${item.formaPagamento || '-'}${item.totalParcelas > 1 ? ` • ${item.parcelaAtual}/${item.totalParcelas}` : ''}`
+        : `${item.categoria} • ${item.responsavel || 'Família'}`;
+      const icon = item.tipo === 'Entrada' ? '↗' : (categoriaIcone[item.categoria] || '↘');
+      return `
+        <div class="list-card" ${withActions ? `onclick="abrirEdicaoLancamento('${item.tipo}','${item.id}')" style="cursor:pointer;"` : ''}>
+          <div class="list-icon">${icon}</div>
+          <div class="list-main">
+            <div class="list-row">
+              <div class="list-title">${item.descricao}</div>
+              <div class="amount ${valorClasse}">${prefix}${money(item.valor)}</div>
+            </div>
+            <div class="list-sub">${detalhe} • ${formatDate(item.data)}</div>
+            <div class="list-row" style="margin-top:8px; margin-bottom:0;">
+              ${buildChipStatus(item)}
+              ${withActions ? '<span class="text-btn">Editar</span>' : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAlertas() {
+      const alertas = [];
+      const gastos = getGastosMes();
+      const hoje = new Date();
+      const reservaMes = db.reserva[mesAtual] || { metaMensal: 0, guardadoMes: 0 };
+
+      gastos.filter((g) => g.status === 'A vencer').forEach((gasto) => {
+        const data = new Date(`${gasto.data}T00:00:00`);
+        const diff = Math.ceil((data - hoje) / (1000 * 60 * 60 * 24));
+        if (diff >= 0 && diff <= 3) {
+          alertas.push({ titulo: gasto.descricao, texto: `Vence em ${diff} dia(s).`, valor: money(gasto.valor), pct: diff <= 1 ? 92 : diff === 2 ? 70 : 50 });
+        }
+      });
+
+      if (Number(reservaMes.metaMensal || 0) > 0 && Number(reservaMes.guardadoMes || 0) < Number(reservaMes.metaMensal || 0)) {
+        const pct = Math.min((Number(reservaMes.guardadoMes || 0) / Number(reservaMes.metaMensal || 1)) * 100, 100);
+        alertas.push({ titulo: 'Reserva do mês', texto: `${money(reservaMes.guardadoMes)} de ${money(reservaMes.metaMensal)}`, valor: 'Abaixo da meta', pct });
+      }
+
+      el('listaAlertas').innerHTML = alertas.length
+        ? alertas.map((item) => `
+            <div class="alert-item">
+              <div class="list-row">
+                <div><div class="list-title">${item.titulo}</div><div class="list-sub">${item.texto}</div></div>
+                <div class="chip warn">${item.valor}</div>
+              </div>
+              <div class="progress-track"><div class="progress-bar" style="width:${item.pct}%;"></div></div>
+            </div>
+          `).join('')
+        : '<div class="alert-item"><div class="list-title">Tudo em ordem</div><div class="list-sub">Nenhum alerta importante no momento.</div></div>';
+    }
+
+    function renderLancamentos() {
+      el('mesRef').value = mesAtual;
+      const itens = applyLancamentoFilter(getAllMonthItems());
+      el('listaLancamentosCompleta').innerHTML = itens.length
+        ? itens.map((item) => buildLancamentoCard(item, true)).join('')
+        : '<div class="alert-item"><div class="list-title">Sem lançamentos</div><div class="list-sub">Use o botão + para registrar entrada ou gasto.</div></div>';
+    }
+
+    function renderCardInvoice() {
+      const atual = getCardInvoice(mesAtual);
+      const prox = getForecastNextMonth();
+      const grupos = {};
+      atual.items.forEach((item) => {
+        const key = item.grupoParcelamentoId || item.id;
+        grupos[key] ||= [];
+        grupos[key].push(item);
+      });
+      const compras = Object.values(grupos).map((grupo) => grupo.sort((a, b) => a.parcelaAtual - b.parcelaAtual)[0]);
+      el('painelCartao').innerHTML = `
+        <div class="report-card">
+          <div class="section-head"><h3>Total da fatura</h3><span class="chip">${formatMonthLabel(mesAtual)}</span></div>
+          <div class="hero-balance" style="color:var(--primary-3); margin:0; font-size:1.7rem;">${money(atual.total)}</div>
+          <div class="list-sub">Próximo mês previsto: ${money(prox.cartao)}</div>
+        </div>
+        <div class="report-card">
+          <div class="section-head"><h3>Compras na fatura</h3></div>
+          <div class="stack">
+            ${compras.length ? compras.map((item) => `
+              <div class="list-card" onclick="abrirEdicaoLancamento('Gasto','${item.id}')" style="cursor:pointer;">
+                <div class="list-icon">💳</div>
+                <div class="list-main">
+                  <div class="list-row">
+                    <div class="list-title">${item.descricao}</div>
+                    <div class="amount out">${money(item.valor)}</div>
+                  </div>
+                  <div class="list-sub">${item.totalParcelas > 1 ? `Parcela ${item.parcelaAtual}/${item.totalParcelas}` : 'À vista no crédito'} • ${formatDate(item.data)}</div>
+                </div>
+              </div>
+            `).join('') : '<div class="list-sub">Nenhuma compra no cartão neste mês.</div>'}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFixas() {
+      el('listaFixas').innerHTML = db.contasFixas.length
+        ? db.contasFixas.map((conta) => `
+            <div class="list-card">
+              <div class="list-icon">${categoriaIcone[conta.categoria] || '◎'}</div>
+              <div class="list-main">
+                <div class="list-row"><div class="list-title">${conta.descricao}</div><div class="amount neutral">${money(conta.valor)}</div></div>
+                <div class="list-sub">${conta.categoria} • vence dia ${conta.diaVencimento}</div>
+                <div class="list-row" style="margin-top:8px; margin-bottom:0;"><span class="chip ${conta.statusPadrao === 'Pago' ? 'ok' : 'warn'}">${conta.statusPadrao}</span><button class="text-btn" type="button" onclick="removerContaFixa('${conta.id}')">Excluir</button></div>
+              </div>
+            </div>
+          `).join('')
+        : '<div class="alert-item"><div class="list-title">Nenhuma conta fixa</div><div class="list-sub">Cadastre despesas recorrentes para lançar automaticamente no mês.</div></div>';
+    }
+
+    function renderReserva() {
+      const reserva = db.reserva[mesAtual] || { metaMensal: 0, metaAnual: 0, guardadoMes: 0, acumulado: 0 };
+      const pctMes = reserva.metaMensal > 0 ? Math.min((reserva.guardadoMes / reserva.metaMensal) * 100, 100) : 0;
+      const pctAno = reserva.metaAnual > 0 ? Math.min((reserva.acumulado / reserva.metaAnual) * 100, 100) : 0;
+      el('painelReserva').innerHTML = `
+        <div class="report-card">
+          <div class="section-head" style="margin-bottom:8px;"><h3>Meta mensal</h3><span class="chip">${money(reserva.guardadoMes)}</span></div>
+          <div class="list-sub">${money(reserva.guardadoMes)} de ${money(reserva.metaMensal)}</div>
+          <div class="progress-track"><div class="progress-bar" style="width:${pctMes}%;"></div></div>
+        </div>
+        <div class="report-card">
+          <div class="section-head" style="margin-bottom:8px;"><h3>Meta anual</h3><span class="chip">${money(reserva.acumulado)}</span></div>
+          <div class="list-sub">${money(reserva.acumulado)} de ${money(reserva.metaAnual)}</div>
+          <div class="progress-track"><div class="progress-bar" style="width:${pctAno}%;"></div></div>
+        </div>
+      `;
+      const form = document.forms.formReserva;
+      if (form) {
+        form.metaMensal.value = reserva.metaMensal || '';
+        form.metaAnual.value = reserva.metaAnual || '';
+        form.guardadoMes.value = reserva.guardadoMes || '';
+        form.acumulado.value = reserva.acumulado || '';
+      }
+    }
+
+    function renderRelatorio() {
+      const atual = getResumoMes();
+      const [ano, mes] = mesAtual.split('-').map(Number);
+      const prevDate = new Date(ano, mes - 2, 1);
+      const prevMonth = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
+      const prevEntradas = sum(db.entradas.filter((item) => sameMonth(item.data, prevMonth)), (item) => item.valor);
+      const prevGastos = sum(db.gastos.filter((item) => sameMonth(item.data, prevMonth)), (item) => item.valor);
+      const prevSaldo = prevEntradas - prevGastos;
+      const topCategorias = categoriasBase.map((categoria) => ({ categoria, valor: sum(getGastosMes().filter((g) => g.categoria === categoria), (g) => g.valor) })).filter((item) => item.valor > 0).sort((a, b) => b.valor - a.valor).slice(0, 5);
+      const forecast = getForecastNextMonth();
+      el('relatorioMensal').innerHTML = `
+        <div class="report-card">
+          <div class="section-head"><h3>Resumo do mês</h3><span class="chip">${formatMonthLabel(mesAtual)}</span></div>
+          <div class="cards-3">
+            <div class="mini-card"><small>Entradas</small><strong>${money(atual.totalEntradas)}</strong></div>
+            <div class="mini-card"><small>Saídas</small><strong>${money(atual.totalSaidas)}</strong></div>
+            <div class="mini-card"><small>Saldo</small><strong>${money(atual.saldo)}</strong></div>
+          </div>
+        </div>
+        <div class="report-card">
+          <div class="section-head"><h3>Comparação anterior</h3><span class="chip">${prevMonth}</span></div>
+          <div class="list-sub">Entradas: <strong>${money(prevEntradas)}</strong></div>
+          <div class="list-sub">Saídas: <strong>${money(prevGastos)}</strong></div>
+          <div class="list-sub">Saldo: <strong>${money(prevSaldo)}</strong></div>
+        </div>
+        <div class="report-card">
+          <div class="section-head"><h3>Previsão próximo mês</h3><span class="chip">${forecast.nextRef}</span></div>
+          <div class="list-sub">Fixas: <strong>${money(forecast.fixas)}</strong></div>
+          <div class="list-sub">Cartão: <strong>${money(forecast.cartao)}</strong></div>
+          <div class="list-sub">Reserva planejada: <strong>${money(forecast.reserva)}</strong></div>
+          <div class="list-sub">Total mínimo: <strong>${money(forecast.total)}</strong></div>
+        </div>
+        <div class="report-card">
+          <div class="section-head"><h3>Categorias que mais consumiram</h3></div>
+          <div class="stack">
+            ${topCategorias.length ? topCategorias.map((item) => `
+              <div>
+                <div class="list-row" style="margin-bottom:2px;"><div class="list-sub">${categoriaIcone[item.categoria] || '•'} ${item.categoria}</div><div class="amount out">${money(item.valor)}</div></div>
+                <div class="progress-track"><div class="progress-bar" style="width:${Math.min((item.valor / (topCategorias[0].valor || 1)) * 100, 100)}%;"></div></div>
+              </div>
+            `).join('') : '<div class="list-sub">Sem gastos suficientes para análise.</div>'}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMonthUI() {
+      if (el('mesRef')) el('mesRef').value = mesAtual;
+      if (el('mesRefModal')) el('mesRefModal').value = mesAtual;
+      if (el('selectedMonthLabel')) el('selectedMonthLabel').textContent = formatMonthLabel(mesAtual);
+    }
+
+    function renderAll() {
+      renderMonthUI();
+      renderFilterBar();
+      renderHome();
+      renderAlertas();
+      renderLancamentos();
+      renderCardInvoice();
+      renderFixas();
+      renderReserva();
+      renderRelatorio();
+    }
+
+    function lancarContasFixasNoMes() {
+      if (!db.contasFixas.length) { alert('Cadastre ao menos uma conta fixa primeiro.'); return; }
+      const existentes = new Set(getGastosMes().filter((gasto) => gasto.origemFixa).map((gasto) => `${gasto.descricao}-${gasto.data}`));
+      db.contasFixas.forEach((conta) => {
+        const data = `${mesAtual}-${String(Math.min(conta.diaVencimento, 28)).padStart(2, '0')}`;
+        const chave = `${conta.descricao}-${data}`;
+        if (existentes.has(chave)) return;
+        db.gastos.push({
+          id: uid(), descricao: conta.descricao, categoria: conta.categoria, valor: Number(conta.valor), data,
+          formaPagamento: 'Boleto', status: conta.statusPadrao, responsavel: 'Sistema', observacao: 'Lançamento automático de conta fixa',
+          origemFixa: true, parcelaAtual: 1, totalParcelas: 1
+        });
+      });
+      saveData(); renderAll(); alert('Contas fixas lançadas no mês atual.');
+    }
+
+    function popularComExemplo() {
+      if (!confirm('Deseja inserir dados de exemplo?')) return;
+      const baseMonth = mesAtual;
+      db.entradas.push(
+        { id: uid(), descricao: 'Salário', categoria: 'Salário', valor: 2700, data: `${baseMonth}-05`, responsavel: 'Família', observacao: '' },
+        { id: uid(), descricao: 'Vale alimentação', categoria: 'Vale alimentação', valor: 510, data: `${baseMonth}-05`, responsavel: 'Família', observacao: '' }
+      );
+      db.gastos.push(
+        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Aluguel', categoria: 'Aluguel', valor: 750, data: `${baseMonth}-10`, formaPagamento: 'Pix', status: 'Pago', responsavel: 'Família', observacao: '', parcelaAtual: 1, totalParcelas: 1 },
+        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Água/Luz/Internet', categoria: 'Internet', valor: 250, data: `${baseMonth}-12`, formaPagamento: 'Boleto', status: 'Pago', responsavel: 'Família', observacao: '', parcelaAtual: 1, totalParcelas: 1 },
+        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Farmácia', categoria: 'Farmácia', valor: 120, data: `${baseMonth}-15`, formaPagamento: 'Pix', status: 'Pago', responsavel: 'Família', observacao: '', parcelaAtual: 1, totalParcelas: 1 }
+      );
+      db.gastos.push(...createInstallmentEntries({
+        descricao: 'TV parcelada', categoria: 'Lazer', valorTotal: 600, dataBase: `${baseMonth}-20`, formaPagamento: 'Cartão crédito', responsavel: 'Família', observacao: '', status: 'Pago', totalParcelas: 3
+      }));
+      db.reserva[baseMonth] = { metaMensal: 400, metaAnual: 8000, guardadoMes: 250, acumulado: 1300 };
+      db.contasFixas = [
+        { id: uid(), descricao: 'Aluguel', categoria: 'Aluguel', valor: 750, diaVencimento: 10, statusPadrao: 'Pago' },
+        { id: uid(), descricao: 'Internet', categoria: 'Internet', valor: 120, diaVencimento: 15, statusPadrao: 'A vencer' }
+      ];
+      saveData(); renderAll();
+    }
+
+    function fillEntradaForm(item) {
+      switchLaunchTab('entrada');
+      const form = document.forms.formEntrada;
+      form.editId.value = item.id;
+      form.descricao.value = item.descricao || '';
+      form.categoria.value = item.categoria || 'Outro';
+      form.valor.value = item.valor || '';
+      form.data.value = item.data || todayISO();
+      form.responsavel.value = item.responsavel || '';
+      form.observacao.value = item.observacao || '';
+      el('btnEntradaCancelarEdicao').classList.remove('hidden');
+      el('btnEntradaExcluir').classList.remove('hidden');
+      openModal('modalLancamento');
+    }
+
+    function fillGastoForm(item, byGroup = false) {
+      switchLaunchTab('gasto');
+      const form = document.forms.formGasto;
+      form.editId.value = item.id;
+      form.grupoParcelamentoId.value = item.grupoParcelamentoId || '';
+      form.descricao.value = item.descricao || '';
+      form.categoria.value = item.categoria || 'Outros';
+      form.valor.value = byGroup && item.totalParcelas > 1 ? item.valorTotalOriginal : item.valor;
+      form.data.value = item.data || todayISO();
+      form.formaPagamento.value = item.formaPagamento || 'Pix';
+      form.status.value = item.status || 'Pago';
+      form.responsavel.value = item.responsavel || '';
+      form.observacao.value = item.observacao || '';
+      if (item.formaPagamento === 'Cartão crédito') {
+        el('campoParcelasGasto').classList.remove('hidden');
+        form.parcelas.value = item.totalParcelas || 1;
+        el('statusGasto').disabled = true;
+      } else {
+        resetGastoFormState();
+        form.editId.value = item.id;
+        form.grupoParcelamentoId.value = item.grupoParcelamentoId || '';
+        form.descricao.value = item.descricao || '';
+        form.categoria.value = item.categoria || 'Outros';
+        form.valor.value = item.valor;
+        form.data.value = item.data || todayISO();
+        form.formaPagamento.value = item.formaPagamento || 'Pix';
+        form.status.value = item.status || 'Pago';
+        form.responsavel.value = item.responsavel || '';
+        form.observacao.value = item.observacao || '';
+      }
+      el('btnGastoCancelarEdicao').classList.remove('hidden');
+      el('btnGastoExcluir').classList.remove('hidden');
+      if (item.totalParcelas > 1) {
+        el('btnExcluirGrupo').classList.remove('hidden');
+        el('btnEditarGrupo').classList.remove('hidden');
+      }
+      openModal('modalLancamento');
+    }
+
+    window.abrirEdicaoLancamento = (tipo, id) => {
+      if (tipo === 'Entrada') {
+        const item = db.entradas.find((i) => i.id === id);
+        if (item) fillEntradaForm(item);
+        return;
+      }
+      const item = db.gastos.find((i) => i.id === id);
+      if (item) fillGastoForm(item, false);
+    };
+
+    function bindEvents() {
+      document.querySelectorAll('[data-nav]').forEach((btn) => btn.addEventListener('click', () => switchScreen(btn.dataset.nav)));
+      document.querySelectorAll('[data-close]').forEach((btn) => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
+      ['modalLancamento', 'modalFixa', 'modalReserva', 'modalMes'].forEach((id) => {
+        el(id).addEventListener('click', (e) => { if (e.target.id === id) closeModal(id); });
+      });
+
+      el('fabAdd').addEventListener('click', () => { resetEntradaFormState(); resetGastoFormState(); switchLaunchTab('gasto'); openModal('modalLancamento'); });
+      el('btnHeroGasto').addEventListener('click', () => { resetEntradaFormState(); resetGastoFormState(); switchLaunchTab('gasto'); openModal('modalLancamento'); });
+      el('btnHeroEntrada').addEventListener('click', () => { resetEntradaFormState(); resetGastoFormState(); switchLaunchTab('entrada'); openModal('modalLancamento'); });
+      el('btnLancamentosNovo').addEventListener('click', () => { resetEntradaFormState(); resetGastoFormState(); switchLaunchTab('gasto'); openModal('modalLancamento'); });
+      el('btnFixaOpen').addEventListener('click', () => openModal('modalFixa'));
+      el('btnReservaOpen').addEventListener('click', () => openModal('modalReserva'));
+      el('btnOpenQuickMonth').addEventListener('click', () => openModal('modalMes'));
+      el('btnOpenMonthModal').addEventListener('click', () => openModal('modalMes'));
+      el('btnPrevMonth').addEventListener('click', () => setMesAtual(addMonthsToMonthRef(mesAtual, -1)));
+      el('btnNextMonth').addEventListener('click', () => setMesAtual(addMonthsToMonthRef(mesAtual, 1)));
+      el('btnAplicarMesModal').addEventListener('click', () => {
+        const valor = el('mesRefModal').value;
+        if (!valor) { alert('Selecione um mês.'); return; }
+        setMesAtual(valor);
+        closeModal('modalMes');
+      });
+      el('btnMesAtual').addEventListener('click', () => {
+        setMesAtual(getCurrentMonth());
+        closeModal('modalMes');
+      });
+      el('btnTabEntrada').addEventListener('click', () => switchLaunchTab('entrada'));
+      el('btnTabGasto').addEventListener('click', () => switchLaunchTab('gasto'));
+
+      el('formaPagamentoGasto').addEventListener('change', (event) => {
+        const isCredito = event.target.value === 'Cartão crédito';
+        el('campoParcelasGasto').classList.toggle('hidden', !isCredito);
+        el('statusGasto').disabled = isCredito;
+        if (isCredito) {
+          el('statusGasto').value = 'A vencer';
+        } else {
+          el('parcelasGasto').value = 1;
+          el('statusGasto').disabled = false;
+          el('statusGasto').value = 'Pago';
+        }
+      });
+
+      document.forms.formEntrada.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const id = formData.get('editId');
+        const payload = {
+          id: id || uid(), descricao: formData.get('descricao'), categoria: formData.get('categoria'),
+          valor: Number(formData.get('valor')), data: formData.get('data'), responsavel: formData.get('responsavel'), observacao: formData.get('observacao')
+        };
+        if (id) {
+          db.entradas = db.entradas.map((item) => item.id === id ? payload : item);
+        } else {
+          db.entradas.push(payload);
+        }
+        saveData(); resetEntradaFormState(); closeModal('modalLancamento'); renderAll(); switchScreen('lancamentos');
+      });
+
+      document.forms.formGasto.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const editId = formData.get('editId');
+        const grupoId = formData.get('grupoParcelamentoId');
+        const formaPagamento = formData.get('formaPagamento');
+        const parcelas = Math.max(1, Number(formData.get('parcelas') || 1));
+        const valorTotal = Number(formData.get('valor'));
+
+        if (editId && formaPagamento === 'Cartão crédito' && parcelas > 1) {
+          db.gastos = db.gastos.filter((item) => item.grupoParcelamentoId !== grupoId);
+          const newEntries = createInstallmentEntries({
+            descricao: formData.get('descricao'), categoria: formData.get('categoria'), valorTotal,
+            dataBase: formData.get('data'), formaPagamento, responsavel: formData.get('responsavel'),
+            observacao: formData.get('observacao'), status: formData.get('status'), totalParcelas: parcelas
+          });
+          db.gastos.push(...newEntries);
+        } else if (editId) {
+          db.gastos = db.gastos.map((item) => item.id === editId ? {
+            ...item, descricao: formData.get('descricao'), categoria: formData.get('categoria'), valor: valorTotal,
+            valorTotalOriginal: valorTotal, data: formData.get('data'), formaPagamento, status: formData.get('status'),
+            responsavel: formData.get('responsavel'), observacao: formData.get('observacao'), parcelaAtual: 1, totalParcelas: 1
+          } : item);
+        } else {
+          const entries = createInstallmentEntries({
+            descricao: formData.get('descricao'), categoria: formData.get('categoria'), valorTotal,
+            dataBase: formData.get('data'), formaPagamento, responsavel: formData.get('responsavel'),
+            observacao: formData.get('observacao'), status: formData.get('status'), totalParcelas: parcelas
+          });
+          db.gastos.push(...entries);
+        }
+
+        saveData(); resetGastoFormState(); closeModal('modalLancamento'); renderAll(); switchScreen('lancamentos');
+      });
+
+      document.forms.formFixa.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        db.contasFixas.push({
+          id: uid(), descricao: formData.get('descricao'), categoria: formData.get('categoria'),
+          valor: Number(formData.get('valor')), diaVencimento: Number(formData.get('diaVencimento')), statusPadrao: formData.get('statusPadrao')
+        });
+        saveData(); event.target.reset(); closeModal('modalFixa'); renderAll(); switchScreen('fixas');
+      });
+
+      document.forms.formReserva.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        db.reserva[mesAtual] = {
+          metaMensal: Number(formData.get('metaMensal')), metaAnual: Number(formData.get('metaAnual')),
+          guardadoMes: Number(formData.get('guardadoMes')), acumulado: Number(formData.get('acumulado'))
+        };
+        saveData(); closeModal('modalReserva'); renderAll(); switchScreen('reserva');
+      });
+
+      el('btnEntradaCancelarEdicao').addEventListener('click', () => resetEntradaFormState());
+      el('btnGastoCancelarEdicao').addEventListener('click', () => resetGastoFormState());
+
+      el('btnEntradaExcluir').addEventListener('click', () => {
+        const id = document.forms.formEntrada.editId.value;
+        if (!id) return;
+        if (!confirm('Deseja excluir esta entrada?')) return;
+        db.entradas = db.entradas.filter((item) => item.id !== id);
+        saveData(); resetEntradaFormState(); closeModal('modalLancamento'); renderAll();
+      });
+
+      el('btnGastoExcluir').addEventListener('click', () => {
+        const id = document.forms.formGasto.editId.value;
+        if (!id) return;
+        if (!confirm('Deseja excluir este gasto?')) return;
+        db.gastos = db.gastos.filter((item) => item.id !== id);
+        saveData(); resetGastoFormState(); closeModal('modalLancamento'); renderAll();
+      });
+
+      el('btnExcluirGrupo').addEventListener('click', () => {
+        const grupoId = document.forms.formGasto.grupoParcelamentoId.value;
+        if (!grupoId) return;
+        if (!confirm('Deseja excluir todas as parcelas dessa compra?')) return;
+        db.gastos = db.gastos.filter((item) => item.grupoParcelamentoId !== grupoId);
+        saveData(); resetGastoFormState(); closeModal('modalLancamento'); renderAll();
+      });
+
+      el('btnEditarGrupo').addEventListener('click', () => {
+        const grupoId = document.forms.formGasto.grupoParcelamentoId.value;
+        const grupo = db.gastos.filter((item) => item.grupoParcelamentoId === grupoId).sort((a, b) => a.parcelaAtual - b.parcelaAtual);
+        if (!grupo.length) return;
+        fillGastoForm(grupo[0], true);
+      });
+
+      el('btnLancarFixas').addEventListener('click', lancarContasFixasNoMes);
+      el('btnAtualizarMes').addEventListener('click', () => {
+        const valor = el('mesRef').value;
+        if (!valor) { alert('Selecione um mês.'); return; }
+        setMesAtual(valor);
+      });
+      el('btnLimparTudo').addEventListener('click', () => {
+        if (!confirm('Tem certeza que deseja apagar todos os dados do app?')) return;
+        db = defaultData(); saveData(); renderAll();
+      });
+      el('btnPopularDemo').addEventListener('click', popularComExemplo);
+    }
+
+    window.removerContaFixa = (id) => {
+      if (!confirm('Deseja excluir esta conta fixa?')) return;
+      db.contasFixas = db.contasFixas.filter((item) => item.id !== id);
+      saveData(); renderAll();
+    };
+
+    function runSelfTests() {
+      try {
+        const p1 = addMonthsToISODate('2026-01-31', 1);
+        console.assert(p1 === '2026-02-28', 'Teste falhou: 31/01 + 1 mês deve ser 28/02 em 2026.');
+        const p2 = addMonthsToISODate('2026-11-15', 2);
+        console.assert(p2 === '2027-01-15', 'Teste falhou: novembro + 2 meses deve virar janeiro do ano seguinte.');
+        const p3 = addMonthsToISODate('2028-01-31', 1);
+        console.assert(p3 === '2028-02-29', 'Teste falhou: 31/01 + 1 mês deve ser 29/02 em ano bissexto.');
+
+        const parcelado = createInstallmentEntries({ descricao: 'Teste TV', categoria: 'Lazer', valorTotal: 100, dataBase: '2026-03-10', formaPagamento: 'Cartão crédito', responsavel: 'Teste', observacao: '', status: 'Pago', totalParcelas: 3 });
+        console.assert(parcelado.length === 3, 'Teste falhou: compra parcelada em 3x deve gerar 3 lançamentos.');
+        console.assert(parcelado[0].data === '2026-03-10', 'Teste falhou: primeira parcela deve ficar no mês da compra.');
+        console.assert(parcelado[1].data === '2026-04-10', 'Teste falhou: segunda parcela deve ficar no mês seguinte.');
+        console.assert(parcelado[2].data === '2026-05-10', 'Teste falhou: terceira parcela deve ficar no segundo mês seguinte.');
+        console.assert(Number((parcelado[0].valor + parcelado[1].valor + parcelado[2].valor).toFixed(2)) === 100, 'Teste falhou: soma das parcelas deve bater com o valor total.');
+        console.assert(parcelado.every((p) => p.status === 'A vencer'), 'Teste falhou: parcelas de cartão de crédito devem ficar como A vencer.');
+
+        const avista = createInstallmentEntries({ descricao: 'Teste mercado', categoria: 'Mercado', valorTotal: 42.5, dataBase: '2026-03-10', formaPagamento: 'Pix', responsavel: 'Teste', observacao: '', status: 'Pago', totalParcelas: 1 });
+        console.assert(avista.length === 1, 'Teste falhou: compra à vista deve gerar 1 lançamento.');
+        console.assert(avista[0].valor === 42.5, 'Teste falhou: valor à vista deve ser preservado.');
+        console.assert(avista[0].status === 'Pago', 'Teste falhou: compra à vista deve preservar o status informado.');
+
+        const grupo = createInstallmentEntries({ descricao: 'Notebook', categoria: 'Lazer', valorTotal: 900, dataBase: '2026-03-10', formaPagamento: 'Cartão crédito', responsavel: 'Teste', observacao: '', status: 'Pago', totalParcelas: 6 });
+        console.assert(new Set(grupo.map((i) => i.grupoParcelamentoId)).size === 1, 'Teste falhou: todas as parcelas devem compartilhar o mesmo grupoParcelamentoId.');
+
+        console.info('Testes automáticos concluídos.');
+      } catch (error) {
+        console.error('Erro nos testes automáticos:', error);
+      }
+    }
+
+    function init() {
+      renderMonthUI();
+      popularSelectsCategorias();
+      bindEvents();
+      resetEntradaFormState();
+      resetGastoFormState();
+      switchLaunchTab('entrada');
+      renderAll();
+      runSelfTests();
+    }
+
+    init();
+  </script>
+</body>
+</html>
