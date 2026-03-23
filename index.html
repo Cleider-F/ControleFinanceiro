@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Controle Financeiro Familiar</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Finanças da Família" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
+
   <style>
     :root {
       --bg: #eef6ff;
@@ -1447,6 +1457,15 @@
       }
     }
 
+    function registerServiceWorker() {
+      if (!('serviceWorker' in navigator)) return;
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(() => console.log('Service worker registrado com sucesso.'))
+          .catch((error) => console.error('Erro ao registrar service worker:', error));
+      });
+    }
+
     function init() {
       renderMonthUI();
       popularSelectsCategorias();
@@ -1456,6 +1475,7 @@
       switchLaunchTab('entrada');
       renderAll();
       runSelfTests();
+      registerServiceWorker();
     }
 
     init();
