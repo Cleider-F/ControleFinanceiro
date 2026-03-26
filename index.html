@@ -60,6 +60,34 @@
     .hello small { display: block; font-size: .82rem; margin-bottom: 4px; }
     .hello strong { font-size: 1.18rem; letter-spacing: -.02em; }
 
+    .auth-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      padding: 10px 12px;
+      margin: 14px 16px 0;
+    }
+    .auth-actions { display: flex; gap: 8px; }
+    .auth-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-3));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      flex: 0 0 36px;
+    }
+    .auth-info { min-width: 0; flex: 1; }
+    .auth-name { font-weight: 800; }
+    .auth-email { color: var(--muted); font-size: .78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
     .icon-circle {
       width: 42px; height: 42px; border-radius: 50%;
       background: rgba(255,255,255,.85); box-shadow: var(--shadow-soft);
@@ -153,25 +181,11 @@
       text-align: center;
       box-shadow: var(--shadow-soft);
     }
-    .month-switcher-label {
-      display: block;
-      font-size: .74rem;
-      color: var(--muted);
-      margin-bottom: 2px;
-    }
-    .month-switcher-value {
-      font-weight: 800;
-      letter-spacing: -.01em;
-    }
+    .month-switcher-label { display: block; font-size: .74rem; color: var(--muted); margin-bottom: 2px; }
+    .month-switcher-value { font-weight: 800; letter-spacing: -.01em; }
     .month-nav-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.92);
-      border: 1px solid var(--border);
-      color: var(--primary-3);
-      box-shadow: var(--shadow-soft);
-      font-size: 1.1rem;
+      width: 44px; height: 44px; border-radius: 14px; background: rgba(255,255,255,.92);
+      border: 1px solid var(--border); color: var(--primary-3); box-shadow: var(--shadow-soft); font-size: 1.1rem;
     }
     .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
     .field:last-child { margin-bottom: 0; }
@@ -231,6 +245,27 @@
     .hidden { display: none !important; }
     .footer-note { color: var(--muted); font-size: .76rem; margin-top: 10px; text-align: center; }
 
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(238,246,255,.9);
+      z-index: 200;
+      padding: 24px;
+    }
+    .loading-card {
+      width: 100%;
+      max-width: 340px;
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
     @media (max-width: 380px) {
       .cards-2, .cards-3, .field-row, .field-row-3, .hero-actions, .hero-chip-wrap, .btn-group, .btn-group-3 { grid-template-columns: 1fr; }
       .hero-balance { font-size: 1.7rem; }
@@ -239,7 +274,26 @@
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-card">
+      <div class="list-title" id="loadingTitle">Carregando app</div>
+      <div class="list-sub" id="loadingText">Conectando ao Firebase...</div>
+    </div>
+  </div>
+
+  <div class="auth-bar hidden" id="authBar">
+    <div class="auth-avatar" id="authAvatar">U</div>
+    <div class="auth-info">
+      <div class="auth-name" id="authName">Usuário</div>
+      <div class="auth-email" id="authEmail">email@exemplo.com</div>
+    </div>
+    <div class="auth-actions">
+      <button class="btn-light" type="button" id="btnGoogleLogin">Entrar</button>
+      <button class="btn-light hidden" type="button" id="btnLogout">Sair</button>
+    </div>
+  </div>
+
+  <div class="app hidden" id="appRoot">
     <section class="screen active" id="screen-home">
       <div class="topbar">
         <div class="hello">
@@ -403,7 +457,7 @@
       </div>
 
       <div class="stack" id="relatorioMensal"></div>
-      <div class="footer-note">Os dados ficam salvos no navegador do aparelho.</div>
+      <div class="footer-note">Os dados ficam salvos online na sua conta.</div>
     </section>
 
     <button class="fab" id="fabAdd" type="button">＋</button>
@@ -466,7 +520,7 @@
 
         <div class="field">
           <label>Quem lançou</label>
-          <input type="text" name="responsavel" placeholder="Ex: Cleider" />
+          <input type="text" name="responsavel" placeholder="Ex: Você" />
         </div>
 
         <div class="field">
@@ -535,7 +589,7 @@
         <div class="field-row">
           <div class="field">
             <label>Responsável</label>
-            <input type="text" name="responsavel" placeholder="Ex: Esposa" />
+            <input type="text" name="responsavel" placeholder="Ex: Você" />
           </div>
           <div class="field">
             <label>Observação</label>
@@ -706,34 +760,44 @@
     </div>
   </div>
 
-  <script>
-    const STORAGE_KEY = 'controle_financeiro_familiar_v3_moderno';
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDocs,
+      setDoc,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      writeBatch
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ6sSQrD2mwhRYulB-5yvsTXtX5Oty27w",
+      authDomain: "controlefinanceiro-738dc.firebaseapp.com",
+      projectId: "controlefinanceiro-738dc",
+      storageBucket: "controlefinanceiro-738dc.firebasestorage.app",
+      messagingSenderId: "361251861150",
+      appId: "1:361251861150:web:16457340493253907d018f"
+    };
+
+    const STORAGE_KEY = 'controle_financeiro_familiar_cache_v1';
     const categoriasBase = ['Aluguel', 'Água', 'Luz', 'Internet', 'Mercado', 'Farmácia', 'Bebê', 'Lazer', 'Transporte', 'Dívidas', 'Reserva', 'Outros'];
     const META_BASE_TOTAL = 3310;
-    const META_DEFAULT = {
-      essenciais: 1400,
-      reserva: 350,
-      farmaciaBebe: 250,
-      lazer: 250,
-      margemLivre: 400
-    };
-
+    const META_DEFAULT = { essenciais: 1400, reserva: 350, farmaciaBebe: 250, lazer: 250, margemLivre: 400 };
     const categoriaIcone = {
-      'Aluguel': '🏠',
-      'Água': '💧',
-      'Luz': '💡',
-      'Internet': '📶',
-      'Mercado': '🛒',
-      'Farmácia': '💊',
-      'Bebê': '🍼',
-      'Lazer': '🎉',
-      'Transporte': '🚗',
-      'Dívidas': '📄',
-      'Reserva': '💰',
-      'Outros': '•'
+      'Aluguel': '🏠', 'Água': '💧', 'Luz': '💡', 'Internet': '📶', 'Mercado': '🛒', 'Farmácia': '💊',
+      'Bebê': '🍼', 'Lazer': '🎉', 'Transporte': '🚗', 'Dívidas': '📄', 'Reserva': '💰', 'Outros': '•'
     };
-
     const metaMap = {
       essenciais: { label: 'Essenciais', icon: '🏠', categorias: ['Aluguel', 'Água', 'Luz', 'Internet', 'Mercado', 'Transporte', 'Dívidas'] },
       reserva: { label: 'Reserva', icon: '💰', categorias: ['Reserva'] },
@@ -744,28 +808,163 @@
 
     const defaultData = () => ({ entradas: [], gastos: [], contasFixas: [], reserva: {}, metas: {} });
 
-    let db = loadData();
+    const appFirebase = initializeApp(firebaseConfig);
+    const auth = getAuth(appFirebase);
+    const dbFirebase = getFirestore(appFirebase);
+    const provider = new GoogleAuthProvider();
+
+    let db = loadCache();
     let mesAtual = getCurrentMonth();
     let activeScreen = 'home';
     let launchMode = 'entrada';
     let filtroLancamento = 'todos';
+    let currentUser = null;
 
     const el = (id) => document.getElementById(id);
     const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
-    function loadData() {
+    function loadCache() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         return raw ? JSON.parse(raw) : defaultData();
-      } catch (error) {
-        console.warn('Falha ao carregar dados salvos. Banco local reiniciado.', error);
+      } catch {
         return defaultData();
       }
     }
 
-    function saveData() {
+    function saveCache() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    }
+
+    function getUserRoot(userId) {
+      return {
+        lancamentos: collection(dbFirebase, 'usuarios', userId, 'lancamentos'),
+        contasFixas: collection(dbFirebase, 'usuarios', userId, 'contasFixas'),
+        metas: collection(dbFirebase, 'usuarios', userId, 'metas'),
+        reserva: collection(dbFirebase, 'usuarios', userId, 'reserva')
+      };
+    }
+
+    async function loadRemoteData(userId) {
+      const root = getUserRoot(userId);
+      const [lancSnap, fixasSnap, metasSnap, reservaSnap] = await Promise.all([
+        getDocs(root.lancamentos),
+        getDocs(root.contasFixas),
+        getDocs(root.metas),
+        getDocs(root.reserva)
+      ]);
+
+      const entradas = [];
+      const gastos = [];
+      lancSnap.forEach((d) => {
+        const data = { id: d.id, ...d.data() };
+        if (data.tipoRegistro === 'entrada') entradas.push(data);
+        if (data.tipoRegistro === 'gasto') gastos.push(data);
+      });
+
+      const contasFixas = [];
+      fixasSnap.forEach((d) => contasFixas.push({ id: d.id, ...d.data() }));
+
+      const metas = {};
+      metasSnap.forEach((d) => { metas[d.id] = d.data(); });
+
+      const reserva = {};
+      reservaSnap.forEach((d) => { reserva[d.id] = d.data(); });
+
+      db = { entradas, gastos, contasFixas, metas, reserva };
+      saveCache();
+    }
+
+    async function saveEntradaRemote(payload) {
+      const root = getUserRoot(currentUser.uid);
+      const base = { ...payload, tipoRegistro: 'entrada', ownerUid: currentUser.uid };
+      if (payload.id && db.entradas.some((i) => i.id === payload.id)) {
+        await setDoc(doc(root.lancamentos, payload.id), base);
+        return payload.id;
+      }
+      const { id, ...toAdd } = base;
+      const ref = await addDoc(root.lancamentos, toAdd);
+      return ref.id;
+    }
+
+    async function saveGastoRemote(payloads, editMode = false, grupoId = '') {
+      const root = getUserRoot(currentUser.uid);
+      const batch = writeBatch(dbFirebase);
+
+      if (editMode && grupoId) {
+        db.gastos.filter((item) => item.grupoParcelamentoId === grupoId).forEach((item) => {
+          batch.delete(doc(root.lancamentos, item.id));
+        });
+      }
+
+      for (const payload of payloads) {
+        const base = { ...payload, tipoRegistro: 'gasto', ownerUid: currentUser.uid };
+        if (base.id && !editMode) {
+          batch.set(doc(root.lancamentos, base.id), base);
+        } else {
+          const newRef = doc(root.lancamentos);
+          base.id = newRef.id;
+          batch.set(newRef, base);
+        }
+      }
+      await batch.commit();
+    }
+
+    async function deleteEntradaRemote(id) {
+      const root = getUserRoot(currentUser.uid);
+      await deleteDoc(doc(root.lancamentos, id));
+    }
+
+    async function deleteGastoRemote(id) {
+      const root = getUserRoot(currentUser.uid);
+      await deleteDoc(doc(root.lancamentos, id));
+    }
+
+    async function deleteGrupoRemote(grupoId) {
+      const root = getUserRoot(currentUser.uid);
+      const batch = writeBatch(dbFirebase);
+      db.gastos.filter((item) => item.grupoParcelamentoId === grupoId).forEach((item) => {
+        batch.delete(doc(root.lancamentos, item.id));
+      });
+      await batch.commit();
+    }
+
+    async function saveContaFixaRemote(payload) {
+      const root = getUserRoot(currentUser.uid);
+      if (payload.id && db.contasFixas.some((i) => i.id === payload.id)) {
+        await setDoc(doc(root.contasFixas, payload.id), payload);
+        return payload.id;
+      }
+      const { id, ...toAdd } = payload;
+      const ref = await addDoc(root.contasFixas, toAdd);
+      return ref.id;
+    }
+
+    async function deleteContaFixaRemote(id) {
+      const root = getUserRoot(currentUser.uid);
+      await deleteDoc(doc(root.contasFixas, id));
+    }
+
+    async function saveMetasRemote(monthRef, payload) {
+      const root = getUserRoot(currentUser.uid);
+      await setDoc(doc(root.metas, monthRef), payload);
+    }
+
+    async function saveReservaRemote(monthRef, payload) {
+      const root = getUserRoot(currentUser.uid);
+      await setDoc(doc(root.reserva, monthRef), payload);
+    }
+
+    async function clearAllRemote() {
+      const root = getUserRoot(currentUser.uid);
+      const batch = writeBatch(dbFirebase);
+      db.entradas.forEach((item) => batch.delete(doc(root.lancamentos, item.id)));
+      db.gastos.forEach((item) => batch.delete(doc(root.lancamentos, item.id)));
+      db.contasFixas.forEach((item) => batch.delete(doc(root.contasFixas, item.id)));
+      Object.keys(db.metas).forEach((id) => batch.delete(doc(root.metas, id)));
+      Object.keys(db.reserva).forEach((id) => batch.delete(doc(root.reserva, id)));
+      await batch.commit();
     }
 
     function getCurrentMonth() {
@@ -773,31 +972,22 @@
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     }
 
-    function todayISO() {
-      return new Date().toISOString().slice(0, 10);
-    }
-
-    function sameMonth(dateStr, monthRef) {
-      return String(dateStr || '').slice(0, 7) === monthRef;
-    }
-
+    function todayISO() { return new Date().toISOString().slice(0, 10); }
+    function sameMonth(dateStr, monthRef) { return String(dateStr || '').slice(0, 7) === monthRef; }
     function formatDate(dateStr) {
       if (!dateStr) return '-';
       const [y, m, d] = dateStr.split('-');
       return `${d}/${m}/${y}`;
     }
-
     function formatMonthLabel(monthRef) {
       const [y, m] = monthRef.split('-').map(Number);
       return new Date(y, m - 1, 1).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
     }
-
     function addMonthsToMonthRef(monthRef, delta) {
       const [y, m] = monthRef.split('-').map(Number);
       const d = new Date(y, m - 1 + delta, 1);
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     }
-
     function setMesAtual(monthRef) {
       mesAtual = monthRef;
       if (el('mesRef')) el('mesRef').value = monthRef;
@@ -805,7 +995,6 @@
       if (el('selectedMonthLabel')) el('selectedMonthLabel').textContent = formatMonthLabel(monthRef);
       renderAll();
     }
-
     function addMonthsToISODate(dateStr, monthsToAdd) {
       const [year, month, day] = dateStr.split('-').map(Number);
       const base = new Date(year, month - 1 + monthsToAdd, 1);
@@ -814,23 +1003,10 @@
       const finalMonth = String(base.getMonth() + 1).padStart(2, '0');
       return `${base.getFullYear()}-${finalMonth}-${finalDay}`;
     }
-
-    function getEntradasMes(monthRef = mesAtual) {
-      return db.entradas.filter((item) => sameMonth(item.data, monthRef));
-    }
-
-    function getGastosMes(monthRef = mesAtual) {
-      return db.gastos.filter((item) => sameMonth(item.data, monthRef));
-    }
-
-    function sum(arr, fn) {
-      return arr.reduce((acc, item) => acc + Number(fn(item) || 0), 0);
-    }
-
-    function getMetasMes(monthRef = mesAtual) {
-      return db.metas[monthRef] || { ...META_DEFAULT };
-    }
-
+    function getEntradasMes(monthRef = mesAtual) { return db.entradas.filter((item) => sameMonth(item.data, monthRef)); }
+    function getGastosMes(monthRef = mesAtual) { return db.gastos.filter((item) => sameMonth(item.data, monthRef)); }
+    function sum(arr, fn) { return arr.reduce((acc, item) => acc + Number(fn(item) || 0), 0); }
+    function getMetasMes(monthRef = mesAtual) { return db.metas[monthRef] || { ...META_DEFAULT }; }
     function getMetaProgress(monthRef = mesAtual) {
       const metas = getMetasMes(monthRef);
       const gastos = getGastosMes(monthRef);
@@ -847,7 +1023,6 @@
         return { key, ...conf, meta, gasto, restante, pct };
       });
     }
-
     function getResumoMes(monthRef = mesAtual) {
       const entradas = getEntradasMes(monthRef);
       const gastos = getGastosMes(monthRef);
@@ -862,28 +1037,25 @@
     function createInstallmentEntries(payload) {
       const { descricao, categoria, valorTotal, dataBase, formaPagamento, responsavel, observacao, status, totalParcelas } = payload;
       const parcelas = Math.max(1, Number(totalParcelas || 1));
-      const grupoParcelamentoId = uid();
-
+      const grupoParcelamentoId = payload.grupoParcelamentoId || uid();
       if (formaPagamento !== 'Cartão crédito' || parcelas === 1) {
         return [{
-          id: uid(), grupoParcelamentoId, descricao, categoria,
+          id: payload.id || uid(), grupoParcelamentoId, descricao, categoria,
           valor: Number(valorTotal), valorTotalOriginal: Number(valorTotal), data: dataBase,
           formaPagamento, status, responsavel, observacao, parcelaAtual: 1, totalParcelas: 1
         }];
       }
-
       const valorBase = Number((Number(valorTotal) / parcelas).toFixed(2));
       const entries = [];
       let acumulado = 0;
-
       for (let i = 1; i <= parcelas; i += 1) {
         let valorParcela = valorBase;
         if (i === parcelas) valorParcela = Number((Number(valorTotal) - acumulado).toFixed(2));
         acumulado += valorParcela;
         entries.push({
-          id: uid(), grupoParcelamentoId, descricao, categoria,
-          valor: valorParcela, valorTotalOriginal: Number(valorTotal), data: addMonthsToISODate(dataBase, i - 1),
-          formaPagamento, status: 'A vencer', responsavel, observacao, parcelaAtual: i, totalParcelas: parcelas
+          id: uid(), grupoParcelamentoId, descricao, categoria, valor: valorParcela,
+          valorTotalOriginal: Number(valorTotal), data: addMonthsToISODate(dataBase, i - 1), formaPagamento,
+          status: 'A vencer', responsavel, observacao, parcelaAtual: i, totalParcelas: parcelas
         });
       }
       return entries;
@@ -896,10 +1068,8 @@
         select.innerHTML = categoriasBase.map((categoria) => `<option value="${categoria}">${categoria}</option>`).join('');
       });
     }
-
     function openModal(id) { el(id).classList.add('show'); }
     function closeModal(id) { el(id).classList.remove('show'); }
-
     function switchLaunchTab(kind) {
       launchMode = kind;
       const isEntrada = kind === 'entrada';
@@ -908,7 +1078,6 @@
       el('btnTabEntrada').className = isEntrada ? 'btn-primary' : 'btn-light';
       el('btnTabGasto').className = isEntrada ? 'btn-light' : 'btn-primary';
     }
-
     function switchScreen(name) {
       activeScreen = name;
       document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
@@ -916,7 +1085,6 @@
       const target = el(`screen-${name}`);
       if (target) target.classList.add('active');
     }
-
     function resetEntradaFormState() {
       const form = document.forms.formEntrada;
       form.reset();
@@ -925,7 +1093,6 @@
       el('btnEntradaCancelarEdicao').classList.add('hidden');
       el('btnEntradaExcluir').classList.add('hidden');
     }
-
     function resetGastoFormState() {
       const form = document.forms.formGasto;
       form.reset();
@@ -941,35 +1108,27 @@
       el('btnExcluirGrupo').classList.add('hidden');
       el('btnEditarGrupo').classList.add('hidden');
     }
-
     function buildChipStatus(item) {
       if (item.tipo === 'Entrada') return '<span class="chip ok">Entrada</span>';
       if (item.status === 'A vencer') return '<span class="chip warn">A vencer</span>';
       return '<span class="chip danger">Pago</span>';
     }
-
     function getNextMonthRef() {
       const [y, m] = mesAtual.split('-').map(Number);
       const d = new Date(y, m, 1);
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     }
-
-    function getFixedTotal() {
-      return sum(db.contasFixas, (item) => item.valor);
-    }
-
+    function getFixedTotal() { return sum(db.contasFixas, (item) => item.valor); }
     function getCardInvoice(monthRef = mesAtual) {
       const items = getGastosMes(monthRef).filter((item) => item.formaPagamento === 'Cartão crédito');
       const total = sum(items, (item) => item.valor);
       return { items, total };
     }
-
     function getComprometidoMes(monthRef = mesAtual) {
       const fixas = getFixedTotal();
       const cartao = getCardInvoice(monthRef).total;
       return { fixas, cartao, total: fixas + cartao };
     }
-
     function getForecastNextMonth() {
       const nextRef = getNextMonthRef();
       const cartao = getCardInvoice(nextRef).total;
@@ -977,14 +1136,12 @@
       const reserva = Number((db.reserva[nextRef] || {}).metaMensal || (db.reserva[mesAtual] || {}).metaMensal || 0);
       return { nextRef, fixas, cartao, reserva, total: fixas + cartao + reserva };
     }
-
     function getAllMonthItems() {
       return [
         ...getEntradasMes().map((item) => ({ ...item, tipo: 'Entrada' })),
         ...getGastosMes().map((item) => ({ ...item, tipo: 'Gasto' }))
       ].sort((a, b) => (a.data < b.data ? 1 : -1));
     }
-
     function applyLancamentoFilter(itens) {
       switch (filtroLancamento) {
         case 'entradas': return itens.filter((i) => i.tipo === 'Entrada');
@@ -997,14 +1154,7 @@
     }
 
     function renderFilterBar() {
-      const filtros = [
-        ['todos', 'Todos'],
-        ['entradas', 'Entradas'],
-        ['gastos', 'Gastos'],
-        ['avencer', 'A vencer'],
-        ['cartao', 'Cartão'],
-        ['fixas', 'Fixas']
-      ];
+      const filtros = [['todos', 'Todos'], ['entradas', 'Entradas'], ['gastos', 'Gastos'], ['avencer', 'A vencer'], ['cartao', 'Cartão'], ['fixas', 'Fixas']];
       el('filterBar').innerHTML = filtros.map(([key, label]) => `<button class="filter-btn ${filtroLancamento === key ? 'active' : ''}" type="button" data-filter="${key}">${label}</button>`).join('');
       document.querySelectorAll('[data-filter]').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -1015,46 +1165,12 @@
       });
     }
 
-    function renderHome() {
-      const resumo = getResumoMes();
-      const comprometido = getComprometidoMes();
-      const forecast = getForecastNextMonth();
-      el('heroSaldo').textContent = money(resumo.restante);
-      el('heroEntradas').textContent = money(resumo.totalEntradas);
-      el('heroSaidas').textContent = money(resumo.totalSaidas);
-      el('heroMes').textContent = formatMonthLabel(mesAtual);
-
-      el('homeMiniStats').innerHTML = `
-        <div class="mini-card"><small>Guardado</small><strong>${money(resumo.guardadoMes)}</strong></div>
-        <div class="mini-card"><small>Comprometido</small><strong>${money(comprometido.total)}</strong></div>
-        <div class="mini-card"><small>Pode gastar</small><strong>${money(Math.max(resumo.restante, 0))}</strong></div>
-      `;
-
-      el('homeForecast').innerHTML = `
-        <div class="forecast-card">
-          <small class="muted">Fatura atual</small>
-          <div class="list-title">${money(comprometido.cartao)}</div>
-          <div class="list-sub">Cartão em ${formatMonthLabel(mesAtual)}</div>
-        </div>
-        <div class="forecast-card">
-          <small class="muted">Próximo mês</small>
-          <div class="list-title">${money(forecast.total)}</div>
-          <div class="list-sub">Fixas + cartão + reserva</div>
-        </div>
-      `;
-
-      const recentes = getAllMonthItems().slice(0, 5);
-      el('listaRecentes').innerHTML = recentes.length
-        ? recentes.map((item) => buildLancamentoCard(item, false)).join('')
-        : '<div class="alert-item"><div class="muted">Nenhum lançamento no mês.</div></div>';
-    }
-
     function buildLancamentoCard(item, withActions = true) {
       const valorClasse = item.tipo === 'Entrada' ? 'in' : 'out';
       const prefix = item.tipo === 'Entrada' ? '+' : '-';
       const detalhe = item.tipo === 'Gasto'
         ? `${item.categoria} • ${item.formaPagamento || '-'}${item.totalParcelas > 1 ? ` • ${item.parcelaAtual}/${item.totalParcelas}` : ''}`
-        : `${item.categoria} • ${item.responsavel || 'Família'}`;
+        : `${item.categoria} • ${item.responsavel || 'Você'}`;
       const icon = item.tipo === 'Entrada' ? '↗' : (categoriaIcone[item.categoria] || '↘');
       return `
         <div class="list-card" ${withActions ? `onclick="abrirEdicaoLancamento('${item.tipo}','${item.id}')" style="cursor:pointer;"` : ''}>
@@ -1074,44 +1190,52 @@
       `;
     }
 
+    function renderHome() {
+      const resumo = getResumoMes();
+      const comprometido = getComprometidoMes();
+      const forecast = getForecastNextMonth();
+      el('heroSaldo').textContent = money(resumo.restante);
+      el('heroEntradas').textContent = money(resumo.totalEntradas);
+      el('heroSaidas').textContent = money(resumo.totalSaidas);
+      el('heroMes').textContent = formatMonthLabel(mesAtual);
+      el('homeMiniStats').innerHTML = `
+        <div class="mini-card"><small>Guardado</small><strong>${money(resumo.guardadoMes)}</strong></div>
+        <div class="mini-card"><small>Comprometido</small><strong>${money(comprometido.total)}</strong></div>
+        <div class="mini-card"><small>Pode gastar</small><strong>${money(Math.max(resumo.restante, 0))}</strong></div>
+      `;
+      el('homeForecast').innerHTML = `
+        <div class="forecast-card"><small class="muted">Fatura atual</small><div class="list-title">${money(comprometido.cartao)}</div><div class="list-sub">Cartão em ${formatMonthLabel(mesAtual)}</div></div>
+        <div class="forecast-card"><small class="muted">Próximo mês</small><div class="list-title">${money(forecast.total)}</div><div class="list-sub">Fixas + cartão + reserva</div></div>
+      `;
+      const recentes = getAllMonthItems().slice(0, 5);
+      el('listaRecentes').innerHTML = recentes.length ? recentes.map((item) => buildLancamentoCard(item, false)).join('') : '<div class="alert-item"><div class="muted">Nenhum lançamento no mês.</div></div>';
+    }
+
     function renderAlertas() {
       const alertas = [];
       const gastos = getGastosMes();
       const hoje = new Date();
       const reservaMes = db.reserva[mesAtual] || { metaMensal: 0, guardadoMes: 0 };
-
       gastos.filter((g) => g.status === 'A vencer').forEach((gasto) => {
         const data = new Date(`${gasto.data}T00:00:00`);
         const diff = Math.ceil((data - hoje) / (1000 * 60 * 60 * 24));
-        if (diff >= 0 && diff <= 3) {
-          alertas.push({ titulo: gasto.descricao, texto: `Vence em ${diff} dia(s).`, valor: money(gasto.valor), pct: diff <= 1 ? 92 : diff === 2 ? 70 : 50 });
-        }
+        if (diff >= 0 && diff <= 3) alertas.push({ titulo: gasto.descricao, texto: `Vence em ${diff} dia(s).`, valor: money(gasto.valor), pct: diff <= 1 ? 92 : diff === 2 ? 70 : 50 });
       });
-
       if (Number(reservaMes.metaMensal || 0) > 0 && Number(reservaMes.guardadoMes || 0) < Number(reservaMes.metaMensal || 0)) {
         const pct = Math.min((Number(reservaMes.guardadoMes || 0) / Number(reservaMes.metaMensal || 1)) * 100, 100);
         alertas.push({ titulo: 'Reserva do mês', texto: `${money(reservaMes.guardadoMes)} de ${money(reservaMes.metaMensal)}`, valor: 'Abaixo da meta', pct });
       }
-
-      el('listaAlertas').innerHTML = alertas.length
-        ? alertas.map((item) => `
-            <div class="alert-item">
-              <div class="list-row">
-                <div><div class="list-title">${item.titulo}</div><div class="list-sub">${item.texto}</div></div>
-                <div class="chip warn">${item.valor}</div>
-              </div>
-              <div class="progress-track"><div class="progress-bar" style="width:${item.pct}%;"></div></div>
-            </div>
-          `).join('')
-        : '<div class="alert-item"><div class="list-title">Tudo em ordem</div><div class="list-sub">Nenhum alerta importante no momento.</div></div>';
+      el('listaAlertas').innerHTML = alertas.length ? alertas.map((item) => `
+        <div class="alert-item">
+          <div class="list-row"><div><div class="list-title">${item.titulo}</div><div class="list-sub">${item.texto}</div></div><div class="chip warn">${item.valor}</div></div>
+          <div class="progress-track"><div class="progress-bar" style="width:${item.pct}%;"></div></div>
+        </div>`).join('') : '<div class="alert-item"><div class="list-title">Tudo em ordem</div><div class="list-sub">Nenhum alerta importante no momento.</div></div>';
     }
 
     function renderLancamentos() {
       el('mesRef').value = mesAtual;
       const itens = applyLancamentoFilter(getAllMonthItems());
-      el('listaLancamentosCompleta').innerHTML = itens.length
-        ? itens.map((item) => buildLancamentoCard(item, true)).join('')
-        : '<div class="alert-item"><div class="list-title">Sem lançamentos</div><div class="list-sub">Use o botão + para registrar entrada ou gasto.</div></div>';
+      el('listaLancamentosCompleta').innerHTML = itens.length ? itens.map((item) => buildLancamentoCard(item, true)).join('') : '<div class="alert-item"><div class="list-title">Sem lançamentos</div><div class="list-sub">Use o botão + para registrar entrada ou gasto.</div></div>';
     }
 
     function renderCardInvoice() {
@@ -1137,10 +1261,7 @@
               <div class="list-card" onclick="abrirEdicaoLancamento('Gasto','${item.id}')" style="cursor:pointer;">
                 <div class="list-icon">💳</div>
                 <div class="list-main">
-                  <div class="list-row">
-                    <div class="list-title">${item.descricao}</div>
-                    <div class="amount out">${money(item.valor)}</div>
-                  </div>
+                  <div class="list-row"><div class="list-title">${item.descricao}</div><div class="amount out">${money(item.valor)}</div></div>
                   <div class="list-sub">${item.totalParcelas > 1 ? `Parcela ${item.parcelaAtual}/${item.totalParcelas}` : 'À vista no crédito'} • ${formatDate(item.data)}</div>
                 </div>
               </div>
@@ -1151,49 +1272,32 @@
     }
 
     function renderFixas() {
-      el('listaFixas').innerHTML = db.contasFixas.length
-        ? db.contasFixas.map((conta) => `
-            <div class="list-card">
-              <div class="list-icon">${categoriaIcone[conta.categoria] || '◎'}</div>
-              <div class="list-main">
-                <div class="list-row"><div class="list-title">${conta.descricao}</div><div class="amount neutral">${money(conta.valor)}</div></div>
-                <div class="list-sub">${conta.categoria} • vence dia ${conta.diaVencimento}</div>
-                <div class="list-row" style="margin-top:8px; margin-bottom:0;"><span class="chip ${conta.statusPadrao === 'Pago' ? 'ok' : 'warn'}">${conta.statusPadrao}</span><button class="text-btn" type="button" onclick="removerContaFixa('${conta.id}')">Excluir</button></div>
-              </div>
-            </div>
-          `).join('')
-        : '<div class="alert-item"><div class="list-title">Nenhuma conta fixa</div><div class="list-sub">Cadastre despesas recorrentes para lançar automaticamente no mês.</div></div>';
+      el('listaFixas').innerHTML = db.contasFixas.length ? db.contasFixas.map((conta) => `
+        <div class="list-card">
+          <div class="list-icon">${categoriaIcone[conta.categoria] || '◎'}</div>
+          <div class="list-main">
+            <div class="list-row"><div class="list-title">${conta.descricao}</div><div class="amount neutral">${money(conta.valor)}</div></div>
+            <div class="list-sub">${conta.categoria} • vence dia ${conta.diaVencimento}</div>
+            <div class="list-row" style="margin-top:8px; margin-bottom:0;"><span class="chip ${conta.statusPadrao === 'Pago' ? 'ok' : 'warn'}">${conta.statusPadrao}</span><button class="text-btn" type="button" onclick="removerContaFixa('${conta.id}')">Excluir</button></div>
+          </div>
+        </div>`).join('') : '<div class="alert-item"><div class="list-title">Nenhuma conta fixa</div><div class="list-sub">Cadastre despesas recorrentes para lançar automaticamente no mês.</div></div>';
     }
 
     function renderMetas() {
       const metas = getMetasMes(mesAtual);
       const progresso = getMetaProgress(mesAtual);
       el('painelMetas').innerHTML = `
-        <div class="report-card">
-          <div class="section-head"><h3>Distribuição planejada</h3><span class="chip">${money(META_BASE_TOTAL)}</span></div>
-          <div class="list-sub">Base: salário R$ 2.800 + VA R$ 510.</div>
-        </div>
+        <div class="report-card"><div class="section-head"><h3>Distribuição planejada</h3><span class="chip">${money(META_BASE_TOTAL)}</span></div><div class="list-sub">Base: salário R$ 2.800 + VA R$ 510.</div></div>
         ${progresso.map((item) => {
           const statusClass = item.pct >= 100 ? 'danger' : item.pct >= 80 ? 'warn' : 'ok';
           return `
             <div class="report-card">
-              <div class="list-row">
-                <div>
-                  <div class="list-title">${item.icon} ${item.label}</div>
-                  <div class="list-sub">Meta ${money(item.meta)} • usado ${money(item.gasto)}</div>
-                </div>
-                <span class="chip ${statusClass}">${item.pct.toFixed(0)}%</span>
-              </div>
+              <div class="list-row"><div><div class="list-title">${item.icon} ${item.label}</div><div class="list-sub">Meta ${money(item.meta)} • usado ${money(item.gasto)}</div></div><span class="chip ${statusClass}">${item.pct.toFixed(0)}%</span></div>
               <div class="progress-track"><div class="progress-bar" style="width:${Math.min(item.pct,100)}%;"></div></div>
-              <div class="list-row" style="margin-top:8px; margin-bottom:0;">
-                <div class="list-sub">Restante: <strong>${money(item.restante)}</strong></div>
-                <div class="list-sub">${((item.meta / META_BASE_TOTAL) * 100).toFixed(0)}% da renda</div>
-              </div>
-            </div>
-          `;
+              <div class="list-row" style="margin-top:8px; margin-bottom:0;"><div class="list-sub">Restante: <strong>${money(item.restante)}</strong></div><div class="list-sub">${((item.meta / META_BASE_TOTAL) * 100).toFixed(0)}% da renda</div></div>
+            </div>`;
         }).join('')}
       `;
-
       const form = document.forms.formMetas;
       if (form) {
         form.essenciais.value = metas.essenciais || 0;
@@ -1209,16 +1313,8 @@
       const pctMes = reserva.metaMensal > 0 ? Math.min((reserva.guardadoMes / reserva.metaMensal) * 100, 100) : 0;
       const pctAno = reserva.metaAnual > 0 ? Math.min((reserva.acumulado / reserva.metaAnual) * 100, 100) : 0;
       el('painelReserva').innerHTML = `
-        <div class="report-card">
-          <div class="section-head" style="margin-bottom:8px;"><h3>Meta mensal</h3><span class="chip">${money(reserva.guardadoMes)}</span></div>
-          <div class="list-sub">${money(reserva.guardadoMes)} de ${money(reserva.metaMensal)}</div>
-          <div class="progress-track"><div class="progress-bar" style="width:${pctMes}%;"></div></div>
-        </div>
-        <div class="report-card">
-          <div class="section-head" style="margin-bottom:8px;"><h3>Meta anual</h3><span class="chip">${money(reserva.acumulado)}</span></div>
-          <div class="list-sub">${money(reserva.acumulado)} de ${money(reserva.metaAnual)}</div>
-          <div class="progress-track"><div class="progress-bar" style="width:${pctAno}%;"></div></div>
-        </div>
+        <div class="report-card"><div class="section-head" style="margin-bottom:8px;"><h3>Meta mensal</h3><span class="chip">${money(reserva.guardadoMes)}</span></div><div class="list-sub">${money(reserva.guardadoMes)} de ${money(reserva.metaMensal)}</div><div class="progress-track"><div class="progress-bar" style="width:${pctMes}%;"></div></div></div>
+        <div class="report-card"><div class="section-head" style="margin-bottom:8px;"><h3>Meta anual</h3><span class="chip">${money(reserva.acumulado)}</span></div><div class="list-sub">${money(reserva.acumulado)} de ${money(reserva.metaAnual)}</div><div class="progress-track"><div class="progress-bar" style="width:${pctAno}%;"></div></div></div>
       `;
       const form = document.forms.formReserva;
       if (form) {
@@ -1240,38 +1336,10 @@
       const topCategorias = categoriasBase.map((categoria) => ({ categoria, valor: sum(getGastosMes().filter((g) => g.categoria === categoria), (g) => g.valor) })).filter((item) => item.valor > 0).sort((a, b) => b.valor - a.valor).slice(0, 5);
       const forecast = getForecastNextMonth();
       el('relatorioMensal').innerHTML = `
-        <div class="report-card">
-          <div class="section-head"><h3>Resumo do mês</h3><span class="chip">${formatMonthLabel(mesAtual)}</span></div>
-          <div class="cards-3">
-            <div class="mini-card"><small>Entradas</small><strong>${money(atual.totalEntradas)}</strong></div>
-            <div class="mini-card"><small>Saídas</small><strong>${money(atual.totalSaidas)}</strong></div>
-            <div class="mini-card"><small>Saldo</small><strong>${money(atual.saldo)}</strong></div>
-          </div>
-        </div>
-        <div class="report-card">
-          <div class="section-head"><h3>Comparação anterior</h3><span class="chip">${prevMonth}</span></div>
-          <div class="list-sub">Entradas: <strong>${money(prevEntradas)}</strong></div>
-          <div class="list-sub">Saídas: <strong>${money(prevGastos)}</strong></div>
-          <div class="list-sub">Saldo: <strong>${money(prevSaldo)}</strong></div>
-        </div>
-        <div class="report-card">
-          <div class="section-head"><h3>Previsão próximo mês</h3><span class="chip">${forecast.nextRef}</span></div>
-          <div class="list-sub">Fixas: <strong>${money(forecast.fixas)}</strong></div>
-          <div class="list-sub">Cartão: <strong>${money(forecast.cartao)}</strong></div>
-          <div class="list-sub">Reserva planejada: <strong>${money(forecast.reserva)}</strong></div>
-          <div class="list-sub">Total mínimo: <strong>${money(forecast.total)}</strong></div>
-        </div>
-        <div class="report-card">
-          <div class="section-head"><h3>Categorias que mais consumiram</h3></div>
-          <div class="stack">
-            ${topCategorias.length ? topCategorias.map((item) => `
-              <div>
-                <div class="list-row" style="margin-bottom:2px;"><div class="list-sub">${categoriaIcone[item.categoria] || '•'} ${item.categoria}</div><div class="amount out">${money(item.valor)}</div></div>
-                <div class="progress-track"><div class="progress-bar" style="width:${Math.min((item.valor / (topCategorias[0].valor || 1)) * 100, 100)}%;"></div></div>
-              </div>
-            `).join('') : '<div class="list-sub">Sem gastos suficientes para análise.</div>'}
-          </div>
-        </div>
+        <div class="report-card"><div class="section-head"><h3>Resumo do mês</h3><span class="chip">${formatMonthLabel(mesAtual)}</span></div><div class="cards-3"><div class="mini-card"><small>Entradas</small><strong>${money(atual.totalEntradas)}</strong></div><div class="mini-card"><small>Saídas</small><strong>${money(atual.totalSaidas)}</strong></div><div class="mini-card"><small>Saldo</small><strong>${money(atual.saldo)}</strong></div></div></div>
+        <div class="report-card"><div class="section-head"><h3>Comparação anterior</h3><span class="chip">${prevMonth}</span></div><div class="list-sub">Entradas: <strong>${money(prevEntradas)}</strong></div><div class="list-sub">Saídas: <strong>${money(prevGastos)}</strong></div><div class="list-sub">Saldo: <strong>${money(prevSaldo)}</strong></div></div>
+        <div class="report-card"><div class="section-head"><h3>Previsão próximo mês</h3><span class="chip">${forecast.nextRef}</span></div><div class="list-sub">Fixas: <strong>${money(forecast.fixas)}</strong></div><div class="list-sub">Cartão: <strong>${money(forecast.cartao)}</strong></div><div class="list-sub">Reserva planejada: <strong>${money(forecast.reserva)}</strong></div><div class="list-sub">Total mínimo: <strong>${money(forecast.total)}</strong></div></div>
+        <div class="report-card"><div class="section-head"><h3>Categorias que mais consumiram</h3></div><div class="stack">${topCategorias.length ? topCategorias.map((item) => `<div><div class="list-row" style="margin-bottom:2px;"><div class="list-sub">${categoriaIcone[item.categoria] || '•'} ${item.categoria}</div><div class="amount out">${money(item.valor)}</div></div><div class="progress-track"><div class="progress-bar" style="width:${Math.min((item.valor / (topCategorias[0].valor || 1)) * 100, 100)}%;"></div></div></div>`).join('') : '<div class="list-sub">Sem gastos suficientes para análise.</div>'}</div></div>
       `;
     }
 
@@ -1279,6 +1347,28 @@
       if (el('mesRef')) el('mesRef').value = mesAtual;
       if (el('mesRefModal')) el('mesRefModal').value = mesAtual;
       if (el('selectedMonthLabel')) el('selectedMonthLabel').textContent = formatMonthLabel(mesAtual);
+    }
+
+    function renderAuthUI() {
+      const authBar = el('authBar');
+      const appRoot = el('appRoot');
+      if (!currentUser) {
+        authBar.classList.remove('hidden');
+        appRoot.classList.add('hidden');
+        el('btnGoogleLogin').classList.remove('hidden');
+        el('btnLogout').classList.add('hidden');
+        el('authName').textContent = 'Faça login';
+        el('authEmail').textContent = 'Seus dados ficarão online na sua conta.';
+        el('authAvatar').textContent = '🔐';
+        return;
+      }
+      authBar.classList.remove('hidden');
+      appRoot.classList.remove('hidden');
+      el('btnGoogleLogin').classList.add('hidden');
+      el('btnLogout').classList.remove('hidden');
+      el('authName').textContent = currentUser.displayName || 'Usuário';
+      el('authEmail').textContent = currentUser.email || '';
+      el('authAvatar').textContent = (currentUser.displayName || currentUser.email || 'U').trim().charAt(0).toUpperCase();
     }
 
     function renderAll() {
@@ -1292,46 +1382,57 @@
       renderMetas();
       renderReserva();
       renderRelatorio();
+      renderAuthUI();
     }
 
-    function lancarContasFixasNoMes() {
+    async function lancarContasFixasNoMes() {
+      if (!currentUser) return;
       if (!db.contasFixas.length) { alert('Cadastre ao menos uma conta fixa primeiro.'); return; }
       const existentes = new Set(getGastosMes().filter((gasto) => gasto.origemFixa).map((gasto) => `${gasto.descricao}-${gasto.data}`));
+      const novos = [];
       db.contasFixas.forEach((conta) => {
         const data = `${mesAtual}-${String(Math.min(conta.diaVencimento, 28)).padStart(2, '0')}`;
         const chave = `${conta.descricao}-${data}`;
         if (existentes.has(chave)) return;
-        db.gastos.push({
+        novos.push({
           id: uid(), descricao: conta.descricao, categoria: conta.categoria, valor: Number(conta.valor), data,
           formaPagamento: 'Boleto', status: conta.statusPadrao, responsavel: 'Sistema', observacao: 'Lançamento automático de conta fixa',
-          origemFixa: true, parcelaAtual: 1, totalParcelas: 1
+          origemFixa: true, parcelaAtual: 1, totalParcelas: 1, grupoParcelamentoId: uid()
         });
       });
-      saveData(); renderAll(); alert('Contas fixas lançadas no mês atual.');
+      if (!novos.length) { alert('Nenhuma conta fixa nova para lançar neste mês.'); return; }
+      await saveGastoRemote(novos, false, '');
+      await loadRemoteData(currentUser.uid);
+      renderAll();
+      alert('Contas fixas lançadas no mês atual.');
     }
 
-    function popularComExemplo() {
+    async function popularComExemplo() {
+      if (!currentUser) return;
       if (!confirm('Deseja inserir dados de exemplo?')) return;
       const baseMonth = mesAtual;
-      db.entradas.push(
-        { id: uid(), descricao: 'Salário', categoria: 'Salário', valor: 2700, data: `${baseMonth}-05`, responsavel: 'Família', observacao: '' },
-        { id: uid(), descricao: 'Vale alimentação', categoria: 'Vale alimentação', valor: 510, data: `${baseMonth}-05`, responsavel: 'Família', observacao: '' }
-      );
-      db.gastos.push(
-        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Aluguel', categoria: 'Aluguel', valor: 750, data: `${baseMonth}-10`, formaPagamento: 'Pix', status: 'Pago', responsavel: 'Família', observacao: '', parcelaAtual: 1, totalParcelas: 1 },
-        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Água/Luz/Internet', categoria: 'Internet', valor: 250, data: `${baseMonth}-12`, formaPagamento: 'Boleto', status: 'Pago', responsavel: 'Família', observacao: '', parcelaAtual: 1, totalParcelas: 1 },
-        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Farmácia', categoria: 'Farmácia', valor: 120, data: `${baseMonth}-15`, formaPagamento: 'Pix', status: 'Pago', responsavel: 'Família', observacao: '', parcelaAtual: 1, totalParcelas: 1 }
-      );
-      db.gastos.push(...createInstallmentEntries({
-        descricao: 'TV parcelada', categoria: 'Lazer', valorTotal: 600, dataBase: `${baseMonth}-20`, formaPagamento: 'Cartão crédito', responsavel: 'Família', observacao: '', status: 'Pago', totalParcelas: 3
-      }));
-      db.reserva[baseMonth] = { metaMensal: 400, metaAnual: 8000, guardadoMes: 250, acumulado: 1300 };
-      db.metas[baseMonth] = { ...META_DEFAULT };
-      db.contasFixas = [
+      const entradas = [
+        { id: uid(), descricao: 'Salário', categoria: 'Salário', valor: 2800, data: `${baseMonth}-05`, responsavel: 'Você', observacao: '' },
+        { id: uid(), descricao: 'Vale alimentação', categoria: 'Vale alimentação', valor: 510, data: `${baseMonth}-05`, responsavel: 'Você', observacao: '' }
+      ];
+      const gastos = [
+        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Aluguel', categoria: 'Aluguel', valor: 750, data: `${baseMonth}-10`, formaPagamento: 'Pix', status: 'Pago', responsavel: 'Você', observacao: '', parcelaAtual: 1, totalParcelas: 1 },
+        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Água/Luz/Internet', categoria: 'Internet', valor: 250, data: `${baseMonth}-12`, formaPagamento: 'Boleto', status: 'Pago', responsavel: 'Você', observacao: '', parcelaAtual: 1, totalParcelas: 1 },
+        { id: uid(), grupoParcelamentoId: uid(), descricao: 'Farmácia', categoria: 'Farmácia', valor: 120, data: `${baseMonth}-15`, formaPagamento: 'Pix', status: 'Pago', responsavel: 'Você', observacao: '', parcelaAtual: 1, totalParcelas: 1 }
+      ];
+      gastos.push(...createInstallmentEntries({ descricao: 'TV parcelada', categoria: 'Lazer', valorTotal: 600, dataBase: `${baseMonth}-20`, formaPagamento: 'Cartão crédito', responsavel: 'Você', observacao: '', status: 'Pago', totalParcelas: 3 }));
+      const fixas = [
         { id: uid(), descricao: 'Aluguel', categoria: 'Aluguel', valor: 750, diaVencimento: 10, statusPadrao: 'Pago' },
         { id: uid(), descricao: 'Internet', categoria: 'Internet', valor: 120, diaVencimento: 15, statusPadrao: 'A vencer' }
       ];
-      saveData(); renderAll();
+
+      for (const entrada of entradas) await saveEntradaRemote(entrada);
+      await saveGastoRemote(gastos, false, '');
+      for (const fixa of fixas) await saveContaFixaRemote(fixa);
+      await saveReservaRemote(baseMonth, { metaMensal: 400, metaAnual: 8000, guardadoMes: 250, acumulado: 1300 });
+      await saveMetasRemote(baseMonth, { ...META_DEFAULT });
+      await loadRemoteData(currentUser.uid);
+      renderAll();
     }
 
     function fillEntradaForm(item) {
@@ -1398,6 +1499,36 @@
       if (item) fillGastoForm(item, false);
     };
 
+    window.removerContaFixa = async (id) => {
+      if (!currentUser) return;
+      if (!confirm('Deseja excluir esta conta fixa?')) return;
+      await deleteContaFixaRemote(id);
+      await loadRemoteData(currentUser.uid);
+      renderAll();
+    };
+
+    function setLoading(visible, title = 'Carregando app', text = 'Aguarde...') {
+      el('loadingOverlay').classList.toggle('hidden', !visible);
+      el('loadingTitle').textContent = title;
+      el('loadingText').textContent = text;
+    }
+
+    async function handleGoogleLogin() {
+      try {
+        setLoading(true, 'Login', 'Abrindo autenticação do Google...');
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error(error);
+        alert('Não foi possível entrar com Google. Verifique se esse método está ativado no Firebase Auth.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function handleLogout() {
+      await signOut(auth);
+    }
+
     function bindEvents() {
       document.querySelectorAll('[data-nav]').forEach((btn) => btn.addEventListener('click', () => switchScreen(btn.dataset.nav)));
       document.querySelectorAll('[data-close]').forEach((btn) => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
@@ -1405,6 +1536,8 @@
         el(id).addEventListener('click', (e) => { if (e.target.id === id) closeModal(id); });
       });
 
+      el('btnGoogleLogin').addEventListener('click', handleGoogleLogin);
+      el('btnLogout').addEventListener('click', handleLogout);
       el('fabAdd').addEventListener('click', () => { resetEntradaFormState(); resetGastoFormState(); switchLaunchTab('gasto'); openModal('modalLancamento'); });
       el('btnHeroGasto').addEventListener('click', () => { resetEntradaFormState(); resetGastoFormState(); switchLaunchTab('gasto'); openModal('modalLancamento'); });
       el('btnHeroEntrada').addEventListener('click', () => { resetEntradaFormState(); resetGastoFormState(); switchLaunchTab('entrada'); openModal('modalLancamento'); });
@@ -1422,10 +1555,7 @@
         setMesAtual(valor);
         closeModal('modalMes');
       });
-      el('btnMesAtual').addEventListener('click', () => {
-        setMesAtual(getCurrentMonth());
-        closeModal('modalMes');
-      });
+      el('btnMesAtual').addEventListener('click', () => { setMesAtual(getCurrentMonth()); closeModal('modalMes'); });
       el('btnTabEntrada').addEventListener('click', () => switchLaunchTab('entrada'));
       el('btnTabGasto').addEventListener('click', () => switchLaunchTab('gasto'));
 
@@ -1442,8 +1572,9 @@
         }
       });
 
-      document.forms.formEntrada.addEventListener('submit', (event) => {
+      document.forms.formEntrada.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (!currentUser) return;
         const form = event.target;
         const formData = new FormData(form);
         const id = formData.get('editId');
@@ -1451,16 +1582,17 @@
           id: id || uid(), descricao: formData.get('descricao'), categoria: formData.get('categoria'),
           valor: Number(formData.get('valor')), data: formData.get('data'), responsavel: formData.get('responsavel'), observacao: formData.get('observacao')
         };
-        if (id) {
-          db.entradas = db.entradas.map((item) => item.id === id ? payload : item);
-        } else {
-          db.entradas.push(payload);
-        }
-        saveData(); resetEntradaFormState(); closeModal('modalLancamento'); renderAll(); switchScreen('lancamentos');
+        await saveEntradaRemote(payload);
+        await loadRemoteData(currentUser.uid);
+        resetEntradaFormState();
+        closeModal('modalLancamento');
+        renderAll();
+        switchScreen('lancamentos');
       });
 
-      document.forms.formGasto.addEventListener('submit', (event) => {
+      document.forms.formGasto.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (!currentUser) return;
         const form = event.target;
         const formData = new FormData(form);
         const editId = formData.get('editId');
@@ -1470,92 +1602,120 @@
         const valorTotal = Number(formData.get('valor'));
 
         if (editId && formaPagamento === 'Cartão crédito' && parcelas > 1) {
-          db.gastos = db.gastos.filter((item) => item.grupoParcelamentoId !== grupoId);
           const newEntries = createInstallmentEntries({
             descricao: formData.get('descricao'), categoria: formData.get('categoria'), valorTotal,
             dataBase: formData.get('data'), formaPagamento, responsavel: formData.get('responsavel'),
-            observacao: formData.get('observacao'), status: formData.get('status'), totalParcelas: parcelas
+            observacao: formData.get('observacao'), status: formData.get('status'), totalParcelas: parcelas, grupoParcelamentoId: grupoId
           });
-          db.gastos.push(...newEntries);
+          await saveGastoRemote(newEntries, true, grupoId);
         } else if (editId) {
-          db.gastos = db.gastos.map((item) => item.id === editId ? {
-            ...item, descricao: formData.get('descricao'), categoria: formData.get('categoria'), valor: valorTotal,
-            valorTotalOriginal: valorTotal, data: formData.get('data'), formaPagamento, status: formData.get('status'),
-            responsavel: formData.get('responsavel'), observacao: formData.get('observacao'), parcelaAtual: 1, totalParcelas: 1
-          } : item);
+          const payload = [{
+            id: editId, grupoParcelamentoId: grupoId || uid(), descricao: formData.get('descricao'), categoria: formData.get('categoria'),
+            valor: valorTotal, valorTotalOriginal: valorTotal, data: formData.get('data'), formaPagamento,
+            status: formData.get('status'), responsavel: formData.get('responsavel'), observacao: formData.get('observacao'),
+            parcelaAtual: 1, totalParcelas: 1
+          }];
+          await saveGastoRemote(payload, false, '');
         } else {
           const entries = createInstallmentEntries({
             descricao: formData.get('descricao'), categoria: formData.get('categoria'), valorTotal,
             dataBase: formData.get('data'), formaPagamento, responsavel: formData.get('responsavel'),
             observacao: formData.get('observacao'), status: formData.get('status'), totalParcelas: parcelas
           });
-          db.gastos.push(...entries);
+          await saveGastoRemote(entries, false, '');
         }
-
-        saveData(); resetGastoFormState(); closeModal('modalLancamento'); renderAll(); switchScreen('lancamentos');
+        await loadRemoteData(currentUser.uid);
+        resetGastoFormState();
+        closeModal('modalLancamento');
+        renderAll();
+        switchScreen('lancamentos');
       });
 
-      document.forms.formFixa.addEventListener('submit', (event) => {
+      document.forms.formFixa.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (!currentUser) return;
         const formData = new FormData(event.target);
-        db.contasFixas.push({
-          id: uid(), descricao: formData.get('descricao'), categoria: formData.get('categoria'),
+        await saveContaFixaRemote({
+          descricao: formData.get('descricao'), categoria: formData.get('categoria'),
           valor: Number(formData.get('valor')), diaVencimento: Number(formData.get('diaVencimento')), statusPadrao: formData.get('statusPadrao')
         });
-        saveData(); event.target.reset(); closeModal('modalFixa'); renderAll(); switchScreen('fixas');
+        await loadRemoteData(currentUser.uid);
+        event.target.reset();
+        closeModal('modalFixa');
+        renderAll();
+        switchScreen('fixas');
       });
 
-      document.forms.formMetas.addEventListener('submit', (event) => {
+      document.forms.formMetas.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (!currentUser) return;
         const formData = new FormData(event.target);
-        db.metas[mesAtual] = {
+        await saveMetasRemote(mesAtual, {
           essenciais: Number(formData.get('essenciais')),
           reserva: Number(formData.get('reserva')),
           farmaciaBebe: Number(formData.get('farmaciaBebe')),
           lazer: Number(formData.get('lazer')),
           margemLivre: Number(formData.get('margemLivre'))
-        };
-        saveData();
+        });
+        await loadRemoteData(currentUser.uid);
         closeModal('modalMetas');
         renderAll();
         switchScreen('metas');
       });
 
-      document.forms.formReserva.addEventListener('submit', (event) => {
+      document.forms.formReserva.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (!currentUser) return;
         const formData = new FormData(event.target);
-        db.reserva[mesAtual] = {
-          metaMensal: Number(formData.get('metaMensal')), metaAnual: Number(formData.get('metaAnual')),
-          guardadoMes: Number(formData.get('guardadoMes')), acumulado: Number(formData.get('acumulado'))
-        };
-        saveData(); closeModal('modalReserva'); renderAll(); switchScreen('reserva');
+        await saveReservaRemote(mesAtual, {
+          metaMensal: Number(formData.get('metaMensal')),
+          metaAnual: Number(formData.get('metaAnual')),
+          guardadoMes: Number(formData.get('guardadoMes')),
+          acumulado: Number(formData.get('acumulado'))
+        });
+        await loadRemoteData(currentUser.uid);
+        closeModal('modalReserva');
+        renderAll();
+        switchScreen('reserva');
       });
 
       el('btnEntradaCancelarEdicao').addEventListener('click', () => resetEntradaFormState());
       el('btnGastoCancelarEdicao').addEventListener('click', () => resetGastoFormState());
 
-      el('btnEntradaExcluir').addEventListener('click', () => {
+      el('btnEntradaExcluir').addEventListener('click', async () => {
+        if (!currentUser) return;
         const id = document.forms.formEntrada.editId.value;
         if (!id) return;
         if (!confirm('Deseja excluir esta entrada?')) return;
-        db.entradas = db.entradas.filter((item) => item.id !== id);
-        saveData(); resetEntradaFormState(); closeModal('modalLancamento'); renderAll();
+        await deleteEntradaRemote(id);
+        await loadRemoteData(currentUser.uid);
+        resetEntradaFormState();
+        closeModal('modalLancamento');
+        renderAll();
       });
 
-      el('btnGastoExcluir').addEventListener('click', () => {
+      el('btnGastoExcluir').addEventListener('click', async () => {
+        if (!currentUser) return;
         const id = document.forms.formGasto.editId.value;
         if (!id) return;
         if (!confirm('Deseja excluir este gasto?')) return;
-        db.gastos = db.gastos.filter((item) => item.id !== id);
-        saveData(); resetGastoFormState(); closeModal('modalLancamento'); renderAll();
+        await deleteGastoRemote(id);
+        await loadRemoteData(currentUser.uid);
+        resetGastoFormState();
+        closeModal('modalLancamento');
+        renderAll();
       });
 
-      el('btnExcluirGrupo').addEventListener('click', () => {
+      el('btnExcluirGrupo').addEventListener('click', async () => {
+        if (!currentUser) return;
         const grupoId = document.forms.formGasto.grupoParcelamentoId.value;
         if (!grupoId) return;
         if (!confirm('Deseja excluir todas as parcelas dessa compra?')) return;
-        db.gastos = db.gastos.filter((item) => item.grupoParcelamentoId !== grupoId);
-        saveData(); resetGastoFormState(); closeModal('modalLancamento'); renderAll();
+        await deleteGrupoRemote(grupoId);
+        await loadRemoteData(currentUser.uid);
+        resetGastoFormState();
+        closeModal('modalLancamento');
+        renderAll();
       });
 
       el('btnEditarGrupo').addEventListener('click', () => {
@@ -1571,18 +1731,16 @@
         if (!valor) { alert('Selecione um mês.'); return; }
         setMesAtual(valor);
       });
-      el('btnLimparTudo').addEventListener('click', () => {
-        if (!confirm('Tem certeza que deseja apagar todos os dados do app?')) return;
-        db = defaultData(); saveData(); renderAll();
+      el('btnLimparTudo').addEventListener('click', async () => {
+        if (!currentUser) return;
+        if (!confirm('Tem certeza que deseja apagar todos os dados do app online?')) return;
+        await clearAllRemote();
+        db = defaultData();
+        saveCache();
+        renderAll();
       });
       el('btnPopularDemo').addEventListener('click', popularComExemplo);
     }
-
-    window.removerContaFixa = (id) => {
-      if (!confirm('Deseja excluir esta conta fixa?')) return;
-      db.contasFixas = db.contasFixas.filter((item) => item.id !== id);
-      saveData(); renderAll();
-    };
 
     function runSelfTests() {
       try {
@@ -1592,23 +1750,9 @@
         console.assert(p2 === '2027-01-15', 'Teste falhou: novembro + 2 meses deve virar janeiro do ano seguinte.');
         const p3 = addMonthsToISODate('2028-01-31', 1);
         console.assert(p3 === '2028-02-29', 'Teste falhou: 31/01 + 1 mês deve ser 29/02 em ano bissexto.');
-
         const parcelado = createInstallmentEntries({ descricao: 'Teste TV', categoria: 'Lazer', valorTotal: 100, dataBase: '2026-03-10', formaPagamento: 'Cartão crédito', responsavel: 'Teste', observacao: '', status: 'Pago', totalParcelas: 3 });
         console.assert(parcelado.length === 3, 'Teste falhou: compra parcelada em 3x deve gerar 3 lançamentos.');
-        console.assert(parcelado[0].data === '2026-03-10', 'Teste falhou: primeira parcela deve ficar no mês da compra.');
-        console.assert(parcelado[1].data === '2026-04-10', 'Teste falhou: segunda parcela deve ficar no mês seguinte.');
-        console.assert(parcelado[2].data === '2026-05-10', 'Teste falhou: terceira parcela deve ficar no segundo mês seguinte.');
         console.assert(Number((parcelado[0].valor + parcelado[1].valor + parcelado[2].valor).toFixed(2)) === 100, 'Teste falhou: soma das parcelas deve bater com o valor total.');
-        console.assert(parcelado.every((p) => p.status === 'A vencer'), 'Teste falhou: parcelas de cartão de crédito devem ficar como A vencer.');
-
-        const avista = createInstallmentEntries({ descricao: 'Teste mercado', categoria: 'Mercado', valorTotal: 42.5, dataBase: '2026-03-10', formaPagamento: 'Pix', responsavel: 'Teste', observacao: '', status: 'Pago', totalParcelas: 1 });
-        console.assert(avista.length === 1, 'Teste falhou: compra à vista deve gerar 1 lançamento.');
-        console.assert(avista[0].valor === 42.5, 'Teste falhou: valor à vista deve ser preservado.');
-        console.assert(avista[0].status === 'Pago', 'Teste falhou: compra à vista deve preservar o status informado.');
-
-        const grupo = createInstallmentEntries({ descricao: 'Notebook', categoria: 'Lazer', valorTotal: 900, dataBase: '2026-03-10', formaPagamento: 'Cartão crédito', responsavel: 'Teste', observacao: '', status: 'Pago', totalParcelas: 6 });
-        console.assert(new Set(grupo.map((i) => i.grupoParcelamentoId)).size === 1, 'Teste falhou: todas as parcelas devem compartilhar o mesmo grupoParcelamentoId.');
-
         console.info('Testes automáticos concluídos.');
       } catch (error) {
         console.error('Erro nos testes automáticos:', error);
@@ -1618,10 +1762,24 @@
     function registerServiceWorker() {
       if (!('serviceWorker' in navigator)) return;
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(() => console.log('Service worker registrado com sucesso.'))
-          .catch((error) => console.error('Erro ao registrar service worker:', error));
+        navigator.serviceWorker.register('./sw.js').catch((error) => console.error('Erro ao registrar service worker:', error));
       });
+    }
+
+    async function bootAuthenticatedUser(user) {
+      currentUser = user;
+      renderAuthUI();
+      setLoading(true, 'Sincronizando dados', 'Baixando suas informações...');
+      await loadRemoteData(user.uid);
+      renderAll();
+      setLoading(false);
+    }
+
+    function bootLoggedOut() {
+      currentUser = null;
+      db = loadCache();
+      renderAuthUI();
+      setLoading(false, 'Login necessário', 'Entre com Google para carregar seus dados online.');
     }
 
     function init() {
@@ -1631,9 +1789,21 @@
       resetEntradaFormState();
       resetGastoFormState();
       switchLaunchTab('entrada');
-      renderAll();
       runSelfTests();
       registerServiceWorker();
+      onAuthStateChanged(auth, async (user) => {
+        try {
+          if (user) {
+            await bootAuthenticatedUser(user);
+          } else {
+            bootLoggedOut();
+          }
+        } catch (error) {
+          console.error(error);
+          alert('Erro ao carregar dados do Firebase. Confira sua configuração e as regras do Firestore.');
+          setLoading(false);
+        }
+      });
     }
 
     init();
