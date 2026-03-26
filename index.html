@@ -769,17 +769,18 @@
       signOut,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      getDocs,
-      setDoc,
-      addDoc,
-      updateDoc,
-      deleteDoc,
-      writeBatch
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+   import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  addDoc,
+  deleteDoc,
+  writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZ6sSQrD2mwhRYulB-5yvsTXtX5Oty27w",
@@ -810,7 +811,11 @@
 
     const appFirebase = initializeApp(firebaseConfig);
     const auth = getAuth(appFirebase);
-    const dbFirebase = getFirestore(appFirebase);
+    const dbFirebase = initializeFirestore(appFirebase, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
+});
     const provider = new GoogleAuthProvider();
 
     let db = loadCache();
