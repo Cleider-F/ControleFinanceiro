@@ -1,0 +1,1145 @@
+  <!DOCTYPE html>
+  <html lang="pt-br">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard Técnico</title>
+
+  <style>
+  body {
+    margin: 0;
+    font-family: Arial;
+    background: #f1f3f6;
+  }
+
+  /* TOPO */
+  .topbar {
+    background: #1f2937;
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  /* FILTROS */
+  .filtros {
+    background: white;
+    padding: 10px;
+    display: grid;
+    gap: 8px;
+  }
+
+  input, select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  /* CONTADORES */
+  .contadores {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .contador-card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .contador-top {
+    font-size: 12px;
+    color: #777;
+  }
+
+  .contador-numero {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+
+  .azul { border-left: 5px solid #2196f3; }
+  .laranja { border-left: 5px solid #ff9800; }
+  .amarelo { border-left: 5px solid #ffc107; }
+  .verde { border-left: 5px solid #4caf50; }
+
+  /* LISTA */
+  .lista {
+    padding: 10px;
+  }
+
+  /* CARD */
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .card:active {
+    transform: scale(0.97);
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .placa {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+  }
+
+  .status.azul { background: #2196f3; }
+  .status.laranja { background: #ff9800; }
+  .status.amarelo { background: #ffc107; color: black; }
+  .status.verde { background: #4caf50; }
+
+  .info {
+    margin-top: 5px;
+    color: #555;
+  }
+
+  /* BOTÃO EXCLUIR */
+  .excluir {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 10px;
+  }
+
+  .btn-relatorio {
+    background: #111;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 10px;
+    float: right;
+  }
+
+  /* Estilo da Topbar Ajustada */
+  .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .menu-btn{
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+  /* Menu Lateral (Sidebar) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 280px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    z-index: 1001;
+      transition: 0.3s;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+  }
+
+  .sidebar.active {
+      right: 0;
+  }
+
+  .form-group {
+      margin-bottom: 15px;
+  }
+
+  .form-group label {
+      font-size: 12px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #666;
+  }
+  .topbar {
+    background: #1f2937;
+    color: white;
+
+    padding: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: relative;
+  }
+
+  /* Logo centralizada REAL */
+  .logo-topbar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    height: 32px;
+    object-fit: contain;
+  }
+
+  /* Grupo de botões da direita */
+  .topbar-acoes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Evita texto esmagando a logo */
+  .titulo-topbar {
+    min-width: 90px;
+  }
+
+  </style>
+
+  </head>
+
+  <body>
+
+  <!-- Ajuste na Topbar para incluir o botão -->
+  <!-- Ajuste na Topbar -->
+  <div class="topbar">
+      <span>👷🏻‍♂️ Técnico</span>
+      <!-- Logo central -->
+    <img src="suzano-logo.png" class="logo-topbar">
+      <!-- Trocado de 🔍 para as três listrinhas -->
+<button onclick="toggleFiltros()" class="menu-btn">
+  &#9776;
+</button>  </div>
+
+<div class="filtros">
+  <input id="busca" placeholder="Buscar por GO/Placa">
+
+  <select id="filtroTipo">
+    <option value="">Todos os tipos</option>
+    <option value="carreta">Carreta</option>
+    <option value="prancha">Prancha</option>
+    <option value="comboio">Comboio</option>
+    <option value="cavalo">Cavalo</option>
+  </select>
+
+  <select id="filtroStatus">
+              <option value="">Todos</option>
+              <option value="em_inspecao">Em inspeção</option>
+              <option value="aguardando_manutencao">Aguardando manutenção</option>
+              <option value="em_manutencao"> Em manutenção</option>
+              <option value="liberado">Liberado</option>
+          </select>
+</div>
+
+
+  <!-- Menu Lateral de Filtros -->
+  <div id="sidebarFiltros" class="sidebar">
+      <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:15px;">
+          <h3 style="margin:0;">Relatório de manutenção</h3>
+          <button onclick="toggleFiltros()" style="background:none; border:none; font-size:20px;">✖</button>
+      </div>
+
+      <div class="form-group">
+          <label>Buscar Placa/GO</label>
+          <input id="busca" placeholder="Ex: ABC-1234">
+      </div>
+
+      <div class="form-group">
+          <label>Período</label>
+          <div style="display: flex; gap: 5px;">
+              <input type="date" id="dataInicio" style="font-size:12px;">
+              <input type="date" id="dataFim" style="font-size:12px;">
+          </div>
+      </div>
+
+      <div class="form-group">
+          <label>Tipo de Equipamento</label>
+          <select id="filtroTipo">
+              <option value="">Todos</option>
+              <option value="carreta">Carreta</option>
+              <option value="prancha">Prancha</option>
+              <option value="comboio">Comboio</option>
+              <option value="cavalo">Cavalo</option>
+          </select>
+      </div>
+
+      <div class="form-group">
+          <label>Manutenção</label>
+          <select id="filtroTipoManut">
+              <option value="">Todas</option>
+              <option value="revisao">Revisão</option>
+              <option value="preventiva">Preventiva</option>
+              <option value="cnp">CNP</option>
+              <option value="gm">GM</option>
+          </select>
+      </div>
+
+      <div class="form-group">
+          <label>Status</label>
+          <select id="filtroStatus">
+              <option value="">Todos</option>
+              <option value="em_inspecao">Em inspeção</option>
+              <option value="aguardando_manutencao">Aguardando manutenção</option>
+              <option value="em_manutencao">Em manutenção</option>
+              <option value="liberado">Liberado</option>
+          </select>
+      </div>
+
+      <button onclick="gerarRelatorioGeral()" class="btn-sucesso" style="background:#2e7d32; margin-top:10px;">
+          📊 Gerar PDF por Período
+      </button>
+      <hr style="margin:20px 0; border:none; border-top:1px solid #ddd;">
+</div>
+
+
+  <!-- Fundo escuro quando o menu abre -->
+<div
+  id="overlay"
+  onclick="
+    toggleFiltros();
+    togglePlanoSemanal();
+    fecharMenus();
+  "
+  style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    z-index:999;
+  ">
+</div>
+
+  <div class="contadores" id="contadores"></div>
+
+  <div class="lista" id="lista"></div>
+
+  <link rel="stylesheet" href="navbar.css">
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<link rel="manifest" href="/manifest.json">
+
+<meta name="theme-color" content="#1f2937">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="apple-touch-icon" href="/icone-192.png">
+
+  <script type="module">
+    
+  import { protegerPagina } from "./auth.js";
+  protegerPagina(["tecnico"]);
+
+  import { db } from "./firebase.js";
+  import {
+    collection,
+    getDoc,
+    getDocs,
+    query,
+    where,
+    deleteDoc,
+    doc,
+    updateDoc,
+    addDoc,
+    Timestamp,
+    limit,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+if ("serviceWorker" in navigator) {
+
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("PWA ativo"))
+    .catch(err => console.log(err));
+
+}
+
+  let dados = [];
+
+ 
+  // 🎨 STATUS
+  function getStatusInfo(status) {
+    switch(status) {
+      case "em_inspecao": return { nome: "Em Inspeção", cor: "azul" };
+      case "aguardando_manutencao": return { nome: "Aguardando", cor: "laranja" };
+      case "em_manutencao": return { nome: " Em Manutenção", cor: "amarelo" };
+      case "liberado": return { nome: "Liberado", cor: "verde" };
+    }
+  }
+
+  // 🧠 PRIORIDADE
+  function prioridade(status) {
+
+    if (status === "aguardando_manutencao") return 1;
+
+    if (status === "em_manutencao") return 2;
+
+    if (status === "liberado") return 3;
+
+    if (status === "em_inspecao") return 4;
+
+    return 5;
+  }
+
+  // 📅 DATA
+  function formatarData(ts) {
+    if (!ts || !ts.toDate) return "-";
+
+    const d = ts.toDate();
+
+    const dia = String(d.getDate()).padStart(2, "0");
+    const mes = String(d.getMonth() + 1).padStart(2, "0");
+    const ano = d.getFullYear();
+
+    const hora = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+
+    return `${dia}/${mes}/${ano} ${hora}:${min}`;
+  }
+
+  // 🔧 TIPO MANUTENÇÃO
+  function formatarTipoManutencao(tipo) {
+    switch(tipo) {
+      case "preventiva": return "Preventiva";
+      case "revisao": return "Revisão";
+      case "cnp": return "CNP";
+      case "gm": return "GM";
+      default: return tipo || "-";
+    }
+  }
+
+  // 🔢 CONTADORES
+  function atualizarContadores(lista) {
+
+    const cont = {
+      em_inspecao: 0,
+      aguardando_manutencao: 0,
+      em_manutencao: 0,
+      liberado: 0
+    };
+
+    lista.forEach(i => cont[i.status]++);
+
+    document.getElementById("contadores").innerHTML = `
+      <div class="contador-card azul">
+        <div class="contador-top">Inspeção</div>
+        <div class="contador-numero">${cont.em_inspecao}</div>
+      </div>
+
+      <div class="contador-card laranja">
+        <div class="contador-top">Aguardando</div>
+        <div class="contador-numero">${cont.aguardando_manutencao}</div>
+      </div>
+
+      <div class="contador-card amarelo">
+        <div class="contador-top">Em manutenção</div>
+        <div class="contador-numero">${cont.em_manutencao}</div>
+      </div>
+
+      <div class="contador-card verde">
+        <div class="contador-top">Liberado</div>
+        <div class="contador-numero">${cont.liberado}</div>
+      </div>
+    `;
+  }
+
+  // 🚀 CARREGAR
+  async function carregar() {
+
+    const q = query(
+  collection(db, "implementos"),
+  orderBy("dataInspecao", "desc"),
+  limit(45)
+);
+
+const snap = await getDocs(q);
+
+    dados = [];
+
+    snap.forEach(d => {
+      dados.push({ id: d.id, ...d.data() });
+    });
+
+    aplicarFiltros();
+  }
+
+  // 🔎 FILTROS
+  function aplicarFiltros() {
+
+    const busca = document.getElementById("busca").value.toLowerCase();
+    const tipo = document.getElementById("filtroTipo").value;
+    const status = document.getElementById("filtroStatus").value;
+
+    let resultado = dados;
+
+    if (busca) {
+      resultado = resultado.filter(i =>
+        i.placa.toLowerCase().includes(busca)
+      );
+    }
+
+    if (tipo) {
+      resultado = resultado.filter(i => i.tipo === tipo);
+    }
+
+    if (status) {
+      resultado = resultado.filter(i => i.status === status);
+    }
+
+    render(resultado);
+  }
+
+  // 🎯 RENDER
+  function render(lista) {
+
+    // 🔥 ORDENAÇÃO
+    lista.sort((a, b) => {
+
+      const p1 = prioridade(a.status);
+      const p2 = prioridade(b.status);
+
+      if (p1 !== p2) return p1 - p2;
+
+      const d1 = a.dataInspecao?.seconds || 0;
+      const d2 = b.dataInspecao?.seconds || 0;
+
+      return d1 - d2;
+    });
+
+    atualizarContadores(lista);
+
+    const container = document.getElementById("lista");
+    container.innerHTML = "";
+
+    lista.forEach(item => {
+
+      const status = getStatusInfo(item.status);
+
+      const div = document.createElement("div");
+      div.className = "card";
+
+      div.innerHTML = `
+    <div class="card-top">
+      <div class="placa">${item.placa}</div>
+      <div class="status ${status.cor}">${status.nome}</div>
+    </div>
+
+<div class="info">
+Tipo: ${item.tipo}<br>
+
+Manutenção:
+<strong>${formatarTipoManutencao(item.tipoManutencao)}</strong><br>
+
+<span style="
+      color:#2072d6;
+      font-weight:bold;
+    ">
+    🔍  Inspeção:
+    </span>
+${formatarData(item.dataInspecao)}
+
+${
+  item.status === "liberado" && item.dataLiberacao
+    ? `
+    <br>
+    <span style="
+      color:#2e7d32;
+      font-weight:bold;
+    ">
+      ✔  Liberado:
+    </span>
+    ${formatarData(item.dataLiberacao)}
+    `
+    : ""
+}    
+  ${
+    item.status === "aguardando_manutencao" ||
+    item.status === "em_manutencao"
+      ? `
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+        <label style="font-size: 12px; font-weight: bold; white-space: nowrap;">
+          📍 Box:
+        </label>
+
+        <select
+          onclick="event.stopPropagation()"
+          onchange="alterarBox('${item.id}', this.value)"
+          style="
+            width: auto;
+            min-width: 120px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 12px;
+            background: #f9f9f9;
+          "
+        >
+          <option value="">Sem box</option>
+          <option value="Box 1" ${item.box === "Box 1" ? "selected" : ""}>Box 1</option>
+          <option value="Box 2" ${item.box === "Box 2" ? "selected" : ""}>Box 2</option>
+          <option value="Box 3" ${item.box === "Box 3" ? "selected" : ""}>Box 3</option>
+          <option value="Box 4" ${item.box === "Box 4" ? "selected" : ""}>Box 4</option>
+          <option value="Box 5" ${item.box === "Box 5" ? "selected" : ""}>Box 5</option>
+          <option value="Box 6" ${item.box === "Box 6" ? "selected" : ""}>Box 6</option>
+          <option value="Box 7" ${item.box === "Box 7" ? "selected" : ""}>Box 7</option>
+          <option value="Box 8" ${item.box === "Box 8" ? "selected" : ""}>Box 8</option>
+          <option value="Box 9" ${item.box === "Box 9" ? "selected" : ""}>Box 9</option>
+          <option value="Box 10" ${item.box === "Box 10" ? "selected" : ""}>Box 10</option>
+          <option value="Box 11" ${item.box === "Box 11" ? "selected" : ""}>Box 11</option>
+          <option value="Box 12" ${item.box === "Box 12" ? "selected" : ""}>Box 12</option>
+          <option value="Box Hexa 1" ${item.box === "Box Hexa 1" ? "selected" : ""}>Box Hexa 1</option>
+          <option value="Box Hexa 2" ${item.box === "Box Hexa 2" ? "selected" : ""}>Box Hexa 2</option>
+          <option value="Box Hexa 3" ${item.box === "Box Hexa 3" ? "selected" : ""}>Box Hexa 3</option>
+          <option value="Box Hexa 4" ${item.box === "Box Hexa 4" ? "selected" : ""}>Box Hexa 4</option>
+        </select>
+      </div>
+      `
+      : ""
+  }
+      </div>
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:10px;
+    ">
+
+      <button class="excluir"
+        onclick="event.stopPropagation(); excluir('${item.id}')">
+        Excluir
+      </button>
+
+      <!-- Linha com os dois relatórios lado a lado -->
+      <div style="display:flex; gap: 10px;">
+        
+        <button onclick="event.stopPropagation(); gerarRelatorio('${item.id}')" 
+          style="background:#444; color:white; border:none; padding:8px 12px; border-radius:6px; flex: 1; font-size: 12px;">
+          Rel. Avarias
+        </button>
+
+        <button onclick="event.stopPropagation(); gerarRelatorioManutencao('${item.id}')" 
+          style="background:#111; color:white; border:none; padding:8px 12px; border-radius:6px; flex: 1; font-size: 12px;">
+          Rel. Manutenção
+        </button>
+
+      </div>
+    </div>
+  `;
+
+      div.onclick = () => {
+        window.location = "manutencao_detalhe.html?id=" + item.id;
+      };
+
+      container.appendChild(div);
+    });
+  }
+
+  // 🔄 EVENTOS
+  document.getElementById("busca").addEventListener("input", aplicarFiltros);
+  document.getElementById("filtroTipo").addEventListener("change", aplicarFiltros);
+  document.getElementById("filtroStatus").addEventListener("change", aplicarFiltros);
+
+  // FUNÇÃO ALTERAR BOX //
+
+  window.alterarBox = async function(id, box) {
+
+    try {
+
+      await updateDoc(doc(db, "implementos", id), {
+        box: box || ""
+      });
+
+      const item = dados.find(i => i.id === id);
+
+      if (item) {
+        item.box = box;
+      }
+
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao atualizar box");
+    }
+  };
+
+
+  // 🗑️ EXCLUSÃO
+  window.excluir = async function(id) {
+
+    if (!confirm("Deseja excluir completamente este registro?")) return;
+
+    try {
+
+      const qInspecao = query(
+        collection(db, "inspecoes"),
+        where("implementoId", "==", id)
+      );
+
+      const snapInspecao = await getDocs(qInspecao);
+
+      for (const inspecaoDoc of snapInspecao.docs) {
+
+        const inspecaoId = inspecaoDoc.id;
+
+        const qItens = query(
+          collection(db, "naoConformidades"),
+          where("inspecaoId", "==", inspecaoId)
+        );
+
+        const snapItens = await getDocs(qItens);
+
+        for (const item of snapItens.docs) {
+          await deleteDoc(doc(db, "naoConformidades", item.id));
+        }
+
+        await deleteDoc(doc(db, "inspecoes", inspecaoId));
+      }
+
+      await deleteDoc(doc(db, "implementos", id));
+
+      alert("Excluído com sucesso");
+
+      carregar();
+
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao excluir");
+    }
+  };
+
+  carregar();
+
+  import { carregarNavbar } from "./navbar.js";
+  carregarNavbar();
+
+
+  // =============================
+  // 📄 GERAR RELATÓRIO DE AVARIAS
+  // =============================
+  window.gerarRelatorio = async function(implementoId) {
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    // 🔎 IMPLEMENTO
+    const snapImpl = await getDoc(doc(db, "implementos", implementoId));
+    const implemento = snapImpl.data() || {};
+
+    // 🔎 INSPEÇÃO
+    const qInspecao = query(
+      collection(db, "inspecoes"),
+      where("implementoId", "==", implementoId)
+    );
+
+    const snapInspecao = await getDocs(qInspecao);
+
+    let inspecaoId = null;
+    snapInspecao.forEach(d => inspecaoId = d.id);
+
+    if (!inspecaoId) return alert("Sem inspeção");
+
+    // 🔎 ITENS
+    const qItens = query(
+      collection(db, "naoConformidades"),
+      where("inspecaoId", "==", inspecaoId)
+    );
+
+    const snapItens = await getDocs(qItens);
+
+    const avarias = [];
+
+    snapItens.forEach(docSnap => {
+      const item = docSnap.data();
+      if (item.tipo === "avaria") avarias.push(item);
+    });
+
+    if (!avarias.length) return alert("Sem avarias");
+
+    // =====================
+    // 📄 CABEÇALHO
+    // =====================
+    let y = 15;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(18);
+    pdf.text("RELATÓRIO DE AVARIAS", 105, y, { align: "center" });
+
+    y += 8;
+
+    pdf.setDrawColor(200);
+    pdf.line(10, y, 200, y);
+
+    y += 10;
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+
+    pdf.text(`Placa: ${implemento.placa || "-"}`, 10, y); y += 5;
+    pdf.text(`Tipo: ${implemento.tipo || "-"}`, 10, y); y += 5;
+    pdf.text(`Inspetor: ${implemento.inspecionadoPor || "-"}`, 10, y); y += 5;
+    pdf.text(`Data: ${implemento.dataFormatada || "-"} ${implemento.horaFormatada || ""}`, 10, y);
+
+    y += 10;
+
+    // =====================
+    // 🔧 AVARIAS
+    // =====================
+    for (const item of avarias) {
+
+      // 🔁 quebra de página
+      if (y > 250) {
+        pdf.addPage();
+        y = 15;
+      }
+
+      const inicioY = y;
+
+      // 🔲 BOX
+      pdf.setDrawColor(220);
+      pdf.rect(10, inicioY, 190, 45);
+
+      let linhaY = inicioY + 5;
+
+      // 🔧 DESCRIÇÃO
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(11);
+      pdf.text((item.descricao || "-").toUpperCase(), 12, linhaY);
+
+      linhaY += 6;
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(9);
+
+      pdf.text(`Tipo: ${item.tipo || "-"}`, 12, linhaY); linhaY += 4;
+      pdf.text(`Eixo: ${item.eixo || "-"}`, 12, linhaY); linhaY += 4;
+      pdf.text(`Lado: ${item.lado || "-"}`, 12, linhaY); linhaY += 4;
+
+      if (item.compartimento) {
+        pdf.text(`Compartimento: ${item.compartimento}`, 12, linhaY);
+        linhaY += 4;
+      }
+
+      // 🖼️ FOTO (lado direito)
+      if (item.fotos && item.fotos.length) {
+        try {
+          const imgBase64 = await carregarImagemBase64(item.fotos[0]);
+
+          pdf.addImage(
+            imgBase64,
+            "JPEG",
+            130,              // X
+            inicioY + 5,      // Y
+            60,               // largura
+            35                // altura
+          );
+
+        } catch (e) {
+          console.log("Erro ao carregar imagem", e);
+        }
+      }
+
+      // ⬇️ próxima linha
+      y = inicioY + 50;
+    }
+
+    // =====================
+    // 💾 SALVAR
+    // =====================
+    const nome = (implemento.placa || "relatorio").replace(/\s/g, "_");
+    pdf.save(`Relatorio_${nome}.pdf`);
+  };
+
+
+  // =============================
+  // 🖼️ CONVERTER IMAGEM
+  // =============================
+  async function carregarImagemBase64(url) {
+    return new Promise((resolve, reject) => {
+
+      const img = new Image();
+      img.crossOrigin = "anonymous"; // 🔥 IMPORTANTE
+
+      img.onload = function() {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        const dataURL = canvas.toDataURL("image/jpeg");
+        resolve(dataURL);
+      };
+
+      img.onerror = function(e) {
+        reject("Erro ao carregar imagem");
+      };
+
+      img.src = url;
+    });
+  }
+
+
+
+  // Função para filtrar por data, tipo, manutenção e status
+  window.gerarRelatorioGeral = async function() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('l', 'mm', 'a4'); // 'l' para modo paisagem (melhor para tabelas)
+
+      const dInicio = document.getElementById("dataInicio").value;
+      const dFim = document.getElementById("dataFim").value;
+      const fTipo = document.getElementById("filtroTipo").value;
+      const fManut = document.getElementById("filtroTipoManut").value;
+      const fStatus = document.getElementById("filtroStatus").value;
+
+      // Filtragem lógica
+      let filtrados = dados.filter(item => {
+          const dataItem = item.dataInspecao?.toDate().toISOString().split('T')[0];
+          
+          const bateData = (!dInicio || dataItem >= dInicio) && (!dFim || dataItem <= dFim);
+          const bateTipo = !fTipo || item.tipo === fTipo;
+          const bateManut = !fManut || item.tipoManutencao === fManut;
+          const bateStatus = !fStatus || item.status === fStatus;
+
+          return bateData && bateTipo && bateManut && bateStatus;
+      });
+
+      if (filtrados.length === 0) return alert("Nenhum registro encontrado para este filtro.");
+
+      // Montagem do PDF
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(16);
+      pdf.text("Relatório Consolidado de Manutenções", 148, 15, { align: "center" });
+      
+      pdf.setFontSize(10);
+      pdf.text(`Período: ${dInicio || 'Início'} até ${dFim || 'Hoje'}`, 148, 22, { align: "center" });
+
+      // Cabeçalho da Tabela
+      let y = 35;
+      pdf.setFillColor(31, 41, 55);
+      pdf.rect(10, y, 277, 8, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.text("PLACA/GO", 12, y + 5);
+      pdf.text("TIPO EQUIP.", 50, y + 5);
+      pdf.text("MANUTENÇÃO", 90, y + 5);
+      pdf.text("STATUS", 130, y + 5);
+      pdf.text("INSPECIONADA EM", 180, y + 5);
+      pdf.text("LIBERADA EM", 230, y + 5);
+
+      // Linhas da Tabela
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFont("helvetica", "normal");
+      
+      filtrados.forEach((item, index) => {
+          y += 8;
+          if (y > 185) { pdf.addPage('l'); y = 20; } // Quebra de página
+
+          const statusInfo = getStatusInfo(item.status);
+          
+          pdf.text(item.placa || "-", 12, y + 5);
+          pdf.text(item.tipo || "-", 50, y + 5);
+          pdf.text(formatarTipoManutencao(item.tipoManutencao), 90, y + 5);
+          pdf.text(statusInfo.nome, 130, y + 5);
+          pdf.text(formatarData(item.dataInspecao), 180, y + 5);
+          pdf.text(formatarData(item.dataLiberacao), 230, y + 5); // Assumindo que você tenha esse campo
+
+          pdf.setDrawColor(230);
+          pdf.line(10, y + 8, 287, y + 8);
+      });
+
+      pdf.save(`Relatorio_Manutencao_${new Date().getTime()}.pdf`);
+  };
+
+  window.toggleFiltros = function() {
+      const sidebar = document.getElementById("sidebarFiltros");
+      const overlay = document.getElementById("overlay");
+      
+      if (sidebar.classList.contains("active")) {
+          sidebar.classList.remove("active");
+          overlay.style.display = "none";
+      } else {
+          sidebar.classList.add("active");
+          overlay.style.display = "block";
+      }
+  };
+
+  // No aplicarFiltros, você pode fechar a sidebar automaticamente após filtrar se desejar
+  // mas o ideal é deixar aberta para o usuário ajustar vários filtros.
+
+
+  // ==========================================
+  // 🛠️ RELATÓRIO DE EXECUÇÃO COM LADO E COMPARTIMENTO
+  // ==========================================
+  window.gerarRelatorioManutencao = async function(implementoId) {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+
+      const snapImpl = await getDoc(doc(db, "implementos", implementoId));
+      const implemento = snapImpl.data() || {};
+
+      const qInspecao = query(collection(db, "inspecoes"), where("implementoId", "==", implementoId));
+      const snapInspecao = await getDocs(qInspecao);
+      let inspecaoId = null;
+      snapInspecao.forEach(d => inspecaoId = d.id);
+
+      if (!inspecaoId) return alert("Nenhuma inspeção vinculada.");
+
+      const qItens = query(collection(db, "naoConformidades"), where("inspecaoId", "==", inspecaoId));
+      const snapItens = await getDocs(qItens);
+      
+      const realizados = [];
+      const naoRealizados = [];
+
+      snapItens.forEach(docSnap => {
+          const item = docSnap.data();
+          if (item.status_manutencao === "concluido") realizados.push(item);
+          else if (item.status_manutencao === "nao_realizado") naoRealizados.push(item);
+      });
+
+      // =====================
+  // 📄 CABEÇALHO PROFISSIONAL
+  // =====================
+  let y = 0;
+
+  // 1. Faixa de Título (Estilo Topbar)
+  pdf.setFillColor(31, 41, 55); // Cor var(--dark)
+  pdf.rect(0, 0, 210, 35, 'F');
+
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(16);
+  pdf.text("RELATÓRIO DE EXECUÇÃO DE MANUTENÇÃO", 105, 18, { align: "center" });
+
+  pdf.setFontSize(10);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(`Identificação: ${implemento.placa || "-"} | ${implemento.tipo || "-"}`, 105, 28, { align: "center" });
+
+  // 2. Bloco de Informações de Tempo (Organizado em Colunas)
+  y = 48;
+  pdf.setTextColor(0, 0, 0);
+
+  // Linha de Início
+  pdf.setFont("helvetica", "bold");
+  pdf.text("INÍCIO (INSPEÇÃO):", 15, y);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(formatarData(implemento.dataInspecao), 55, y);
+
+  // Linha de Finalização (Aumentei o espaçamento para não sobrepor)
+  pdf.setFont("helvetica", "bold");
+  pdf.text("||   FINALIZAÇÃO (MANUTENÇÃO):", 97, y);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(formatarData(implemento.dataLiberacao), 160, y);
+
+  y += 8;
+              pdf.setFont("helvetica", "bold");
+            pdf.text("EQUIPE RESPONSÁVEL:", 15, y);
+
+            pdf.setFont("helvetica", "normal");
+            pdf.text(
+                (implemento.equipeManutencao || []).join(", "),
+                65,
+                y
+            );
+
+y += 6;
+
+  // 3. Linha divisória fina
+  pdf.setDrawColor(220, 220, 220);
+  pdf.line(10, y, 200, y);
+
+  y += 12; // Espaço para começar a lista de itens
+
+      // --- SEÇÃO: REALIZADOS ---
+      pdf.setFont("helvetica", "bold");
+      pdf.text("ITENS CONCLUÍDOS:", 10, y);
+      y += 8;
+      pdf.setFont("helvetica", "normal");
+      
+      if (realizados.length === 0) {
+          pdf.text("Nenhum item concluído.", 15, y);
+          y += 8;
+      } else {
+          realizados.forEach(item => {
+              // Lógica para montar a string de localização (Eixo, Lado, Compartimento)
+              const loc = [item.eixo, item.lado, item.compartimento].filter(Boolean).join(" - ");
+              const textoItem = `• ${item.descricao} ${loc ? `(${loc})` : ""}`;
+              
+              pdf.text(textoItem, 15, y);
+              y += 6;
+              if (y > 270) { pdf.addPage(); y = 20; }
+          });
+      }
+
+      y += 10;
+
+      // --- SEÇÃO: NÃO REALIZADOS ---
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(200, 0, 0);
+      pdf.text("ITENS NÃO REALIZADOS:", 10, y);
+      y += 8;
+      pdf.setTextColor(0, 0, 0);
+
+      if (naoRealizados.length === 0) {
+          pdf.setFont("helvetica", "normal");
+          pdf.text("Todos os itens foram realizados.", 15, y);
+      } else {
+          for (const item of naoRealizados) {
+              const loc = [item.eixo, item.lado, item.compartimento].filter(Boolean).join(" - ");
+              
+              pdf.setFont("helvetica", "bold");
+              pdf.text(`Item: ${item.descricao} ${loc ? `(${loc})` : ""}`, 15, y);
+              y += 5;
+              pdf.setFont("helvetica", "italic");
+              pdf.text(`Motivo: ${item.justificativa || "Não informado"}`, 15, y);
+              y += 10;
+              if (y > 270) { pdf.addPage(); y = 20; }
+          }
+      }
+
+      pdf.save(`Manutencao_${implemento.placa || "Frota"}.pdf`);
+  };
+
+
+  window.fecharMenus = function() {
+
+  document
+    .getElementById("sidebarFiltros")
+    .classList.remove("active");
+
+  document
+    .getElementById("sidebarPlano")
+    .classList.remove("active");
+
+  document
+    .getElementById("overlay")
+    .style.display = "none";
+};
+  </script>

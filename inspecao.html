@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Inspeção</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #f1f3f6;
+}
+
+.topbar {
+  background: #1f2937;
+  color: white;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.contadores {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background: white;
+}
+
+.contador {
+  text-align: center;
+}
+
+.azul { color: #2196f3; }
+.laranja { color: #ff9800; }
+.amarelo { color: #ffc107; }
+.verde { color: #4caf50; }
+
+.lista {
+  padding: 10px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.card:active {
+  transform: scale(0.97);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.placa {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: white;
+}
+
+.status.azul { background: #2196f3; }
+.status.laranja { background: #ff9800; }
+.status.amarelo { background: #ffc107; color: black; }
+.status.verde { background: #4caf50; }
+
+.info {
+  margin-top: 5px;
+  color: #555;
+}
+
+.fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 30px;
+}
+
+/* Estilos para Celulares (telas até 768px) */
+@media (max-width: 768px) {
+  .contadores {
+    display: grid;
+    grid-template-columns: 1-fr 1-fr; /* Divide em 2 colunas em vez de uma linha só */
+    gap: 10px;
+  }
+
+  .topbar {
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .card {
+    margin: 8px; /* Reduz margens para ganhar espaço */
+    padding: 12px;
+  }
+
+  /* Ajuste do botão para não atrapalhar o toque no rodapé */
+  .fab {
+    width: 55px;
+    height: 55px;
+    bottom: 85px; 
+    right: 15px;
+  }
+  
+  /* Adiciona um espaçamento no fim da lista para o conteúdo não ficar 
+     escondido atrás da navbar ao rolar até o fim */
+  body {
+    padding-bottom: 70px; 
+  }
+}
+
+.topbar {
+  background: #1f2937;
+  color: white;
+
+  padding: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  position: relative;
+}
+
+/* Logo centralizada REAL */
+.logo-topbar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  height: 32px;
+  object-fit: contain;
+}
+
+/* Grupo de botões da direita */
+.topbar-acoes {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Evita texto esmagando a logo */
+.titulo-topbar {
+  min-width: 90px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="topbar">
+  🔍 Inspeção
+  <!-- Logo central -->
+  <img src="suzano-logo.png" class="logo-topbar">
+</div>
+
+
+<div class="lista" id="lista"></div>
+
+<!-- MODAL INSPECIONADOR -->
+<div id="modalInspetor" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+">
+
+  <div style="
+    background:white;
+    width:90%;
+    max-width:400px;
+    border-radius:14px;
+    padding:20px;
+    box-sizing:border-box;
+  ">
+
+    <h3 style="margin-top:0;">
+      Selecionar Inspecionador
+    </h3>
+
+    <select id="selectInspetor" style="
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      margin-top:10px;
+    ">
+      <option value="">Selecione...</option>
+    </select>
+
+    <div style="
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:20px;
+    ">
+
+      <button onclick="fecharModalInspetor()" style="
+        padding:10px 16px;
+        border:none;
+        border-radius:8px;
+      ">
+        Cancelar
+      </button>
+
+      <button onclick="confirmarInspetor()" style="
+        background:#1f2937;
+        color:white;
+        padding:10px 16px;
+        border:none;
+        border-radius:8px;
+      ">
+        Continuar
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<button class="fab" onclick="nova()">+</button>
+
+<link rel="stylesheet" href="navbar.css">
+<script src="lista_solicitantes.js"></script>
+
+<link rel="manifest" href="/manifest.json">
+
+<meta name="theme-color" content="#1f2937">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="apple-touch-icon" href="/icone-192.png">
+
+<script type="module">
+import { protegerPagina } from "./auth.js";
+
+protegerPagina(["inspetor", "tecnico"]);
+
+import { db } from "./firebase.js";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+if ("serviceWorker" in navigator) {
+
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("PWA ativo"))
+    .catch(err => console.log(err));
+
+}
+
+// 🎨 STATUS
+function getStatusInfo(status) {
+  switch(status) {
+    case "em_inspecao": return { nome: "Inspeção", cor: "azul" };
+    case "aguardando_manutencao": return { nome: "Aguardando", cor: "laranja" };
+    case "em_manutencao": return { nome: "Manutenção", cor: "amarelo" };
+    case "liberado": return { nome: "Liberado", cor: "verde" };
+  }
+}
+
+// 🔢 CONTADORES
+function atualizarContadores(lista) {
+
+  const cont = {
+    em_inspecao: 0,
+    aguardando_manutencao: 0,
+    em_manutencao: 0,
+    liberado: 0
+  };
+
+  lista.forEach(i => cont[i.status]++);
+
+  document.getElementById("contadores").innerHTML = `
+    <div class="contador azul"><strong>${cont.em_inspecao}</strong>Inspeção</div>
+    <div class="contador laranja"><strong>${cont.aguardando_manutencao}</strong>Aguardando</div>
+    <div class="contador amarelo"><strong>${cont.em_manutencao}</strong>Manutenção</div>
+    <div class="contador verde"><strong>${cont.liberado}</strong>Liberado</div>
+  `;
+}
+
+// 🚀 LISTA FILTRADA (SÓ INSPEÇÃO)
+const q = query(
+  collection(db, "implementos"),
+  where("status", "==", "em_inspecao")
+);
+
+onSnapshot(q, (snapshot) => {
+
+  const lista = [];
+  const container = document.getElementById("lista");
+  container.innerHTML = "";
+
+  snapshot.forEach(doc => {
+
+    const data = doc.data();
+    lista.push(data);
+
+    const status = getStatusInfo(data.status);
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div class="card-top">
+        <div class="placa">${data.placa}</div>
+        <div class="status ${status.cor}">
+          ${status.nome}
+        </div>
+      </div>
+
+      <div class="info">
+        Tipo: ${data.tipo}
+      </div>
+    `;
+
+    div.onclick = () => {
+      window.location = "detalhe.html?id=" + doc.id;
+    };
+
+    container.appendChild(div);
+
+  });
+
+  atualizarContadores(lista);
+
+});
+
+// ➕ nova inspeção
+window.nova = async function() {
+
+  const nomesOptions = LISTA_SOLICITANTES
+    .map(nome => `<option value="${nome}">`)
+    .join("");
+
+  const nome = await promptComLista(`
+    <div style="text-align:left;">
+      <label style="font-size:13px; font-weight:bold;">
+        Nome do inspetor
+      </label>
+
+      <input
+        id="nomeInspetor"
+        list="listaInspetores"
+        placeholder="Digite o nome..."
+        style="
+          width:100%;
+          padding:10px;
+          margin-top:8px;
+          border-radius:8px;
+          border:1px solid #ccc;
+          box-sizing:border-box;
+        "
+      >
+
+      <datalist id="listaInspetores">
+        ${nomesOptions}
+      </datalist>
+    </div>
+  `);
+
+  if (!nome) return;
+
+  localStorage.setItem("inspetorAtual", nome);
+
+  window.location =
+    "nova_inspecao.html?inspetor=" +
+    encodeURIComponent(nome);
+};
+
+function promptComLista(html) {
+
+  const overlay = document.createElement("div");
+
+  overlay.style = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  `;
+
+  overlay.innerHTML = `
+    <div style="
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      width:90%;
+      max-width:400px;
+    ">
+      ${html}
+
+      <div style="
+        display:flex;
+        justify-content:flex-end;
+        gap:10px;
+        margin-top:20px;
+      ">
+        <button id="cancelarBtn">Cancelar</button>
+
+        <button id="okBtn"
+          style="
+            background:#2196f3;
+            color:white;
+            border:none;
+            padding:8px 14px;
+            border-radius:6px;
+          ">
+          Continuar
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  return new Promise(resolve => {
+
+    document
+      .getElementById("cancelarBtn")
+      .onclick = () => {
+        overlay.remove();
+        resolve(null);
+      };
+
+    document
+      .getElementById("okBtn")
+      .onclick = () => {
+
+        const valor = document
+          .getElementById("nomeInspetor")
+          .value
+          .trim();
+
+        if (!valor) {
+          alert("Digite o nome do inspetor");
+          return;
+        }
+
+        overlay.remove();
+        resolve(valor);
+      };
+  });
+}
+
+window.fecharModalInspetor = function() {
+
+  document.getElementById("modalInspetor").style.display = "none";
+};
+
+window.confirmarInspetor = function() {
+
+  const inspetor =
+    document.getElementById("selectInspetor").value;
+
+  if (!inspetor) {
+    alert("Selecione um inspetor");
+    return;
+  }
+
+  const nomeCodificado =
+    encodeURIComponent(inspetor);
+
+  window.location =
+    `nova_inspecao.html?inspetor=${nomeCodificado}`;
+};
+
+import { carregarNavbar } from "./navbar.js";
+
+carregarNavbar();
+</script>
+
+</body>
+</html>

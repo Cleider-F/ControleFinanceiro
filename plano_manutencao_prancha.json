@@ -1,0 +1,88 @@
+[
+  {
+    "tipoPlano": "revisao",
+    "grupo": "Cubo",
+    "itens": [
+      { "descricao": "Trocar graxa" , "tipo": "T" },
+      { "descricao": "Trocar retentores" , "tipo": "T" },
+      { "descricao": "Avaliar rolamentos" , "tipo": "V" },
+      { "descricao": "Trocar trava aranha" , "tipo": "T" }
+    ]
+  },
+  {
+    "tipoPlano": "revisao",
+    "grupo": "Freio",
+    "itens": [
+      { "descricao": "Avaliar e medir tambor de freio" , "tipo": "V" },
+      { "descricao": "Avaliar roletes" , "tipo": "V" },
+      { "descricao": "Trocar patins de freio" , "tipo": "T" },
+      { "descricao": "Trocar trava roletes" , "tipo": "T" },
+      { "descricao": "Trocar molas do patim" , "tipo": "T" },
+      { "descricao": "Avaliar catracas de freio" , "tipo": "V" },
+      { "descricao": "Regular freio" , "tipo": "V" }
+    ]
+  },
+  {
+    "tipoPlano": "revisao",
+    "grupo": "Eixo S",
+    "itens": [
+      { "descricao": "Trocar embuchamento do eixo S" , "tipo": "T" },
+      { "descricao": "Trocar trava meia lua do eixo S" , "tipo": "T" },
+      { "descricao": "Trocar embuchamento do mancal" , "tipo": "T" },
+      { "descricao": "Trocar Oring do mancal" , "tipo": "T" },
+      { "descricao": "Avaliar capa do mancal" , "tipo": "V" }
+    ]
+  },
+  {
+    "tipoPlano": "revisao",
+    "grupo": "Balão de ar",
+    "itens": [
+      { "descricao": "Drenar balões de ar" , "tipo": "V" }
+    ]
+  },
+  {
+    "tipoPlano": "revisao",
+    "grupo": "Elétrica",
+    "itens": [
+      { "descricao": "Corrigir elétrica em geral" , "tipo": "V" }
+    ]
+  },
+  {
+    "tipoPlano": "revisao",
+    "grupo": "5ª Roda",
+    "itens": [
+      { "descricao": "Medir e avaliar pino rei" , "tipo": "V" }
+    ]
+  },
+
+  {
+    "tipoPlano": "preventiva",
+    "grupo": "Freio",
+    "itens": [
+      { "descricao": "Avaliar funcionamento das catracas de freio" , "tipo": "V" },
+      { "descricao": "Regular freio" , "tipo": "V" },
+      { "descricao": "Avaliar mangotes e vazamentos" , "tipo": "V" }
+    ]
+  },
+  {
+    "tipoPlano": "preventiva",
+    "grupo": "Balão de ar",
+    "itens": [
+      { "descricao": "Drenar balões de ar" , "tipo": "V" }
+    ]
+  },
+  {
+    "tipoPlano": "preventiva",
+    "grupo": "5ª Roda",
+    "itens": [
+      { "descricao": "Medir pino rei" , "tipo": "V" }
+    ]
+  },
+  {
+    "tipoPlano": "preventiva",
+    "grupo": "Elétrica",
+    "itens": [
+      { "descricao": "Corrigir elétrica em geral" , "tipo": "V" }
+    ]
+  }
+]

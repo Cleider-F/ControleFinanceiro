@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Execução da Manutenção</title>
+
+    <style>
+        :root {
+            --dark: #1f2937;
+            --primary: #2196f3;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --bg: #f1f3f6;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: #333;
+            padding-bottom: 90px;
+        }
+
+        .topbar {
+            background: var(--dark);
+            color: white;
+            padding: 18px 15px;
+            font-size: 20px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container { padding: 15px; }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            text-transform: uppercase;
+            color: var(--dark);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 8px;
+        }
+
+        /* ESTILO DOS ITENS DO CHECKLIST */
+        .item-container {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 5px solid var(--warning);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-container.automatico { border-left-color: var(--primary); }
+        .item-container.concluido { border-left-color: var(--success); }
+        .item-container.nao-realizado { border-left-color: var(--danger); }
+
+        .item-info { flex: 1; padding-right: 10px; }
+        .item-info strong { font-size: 15px; display: block; margin-bottom: 4px; }
+        .item-info small { color: #666; line-height: 1.4; }
+
+        .resolvido { color: var(--success); font-weight: bold; }
+        .cancelado { color: var(--danger); font-weight: bold; }
+
+        .justificativa-box {
+            margin-top: 10px;
+            padding: 8px;
+            background: #fff5f5;
+            border: 1px dashed var(--danger);
+            border-radius: 6px;
+            font-size: 13px;
+            color: #b91c1c;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            margin-top: 5px;
+        }
+
+        /* CONTAINER DE BOTÕES DE AÇÃO */
+        .acoes-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-acao-item {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: var(--bg);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-check.ativo { background: var(--success); color: white; }
+        .btn-x.ativo { background: var(--danger); color: white; }
+
+        .grupo-header {
+            background: var(--dark);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0 10px 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fotos { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .fotos img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-alerta { background: var(--warning); color: white; }
+        .btn-sucesso { background: var(--success); color: white; }
+
+        #modalImg {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">☰ Manutenção</div>
+
+<div class="container">
+    <div id="info" class="card">Carregando dados...</div>
+
+<div id="acoesManutencao"></div>
+<div id="acoesNC"></div>
+
+    <button class="btn-alerta" id="btnIniciar" style="display:none;" onclick="abrirModalEquipe()">
+        ▶ Iniciar Manutenção
+    </button>
+
+    <div class="card">
+        <h3>Lista de Verificação</h3>
+        <div id="itens"></div>
+    </div>
+
+    <button class="btn-sucesso" id="btnFinalizar" style="display:none;" onclick="finalizar()">
+        🏁 Finalizar Manutenção
+    </button>
+</div>
+
+<div id="modalImg" onclick="this.style.display='none'">
+    <img id="imgGrande" style="max-width:95%; max-height:90%; border-radius:10px;">
+</div>
+<!-- MODAL EQUIPE -->
+<div id="modalEquipe" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+">
+
+    <div style="
+        background:white;
+        width:100%;
+        max-width:500px;
+        border-radius:16px;
+        padding:20px;
+    ">
+
+        <h3 style="margin-top:0;">
+            👥 Equipe Responsável
+        </h3>
+
+        <input
+            id="inputMembro"
+            list="listaMembros"
+            placeholder="Digite o nome..."
+            style="
+                width:100%;
+                box-sizing:border-box;
+                padding:12px;
+                border-radius:10px;
+                border:1px solid #ccc;
+                margin-bottom:10px;
+            "
+        >
+
+        <datalist id="listaMembros"></datalist>
+
+        <button
+            onclick="adicionarMembro()"
+            style="
+                background:#2196f3;
+                color:white;
+            "
+        >
+            + Adicionar
+        </button>
+
+        <div
+            id="listaEquipe"
+            style="
+                margin-top:15px;
+                display:flex;
+                flex-wrap:wrap;
+                gap:8px;
+            "
+        ></div>
+
+        <div style="
+            display:flex;
+            gap:10px;
+            margin-top:20px;
+        ">
+            <button
+                onclick="fecharModalEquipe()"
+                style="background:#777;color:white;"
+            >
+                Cancelar
+            </button>
+
+            <button
+                onclick="confirmarInicioManutencao()"
+                style="background:#4caf50;color:white;"
+            >
+                Confirmar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL ADICIONAR RESPONSÁVEL -->
+<div id="modalResponsavel" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+">
+
+    <div style="
+        background:white;
+        width:100%;
+        max-width:450px;
+        border-radius:16px;
+        padding:20px;
+    ">
+
+        <h3 style="margin-top:0;">
+            👤 Adicionar Responsável
+        </h3>
+
+        <input
+            id="inputNovoResponsavel"
+            list="listaMembros"
+            placeholder="Digite o nome..."
+            style="
+                width:100%;
+                box-sizing:border-box;
+                padding:12px;
+                border-radius:10px;
+                border:1px solid #ccc;
+                margin-bottom:15px;
+            "
+        >
+
+        <div style="
+            display:flex;
+            gap:10px;
+        ">
+            <button
+                onclick="fecharModalResponsavel()"
+                style="background:#777;color:white;"
+            >
+                Cancelar
+            </button>
+
+            <button
+                onclick="salvarNovoResponsavel()"
+                style="background:#4caf50;color:white;"
+            >
+                Adicionar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL NOVA NÃO CONFORMIDADE -->
+<div id="modalNC" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+">
+
+    <div style="
+        background:white;
+        width:100%;
+        max-width:500px;
+        border-radius:16px;
+        padding:20px;
+        max-height:90vh;
+        overflow:auto;
+    ">
+
+        <h3 style="margin-top:0;">
+            ➕ Nova Não Conformidade
+        </h3>
+
+        <textarea
+            id="novaDescricao"
+            placeholder="Descrição do problema"
+            style="
+                width:100%;
+                min-height:100px;
+                padding:12px;
+                border-radius:10px;
+                border:1px solid #ccc;
+                box-sizing:border-box;
+                margin-bottom:10px;
+                resize:vertical;
+            "
+        ></textarea>
+
+        <input
+            id="novoEixo"
+            placeholder="Eixo (Opcional)"
+            style="
+                width:100%;
+                padding:12px;
+                border-radius:10px;
+                border:1px solid #ccc;
+                box-sizing:border-box;
+                margin-bottom:10px;
+            "
+        >
+
+        <input
+            id="novoLado"
+            placeholder="Lado (Opcional)"
+            style="
+                width:100%;
+                padding:12px;
+                border-radius:10px;
+                border:1px solid #ccc;
+                box-sizing:border-box;
+                margin-bottom:10px;
+            "
+        >
+
+        <input
+            id="novoCompartimento"
+            placeholder="Compartimento (Opcional)"
+            style="
+                width:100%;
+                padding:12px;
+                border-radius:10px;
+                border:1px solid #ccc;
+                box-sizing:border-box;
+                margin-bottom:15px;
+            "
+        >
+
+        <div style="
+            display:flex;
+            gap:10px;
+        ">
+            <button
+                onclick="fecharModalNC()"
+                style="background:#777;color:white;"
+            >
+                Cancelar
+            </button>
+
+            <button
+                onclick="salvarNovaNC()"
+                style="background:#4caf50;color:white;"
+            >
+                Salvar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<link rel="stylesheet" href="navbar.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="lista_solicitantes.js"></script>
+
+<script type="module">
+    import { db } from "./firebase.js";
+    import { doc, getDoc, addDoc, collection, query, where, getDocs, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { carregarNavbar } from "./navbar.js";
+
+    
+    carregarNavbar();
+    const dataList = document.getElementById("listaMembros");
+
+window.LISTA_SOLICITANTES.forEach(nome => {
+    
+    const option = document.createElement("option");
+    option.value = nome;
+
+    dataList.appendChild(option);
+
+});
+
+    const id = new URLSearchParams(window.location.search).get("id");
+    let itens = [];
+    let implemento = null;
+    let equipeSelecionada = [];
+    let inspecaoIdGlobal = null;
+
+    const podeIniciar = s => s === "aguardando_manutencao";
+    const podeMexerItens = s => s === "em_manutencao";
+    const podeFinalizar = s => s === "em_manutencao";
+
+    async function carregar() {
+        const snap = await getDoc(doc(db, "implementos", id));
+        implemento = snap.data();
+
+document.getElementById("info").innerHTML = `
+    
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        gap:20px;
+        flex-wrap:wrap;
+    ">
+
+        <!-- LADO ESQUERDO -->
+        <div>
+
+            <div style="
+                font-size:28px;
+                font-weight:bold;
+                color:#1f2937;
+            ">
+                ${implemento?.placa || "-"}
+            </div>
+
+            <div style="
+                margin-top:4px;
+                color:#666;
+                font-size:15px;
+                text-transform:uppercase;
+            ">
+                ${implemento?.tipo || "-"}
+            </div>
+
+            <!-- STATUS AGORA FICA ABAIXO -->
+            <div style="margin-top:12px;">
+                <span class="badge" style="
+                    background:var(--dark);
+                    font-size:12px;
+                    padding:6px 12px;
+                ">
+                    ${implemento?.status?.replaceAll("_", " ")}
+                </span>
+            </div>
+
+        </div>
+
+        <!-- LADO DIREITO -->
+        ${
+            implemento?.equipeManutencao?.length
+            ? `
+            <div style="
+                flex:1;
+                min-width:280px;
+            ">
+
+                <div style="
+                    font-weight:bold;
+                    margin-bottom:8px;
+                    color:#1f2937;
+                ">
+                    👥 Equipe Responsável
+                </div>
+
+                <div style="
+                    color:#333;
+                    line-height:1.6;
+                    margin-bottom:15px;
+                ">
+                    ${implemento.equipeManutencao.join(", ")}
+                </div>
+
+                ${
+                    implemento.status === "em_manutencao"
+                    ? `
+                    <button
+                        onclick="abrirModalResponsavel()"
+                        style="
+                            background:#1f2937;
+                            color:white;
+                            border:none;
+                            padding:12px;
+                            border-radius:10px;
+                            font-weight:bold;
+                            cursor:pointer;
+                            width:100%;
+                            max-width:260px;
+                            margin:0;
+                        "
+                    >
+                        👤 + Adicionar Mecânico
+                    </button>
+                    `
+                    : ""
+                }
+
+            </div>
+            `
+            : ""
+        }
+
+    </div>
+`;
+        document.getElementById("btnIniciar").style.display = podeIniciar(implemento.status) ? "block" : "none";
+        document.getElementById("btnFinalizar").style.display = podeFinalizar(implemento.status) ? "block" : "none";
+
+        const acoes = document.getElementById("acoesManutencao");
+
+if (implemento.status === "em_manutencao") {
+
+
+    document.getElementById("acoesNC").innerHTML = `
+        <button
+            onclick="abrirModalNC()"
+            style="
+                background:#ff9800;
+                color:white;
+                margin-bottom:15px;
+            "
+        >
+            ➕ Adicionar novo item
+        </button>
+    `;
+
+} else {
+
+    acoes.innerHTML = "";
+
+    document.getElementById("acoesNC").innerHTML = "";
+
+}
+        const qInspecao = query(collection(db, "inspecoes"), where("implementoId", "==", id));
+        const snapInspecao = await getDocs(qInspecao);
+        inspecaoIdGlobal = null;
+        snapInspecao.forEach(d => inspecaoIdGlobal = d.id);
+
+
+        if (!inspecaoIdGlobal) return;
+
+        const qItens = query(collection(db, "naoConformidades"), where("inspecaoId", "==", inspecaoIdGlobal));
+        const snapItens = await getDocs(qItens);
+        
+        const container = document.getElementById("itens");
+        container.innerHTML = "";
+        itens = [];
+
+        snapItens.forEach(docSnap => {
+            itens.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        // ADICIONE ESTA ORDENAÇÃO AQUI:
+        itens.sort((a, b) => {
+          if (a.origem === 'manual' && b.origem !== 'manual') return -1;
+          if (a.origem !== 'manual' && b.origem === 'manual') return 1;
+            return 0;
+});
+        renderizarChecklist(container);
+    }
+
+function renderizarChecklist(container) {
+
+    const grupos = {};
+
+    itens.forEach(item => {
+
+        let grupo = "";
+
+        // =========================
+        // ITENS MANUAIS
+        // =========================
+
+        if (item.origem === "manual") {
+
+            if (implemento?.tipo?.toLowerCase() === "carreta") {
+
+                grupo = item.compartimento
+                    ? `MANUAL - COMPARTIMENTO ${item.compartimento}`
+                    : "MANUAL - SEM COMPARTIMENTO";
+
+            } else {
+
+                grupo = "MANUAL";
+            }
+
+        }
+
+        // =========================
+        // ITENS AUTOMÁTICOS
+        // =========================
+
+        else {
+
+            grupo = item.grupo || "GERAL";
+        }
+
+        if (!grupos[grupo]) grupos[grupo] = [];
+
+        grupos[grupo].push(item);
+    });
+
+    // =========================
+    // ORDENAÇÃO DOS GRUPOS
+    // =========================
+
+    const nomesGruposOrdenados = Object.keys(grupos).sort((a, b) => {
+
+        const aManual = a.startsWith("MANUAL");
+        const bManual = b.startsWith("MANUAL");
+
+        // MANUAIS PRIMEIRO
+        if (aManual && !bManual) return -1;
+        if (!aManual && bManual) return 1;
+
+        // ORDENAR COMPARTIMENTOS
+        if (aManual && bManual) {
+
+            const numA = parseInt(a.match(/\d+/)?.[0] || 999);
+            const numB = parseInt(b.match(/\d+/)?.[0] || 999);
+
+            return numA - numB;
+        }
+
+        // RESTANTE ALFABÉTICO
+        return a.localeCompare(b);
+    });
+
+    // =========================
+    // RENDERIZAÇÃO
+    // =========================
+
+    nomesGruposOrdenados.forEach(nome => {
+
+        container.appendChild(
+            criarHeaderGrupo(nome)
+        );
+
+        // Ordenar itens internos
+        grupos[nome].sort((a, b) => {
+
+            const compA = a.compartimento || 999;
+            const compB = b.compartimento || 999;
+
+            if (compA !== compB) {
+                return compA - compB;
+            }
+
+            return (a.descricao || "")
+                .localeCompare(b.descricao || "");
+        });
+
+        grupos[nome].forEach(item => {
+
+            container.appendChild(
+                criarCardItem(item)
+            );
+
+        });
+
+    });
+}
+
+    function criarHeaderGrupo(titulo) {
+        const div = document.createElement("div");
+        div.className = "grupo-header";
+        div.innerHTML = `<span>${titulo}</span>`;
+        return div;
+    }
+
+    function criarCardItem(item) {
+        const div = document.createElement("div");
+        const statusClasse = item.status_manutencao === 'concluido' ? 'concluido' : (item.status_manutencao === 'nao_realizado' ? 'nao-realizado' : '');
+        div.className = `item-container ${item.origem === 'manual' ? '' : 'automatico'} ${statusClasse}`;
+        
+        const fotosHTML = (item.fotos || []).map(url => `<img src="${url}" onclick="abrirImagem('${url}')">`).join("");
+        const desabilitado = !podeMexerItens(implemento.status);
+
+        div.innerHTML = `
+            <div class="item-row">
+                <div class="item-info">
+                    <strong class="${item.status_manutencao === 'concluido' ? 'resolvido' : ''}">${item.descricao}</strong>
+                    <small>${item.eixo ? `Eixo: ${item.eixo} | ` : ''} ${item.lado ? `Lado: ${item.lado}` : ''}</small>
+                    <div class="fotos">${fotosHTML}</div>
+                </div>
+                <div class="acoes-container">
+                    <button class="btn-acao-item btn-check ${item.status_manutencao === 'concluido' ? 'ativo' : ''}" 
+                            onclick="marcarFeito('${item.id}')" ${desabilitado ? 'disabled' : ''}>✅</button>
+                    <button class="btn-acao-item btn-x ${item.status_manutencao === 'nao_realizado' ? 'ativo' : ''}" 
+                            onclick="marcarNaoFeito('${item.id}')" ${desabilitado ? 'disabled' : ''}>❌</button>
+                </div>
+            </div>
+            ${item.justificativa ? `<div class="justificativa-box">⚠️ <b>Justificativa:</b> ${item.justificativa}</div>` : ''}
+            ${
+    item.executadoEm
+    ? `
+    <div style="
+        margin-top:8px;
+        font-size:12px;
+        color:#666;
+        font-weight:bold;
+    ">
+        ${
+            item.status_manutencao === "concluido"
+            ? "✅ Concluído em:"
+            : "❌ Não realizado em:"
+        }
+
+        ${
+            item.executadoEm?.toDate
+            ? item.executadoEm.toDate().toLocaleString("pt-BR")
+            : "-"
+        }
+    </div>
+    `
+    : ""
+}
+        `;
+        return div;
+    }
+
+    // ✅ MARCAR COMO FEITO
+    window.marcarFeito = async function(itemId) {
+        try {
+            await updateDoc(doc(db, "naoConformidades", itemId), {
+                resolvido: true,
+                status_manutencao: "concluido",
+                justificativa: null,
+                executadoEm: serverTimestamp()
+            });
+            carregar();
+        } catch (e) { console.error(e); }
+    };
+
+    // ❌ MARCAR COMO NÃO REALIZADO (COM JUSTIFICATIVA)
+    window.marcarNaoFeito = async function(itemId) {
+        const motivo = prompt("Por que este item não foi realizado?");
+        if (!motivo || motivo.trim() === "") {
+            alert("A justificativa é obrigatória para itens não realizados.");
+            return;
+        }
+
+        try {
+            await updateDoc(doc(db, "naoConformidades", itemId), {
+                resolvido: false,
+                status_manutencao: "nao_realizado",
+                justificativa: motivo,
+                executadoEm: serverTimestamp()
+            });
+            carregar();
+        } catch (e) { console.error(e); }
+    };
+
+    window.abrirModalEquipe = function() {
+
+    equipeSelecionada = [];
+
+    document.getElementById("listaEquipe").innerHTML = "";
+
+    document.getElementById("modalEquipe").style.display = "flex";
+};
+
+window.fecharModalEquipe = function() {
+
+    document.getElementById("modalEquipe").style.display = "none";
+};
+
+window.adicionarMembro = function() {
+
+    const input = document.getElementById("inputMembro");
+
+    const nome = input.value.trim();
+
+    if (!nome) return;
+
+    if (equipeSelecionada.includes(nome)) {
+        alert("Este membro já foi adicionado.");
+        return;
+    }
+
+    equipeSelecionada.push(nome);
+
+    renderEquipe();
+
+    input.value = "";
+};
+
+function renderEquipe() {
+
+    const container = document.getElementById("listaEquipe");
+
+    container.innerHTML = "";
+
+    equipeSelecionada.forEach((nome, index) => {
+
+        const tag = document.createElement("div");
+
+        tag.style = `
+            background:#1f2937;
+            color:white;
+            padding:8px 12px;
+            border-radius:999px;
+            font-size:13px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        `;
+
+        tag.innerHTML = `
+            ${nome}
+            <span
+                style="cursor:pointer;font-weight:bold;"
+                onclick="removerMembro(${index})"
+            >
+                ✖
+            </span>
+        `;
+
+        container.appendChild(tag);
+
+    });
+}
+
+window.removerMembro = function(index) {
+
+    equipeSelecionada.splice(index, 1);
+
+    renderEquipe();
+};
+
+window.confirmarInicioManutencao = async function() {
+
+    if (equipeSelecionada.length === 0) {
+        alert("Adicione pelo menos um membro.");
+        return;
+    }
+
+    try {
+
+        await updateDoc(doc(db, "implementos", id), {
+
+            status: "em_manutencao",
+
+            equipeManutencao: equipeSelecionada,
+
+            inicioManutencao: serverTimestamp()
+
+        });
+
+        fecharModalEquipe();
+
+        location.reload();
+
+    } catch (e) {
+
+        console.error(e);
+
+        alert("Erro ao iniciar manutenção.");
+    }
+        };
+
+window.abrirModalResponsavel = function() {
+
+    document.getElementById("modalResponsavel").style.display = "flex";
+
+    document.getElementById("inputNovoResponsavel").value = "";
+};
+
+window.fecharModalResponsavel = function() {
+
+    document.getElementById("modalResponsavel").style.display = "none";
+};
+
+window.salvarNovoResponsavel = async function() {
+
+    const input = document.getElementById("inputNovoResponsavel");
+
+    const nome = input.value.trim();
+
+    if (!nome) {
+
+        alert("Digite um nome.");
+
+        return;
+    }
+
+    try {
+
+        const equipeAtual = implemento.equipeManutencao || [];
+
+        // EVITA DUPLICADO
+        if (equipeAtual.includes(nome)) {
+
+            alert("Este responsável já está na equipe.");
+
+            return;
+        }
+
+        equipeAtual.push(nome);
+
+        await updateDoc(doc(db, "implementos", id), {
+
+            equipeManutencao: equipeAtual
+
+        });
+
+        fecharModalResponsavel();
+
+        carregar();
+
+    } catch (e) {
+
+        console.error(e);
+
+        alert("Erro ao adicionar responsável.");
+    }
+};
+
+window.abrirModalNC = function() {
+
+    document.getElementById("modalNC").style.display = "flex";
+
+    document.getElementById("novaDescricao").value = "";
+    document.getElementById("novoEixo").value = "";
+    document.getElementById("novoLado").value = "";
+    document.getElementById("novoCompartimento").value = "";
+};
+
+window.fecharModalNC = function() {
+
+    document.getElementById("modalNC").style.display = "none";
+};
+
+window.salvarNovaNC = async function() {
+
+    const descricao = document.getElementById("novaDescricao").value.trim();
+
+    const eixo = document.getElementById("novoEixo").value.trim();
+
+    const lado = document.getElementById("novoLado").value.trim();
+
+    const compartimento = document.getElementById("novoCompartimento").value.trim();
+
+    if (!descricao) {
+
+        alert("Informe a descrição.");
+
+        return;
+    }
+
+    try {
+
+        await addDoc(collection(db, "naoConformidades"), {
+
+            inspecaoId: inspecaoIdGlobal,
+
+            descricao,
+
+            eixo,
+
+            lado,
+
+            compartimento,
+
+            origem: "manual",
+
+            resolvido: false,
+
+            status_manutencao: null,
+
+            criadoEm: serverTimestamp()
+
+        });
+
+        fecharModalNC();
+
+        carregar();
+
+    } catch (e) {
+
+        console.error(e);
+
+        alert("Erro ao adicionar não conformidade.");
+    }
+};
+
+window.finalizar = async function() {
+    const total = itens.length;
+    const processados = itens.filter(i => i.status_manutencao).length;
+
+    const realizados = itens.filter(i => i.status_manutencao === 'concluido');
+    const naoRealizados = itens.filter(i => i.status_manutencao === 'nao_realizado');
+
+    // 1. Validação de preenchimento
+    if (processados < total) {
+        alert(`Faltam ${total - processados} itens para serem avaliados (Check ou X).`);
+        return;
+    }
+
+    if (confirm("Deseja finalizar a manutenção e enviar o relatório por e-mail?")) {
+        try {
+            // --- LÓGICA DE DESTINATÁRIOS (REVISADA) ---
+            
+            // 1. Pegamos o tipo e limpamos espaços ou letras maiúsculas
+            const tipoOriginal = implemento.tipo || "";
+            const tipoLimpo = tipoOriginal.trim().toLowerCase();
+
+            // LOG PARA TESTE: Aperte F12 no navegador antes de clicar em finalizar
+            // para ver o que aparece no Console.
+            console.log("Tipo detectado no banco:", tipoOriginal);
+
+            const responsaveis = {
+            "carreta": "cmcmanutencao@outlook.com , cleider1000@hotmail.com",
+            "prancha": "cleider1000@hotmail.com",
+            "comboio": "cleider1000@hotmail.com",
+            "cavalo": "cleider1000@hotmail.com"
+                
+                // Importante: aqui as chaves devem estar em MINÚSCULAS
+            };
+
+            // 2. Busca o e-mail usando o tipo limpo
+            const emailDestino = responsaveis[tipoLimpo] || "cmcmanutencao@outlook.com";
+
+            // Feedback visual no botão
+            const btn = document.getElementById("btnFinalizar");
+            btn.innerText = "⏳ Gerando e Enviando...";
+            btn.disabled = true;
+
+            // 2. GERAÇÃO DO PDF
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            let y = 0;
+
+            // Cabeçalho
+            pdf.setFillColor(31, 41, 55); 
+            pdf.rect(0, 0, 210, 35, 'F');
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(16);
+            pdf.text("RELATÓRIO DE EXECUÇÃO DE MANUTENÇÃO", 105, 18, { align: "center" });
+
+            pdf.setFontSize(10);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(`Identificação: ${implemento.placa || "-"} | ${implemento.tipo || "-"}`, 105, 28, { align: "center" });
+
+            y = 48;
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFont("helvetica", "bold");
+            pdf.text("INÍCIO (INSPEÇÃO):", 15, y);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(formatarData(implemento.dataInspecao), 55, y);
+
+            pdf.setFont("helvetica", "bold");
+            pdf.text("||   FINALIZAÇÃO (MANUTENÇÃO):", 97, y);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(new Date().toLocaleString('pt-BR'), 160, y);
+            y += 8;
+
+            pdf.setFont("helvetica", "bold");
+            pdf.text("EQUIPE RESPONSÁVEL:", 15, y);
+
+            pdf.setFont("helvetica", "normal");
+            pdf.text(
+                (implemento.equipeManutencao || []).join(", "),
+                65,
+                y
+            );
+
+            y += 8;
+            pdf.setDrawColor(220, 220, 220);
+            pdf.line(10, y, 200, y);
+            y += 12;
+
+            // Listagem de Itens Concluídos
+            pdf.setFont("helvetica", "bold");
+            pdf.text("ITENS CONCLUÍDOS:", 10, y);
+            y += 8;
+            pdf.setFont("helvetica", "normal");
+            
+            realizados.forEach(item => {
+                const loc = [item.eixo, item.lado, item.compartimento].filter(Boolean).join(" - ");
+                pdf.text(`• ${item.descricao} ${loc ? `(${loc})` : ""}`, 15, y);
+                y += 6;
+                if (y > 270) { pdf.addPage(); y = 20; }
+            });
+
+            y += 10;
+
+            // Listagem de Itens Não Realizados
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(200, 0, 0);
+            pdf.text("ITENS NÃO REALIZADOS:", 10, y);
+            y += 8;
+            pdf.setTextColor(0, 0, 0);
+
+            if (naoRealizados.length === 0) {
+                pdf.setFont("helvetica", "normal");
+                pdf.text("Todos os itens foram realizados.", 15, y);
+            } else {
+                for (const item of naoRealizados) {
+                    const loc = [item.eixo, item.lado, item.compartimento].filter(Boolean).join(" - ");
+                    pdf.setFont("helvetica", "bold");
+                    pdf.text(`Item: ${item.descricao} ${loc ? `(${loc})` : ""}`, 15, y);
+                    y += 5;
+                    pdf.setFont("helvetica", "italic");
+                    pdf.text(`Motivo: ${item.justificativa || "Não informado"}`, 15, y);
+                    y += 10;
+                    if (y > 270) { pdf.addPage(); y = 20; }
+                }
+            }
+
+            // --- PROCESSO DE ENVIO ---
+            const pdfBlob = pdf.output('blob');
+            const reader = new FileReader();
+            reader.readAsDataURL(pdfBlob);
+
+            reader.onloadend = async function() {
+                // Pega a string Base64 pura (depois da vírgula)
+                const base64data = reader.result.split(',')[1];
+
+                try {
+                    // Atualiza o veículo no Firestore
+                    await updateDoc(doc(db, "implementos", id), { 
+                        status: "liberado", 
+                        dataLiberacao: serverTimestamp() 
+                    });
+
+                    // Envio para o Firestore (Coleção mail)
+                    await addDoc(collection(db, "mail"), {
+                        to: emailDestino,
+                        message: {
+                            subject: `Manutenção Finalizada [${implemento.tipo}] - Placa: ${implemento.placa}`,
+                            html: `Olá,<br><br>O relatório de manutenção do <b>${implemento.tipo}</b> (Placa: ${implemento.placa}) está pronto.<br>Segue em anexo o arquivo PDF.`,
+                            attachments: [
+                                {
+                                    filename: `Relatorio_${implemento.placa}.pdf`,
+                                    content: base64data,
+                                    encoding: 'base64'
+                                }
+                            ]
+                        }
+                    });
+
+                    alert(`Finalizado! E-mail enviado para: ${emailDestino}`);
+                    window.location = "manutencao.html";
+
+                } catch (err) {
+                    console.error("Erro ao salvar:", err);
+                    alert("Dados do veículo salvos, mas o e-mail falhou.");
+                    btn.disabled = false;
+                    btn.innerText = "Finalizar Manutenção";
+                }
+            };
+
+        } catch (error) {
+            console.error("Erro geral:", error);
+            alert("Ocorreu um erro ao processar o relatório.");
+            const btn = document.getElementById("btnFinalizar");
+            btn.disabled = false;
+            btn.innerText = "Finalizar Manutenção";
+        }
+    }
+};
+    window.abrirImagem = (url) => {
+        document.getElementById("imgGrande").src = url;
+        document.getElementById("modalImg").style.display = "flex";
+    };
+
+// Adicione esta função para evitar erro nas datas do PDF
+function formatarData(dataBase) {
+    if (!dataBase) return "-";
+    // Se for um timestamp do Firebase, converte. Se não, tenta converter como data normal.
+    return dataBase.toDate ? dataBase.toDate().toLocaleString('pt-BR') : new Date(dataBase).toLocaleString('pt-BR');
+}
+    carregar();
+</script>
+
+</body>
+</html>

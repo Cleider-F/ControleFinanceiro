@@ -1,0 +1,1385 @@
+ <!DOCTYPE html>
+
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <!-- CRUCIAL: Faz o site entender o tamanho da tela do celular -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Detalhe da Inspeção - Sistema Integrado</title>
+
+
+    <style>
+
+        :root {
+
+            --dark: #1f2937;
+
+            --primary: #2196f3;
+
+            --success: #4caf50;
+
+            --warning: #ff9800;
+
+            --danger: #f44336;
+
+            --bg: #f1f3f6;
+
+            --text-main: #333;
+
+            --text-muted: #6b7280;
+
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+            background: var(--bg);
+
+            color: var(--text-main);
+
+            padding-bottom: 90px;
+
+        }
+
+
+        /* TOPO */
+
+        .topbar {
+
+            background: var(--dark);
+
+            color: white;
+
+            padding: 18px 15px;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        /* CONTAINER */
+
+        .container {
+
+            padding: 15px;
+
+        }
+
+
+        /* CARDS */
+
+        .card {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 18px 15px;
+
+            margin-bottom: 15px;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .card h3 {
+
+            margin-top: 0;
+
+            font-size: 16px;
+
+            text-transform: uppercase;
+
+            color: var(--dark);
+
+            border-bottom: 2px solid var(--bg);
+
+            padding-bottom: 8px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        /* HEADER DO IMPLEMENTO */
+
+        .info-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .info-placa {
+
+            font-size: 24px;
+
+            font-weight: 900;
+
+            color: var(--dark);
+
+            margin: 0;
+
+        }
+
+
+        .info-tipo {
+
+            color: var(--text-muted);
+
+            font-size: 14px;
+
+            text-transform: uppercase;
+
+            font-weight: 600;
+
+        }
+
+
+        /* BADGES (Etiquetas) */
+
+        .badge {
+
+            padding: 4px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            display: inline-block;
+
+        }
+
+        .badge-warning { background: #fff3e0; color: #e65100; }
+
+        .badge-primary { background: #e3f2fd; color: #0d47a1; }
+
+        .badge-success { background: #e8f5e9; color: #1b5e20; }
+
+        .badge-gray { background: #f3f4f6; color: #374151; }
+
+
+        /* LISTA DE ITENS */
+
+        .item-card {
+
+            background: #fff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 10px;
+
+            margin-bottom: 12px;
+
+            overflow: hidden;
+
+        }
+
+
+        .item-view {
+
+            padding: 15px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+
+        .item-info { flex: 1; }
+
+        .item-info strong { font-size: 16px; display: block; margin-bottom: 4px; color: var(--dark); }
+
+        .item-info p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.4; }
+
+       
+
+        .item-acoes {
+
+            display: flex;
+
+            gap: 8px;
+
+            margin-left: 10px;
+
+        }
+
+
+        /* BOTÕES PEQUENOS (Ícones) */
+
+        .btn-icon {
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: 8px;
+
+            border: none;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 18px;
+
+            cursor: pointer;
+
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+            padding: 0;
+
+        }
+
+        .btn-edit { background: #f3f4f6; color: var(--primary); }
+
+        .btn-delete { background: #fef2f2; color: var(--danger); }
+
+
+        /* ÁREA DE EDIÇÃO */
+
+        .item-edit {
+
+            padding: 15px;
+
+            background: #f8fafc;
+
+            border-top: 1px solid #e5e7eb;
+
+        }
+
+
+        /* INPUTS */
+
+        input, select, textarea {
+
+            width: 100%;
+
+            padding: 12px;
+
+            margin-bottom: 12px;
+
+            border-radius: 8px;
+
+            border: 1px solid #d1d5db;
+
+            box-sizing: border-box;
+
+            font-size: 16px; /* Evita zoom no iOS */
+
+            background-color: #fff;
+
+        }
+
+
+        input:focus, select:focus {
+
+            outline: none;
+
+            border-color: var(--primary);
+
+        }
+
+
+        .grid-2 {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+
+        }
+
+
+        /* BOTÕES PRINCIPAIS */
+
+        .btn-acao {
+
+            width: 100%;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            border: none;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+            text-align: center;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .btn-primario { background: var(--primary); color: white; }
+
+        .btn-sucesso { background: var(--success); color: white; margin-top: 10px; font-size: 18px; }
+
+        .btn-outline { background: transparent; border: 2px solid #ccc; color: #555; box-shadow: none; }
+
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- Aplicando a correção visual solicitada: Trocando a lupa pelo menu hamburguer -->
+
+<div class="topbar">☰ Detalhe da Inspeção</div>
+
+
+<div class="container">
+
+
+    <!-- INFO DO IMPLEMENTO -->
+
+    <div id="info" class="card">
+
+        <div style="text-align: center; color: #888;">Carregando dados...</div>
+
+    </div>
+
+
+    <!-- LISTA DE NÃO CONFORMIDADES -->
+
+    <div class="card">
+
+        <h3>Lista de Avarias</h3>
+
+        <div id="itens">
+
+            <div style="text-align: center; color: #888;">Buscando avarias...</div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOTÃO FINAL -->
+
+    <button id="btnFinalizar" class="btn-acao btn-sucesso" onclick="finalizar()" style="display:none;">
+
+        ✅ Enviar para Manutenção
+
+    </button>
+
+
+</div>
+
+
+<link rel="stylesheet" href="navbar.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script type="module">
+
+    import { db } from "./firebase.js";
+
+    import {
+    doc,
+    getDoc,
+    collection,
+    query,
+    where,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    import { carregarNavbar } from "./navbar.js";
+
+
+    carregarNavbar();
+
+
+    // 🔑 ID vindo da URL
+
+    const id = new URLSearchParams(window.location.search).get("id");
+
+
+    let implemento = null;
+
+    let inspecao = null;
+
+
+    // Helper para formatar o status com cores
+
+    function getStatusBadge(status) {
+
+        if(status === 'em_inspecao') return '<span class="badge badge-warning">Em Inspeção</span>';
+
+        if(status === 'aguardando_manutencao') return '<span class="badge badge-primary">Aguardando Manut.</span>';
+
+        if(status === 'liberado') return '<span class="badge badge-success">Liberado</span>';
+
+        return `<span class="badge badge-gray">${status}</span>`;
+
+    }
+
+
+    // 🚀 Carregar dados
+
+    async function carregar() {
+
+        if (!id) {
+
+            document.getElementById("info").innerHTML = "ID não fornecido na URL.";
+
+            return;
+
+        }
+
+
+        // 📦 Implemento
+
+        const docRef = doc(db, "implementos", id);
+
+        const docSnap = await getDoc(docRef);
+
+
+        if (!docSnap.exists()) {
+
+            alert("Implemento não encontrado");
+
+            document.getElementById("info").innerHTML = "Implemento não encontrado.";
+
+            return;
+
+        }
+
+
+        implemento = docSnap.data();
+
+
+        document.getElementById("info").innerHTML = `
+
+            <div class="info-header">
+
+                <div>
+
+                    <h2 class="info-placa">${implemento.placa || 'Sem Placa'}</h2>
+
+                    <span class="info-tipo">${implemento.tipo || 'Desconhecido'}</span>
+
+                </div>
+
+                <div>
+
+                    ${getStatusBadge(implemento.status)}
+
+                </div>
+
+            </div>
+
+            ${implemento.tipoManutencao ? `<div style="margin-top: 10px; font-size: 14px; color: #555;">Manutenção: <strong>${implemento.tipoManutencao.toUpperCase()}</strong></div>` : ''}
+
+        `;
+
+
+        // 📄 Buscar inspeção
+
+        const q = query(
+
+            collection(db, "inspecoes"),
+
+            where("implementoId", "==", id)
+
+        );
+
+
+        const snap = await getDocs(q);
+
+        snap.forEach(d => {
+
+            inspecao = { id: d.id, ...d.data() };
+
+        });
+
+
+        if (!inspecao) {
+
+            document.getElementById("itens").innerHTML = "<div style='text-align:center; padding: 20px;'>Nenhuma inspeção atrelada a este implemento.</div>";
+
+            return;
+
+        }
+
+
+        // ⚠ Não conformidades
+
+        const qItens = query(
+
+            collection(db, "naoConformidades"),
+
+            where("inspecaoId", "==", inspecao.id)
+
+        );
+
+
+        const itensSnap = await getDocs(qItens);
+
+        const container = document.getElementById("itens");
+
+        container.innerHTML = "";
+
+
+        if (itensSnap.empty) {
+
+            container.innerHTML = "<div style='text-align:center; padding: 20px; color: #888;'>Nenhuma avaria registrada.</div>";
+
+        }
+
+
+        const emInspecao = implemento.status === "em_inspecao";
+
+
+const itensAgrupados = {};
+
+itensSnap.forEach(docSnap => {
+
+    const item = docSnap.data();
+
+    const grupo = item.grupo || "GERAL";
+
+    // Define compartimento
+    let compartimentoKey = "SEM COMPARTIMENTO";
+
+    if (
+        item.compartimento !== null &&
+        item.compartimento !== undefined &&
+        item.compartimento !== ""
+    ) {
+        compartimentoKey = `COMPARTIMENTO ${item.compartimento}`;
+    }
+
+    // Cria grupo
+    if (!itensAgrupados[grupo]) {
+        itensAgrupados[grupo] = {};
+    }
+
+    // Cria compartimento
+    if (!itensAgrupados[grupo][compartimentoKey]) {
+        itensAgrupados[grupo][compartimentoKey] = [];
+    }
+
+    itensAgrupados[grupo][compartimentoKey].push({
+        id: docSnap.id,
+        ...item
+    });
+
+});
+
+
+// ==========================
+// RENDERIZAÇÃO ORGANIZADA
+// ==========================
+
+Object.entries(itensAgrupados).forEach(([grupoNome, compartimentos]) => {
+
+    // HEADER DO GRUPO
+    const grupoDiv = document.createElement("div");
+
+    grupoDiv.style.background = "#1f2937";
+    grupoDiv.style.color = "white";
+    grupoDiv.style.padding = "12px";
+    grupoDiv.style.borderRadius = "10px";
+    grupoDiv.style.margin = "20px 0 12px";
+    grupoDiv.style.fontWeight = "bold";
+    grupoDiv.style.fontSize = "15px";
+
+    grupoDiv.innerText = grupoNome;
+
+    container.appendChild(grupoDiv);
+
+
+    // Ordenar compartimentos
+    const compartimentosOrdenados = Object.entries(compartimentos)
+        .sort((a, b) => {
+
+            const numA = parseInt(a[0].replace(/\D/g, "")) || 999;
+            const numB = parseInt(b[0].replace(/\D/g, "")) || 999;
+
+            return numA - numB;
+        });
+
+    compartimentosOrdenados.forEach(([compNome, itens]) => {
+
+        // Não mostra seção se for sem compartimento
+        if (compNome !== "SEM COMPARTIMENTO") {
+
+            const compDiv = document.createElement("div");
+
+            compDiv.style.background = "#e5e7eb";
+            compDiv.style.color = "#1f2937";
+            compDiv.style.padding = "8px 12px";
+            compDiv.style.borderRadius = "8px";
+            compDiv.style.margin = "10px 0";
+            compDiv.style.fontWeight = "bold";
+            compDiv.style.fontSize = "13px";
+
+            compDiv.innerText = compNome;
+
+            container.appendChild(compDiv);
+        }
+
+        // Ordenar itens alfabeticamente
+        itens.sort((a, b) =>
+            a.descricao.localeCompare(b.descricao)
+        );
+
+        itens.forEach(item => {
+
+            const badgeClass =
+                item.tipo === 'avaria'
+                    ? 'badge-warning'
+                    : 'badge-primary';
+
+            const div = document.createElement("div");
+
+            div.className = "item-card";
+
+            div.innerHTML = `
+
+                <!-- VISUALIZAÇÃO -->
+                <div class="item-view" id="view-${item.id}">
+
+                    <div class="item-info">
+
+                        <strong>${item.descricao}</strong>
+
+                        <div style="margin-top:6px;">
+                            <span class="badge ${badgeClass}">
+                                ${item.tipo || 'N/A'}
+                            </span>
+                        </div>
+
+                        <p>
+                            ${item.eixo ? `Eixo: ${item.eixo}` : ''}
+                            ${item.lado ? ` | Lado: ${item.lado}` : ''}
+                            ${
+                                item.compartimento !== null &&
+                                item.compartimento !== undefined
+                                    ? ` | Comp: ${item.compartimento}`
+                                    : ''
+                            }
+                        </p>
+
+                    </div>
+
+                    ${emInspecao ? `
+                    <div class="item-acoes">
+
+                        <button
+                            class="btn-icon btn-edit"
+                            onclick="abrirEdicao('${item.id}')">
+                            ✏️
+                        </button>
+
+                        <button
+                            class="btn-icon btn-delete"
+                            onclick="removerItem('${item.id}')">
+                            🗑️
+                        </button>
+
+                    </div>
+                    ` : ""}
+
+                </div>
+
+
+                <!-- EDIÇÃO -->
+                <div
+                    class="item-edit"
+                    id="edit-${item.id}"
+                    style="display:none;"
+                >
+
+                    <label style="font-size:12px;font-weight:bold;color:#555;">
+                        Descrição
+                    </label>
+
+                    <input
+                        id="desc-${item.id}"
+                        value="${item.descricao}"
+                    >
+
+                    <div class="grid-2">
+
+                        <div>
+
+                            <label style="font-size:12px;font-weight:bold;color:#555;">
+                                Eixo
+                            </label>
+
+                            <input
+                                id="eixo-${item.id}"
+                                value="${item.eixo}"
+                            >
+
+                        </div>
+
+                        <div>
+
+                            <label style="font-size:12px;font-weight:bold;color:#555;">
+                                Lado
+                            </label>
+
+                            <select id="lado-${item.id}">
+
+                                <option value="esquerdo"
+                                    ${item.lado === "esquerdo" ? "selected" : ""}>
+                                    Esquerdo
+                                </option>
+
+                                <option value="direito"
+                                    ${item.lado === "direito" ? "selected" : ""}>
+                                    Direito
+                                </option>
+
+                                <option value="ambos"
+                                    ${item.lado === "ambos" ? "selected" : ""}>
+                                    Ambos
+                                </option>
+
+                                <option value="N/A"
+                                    ${item.lado === "N/A" ? "selected" : ""}>
+                                    N/A
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="grid-2">
+
+                        <div>
+
+                            <label style="font-size:12px;font-weight:bold;color:#555;">
+                                Tipo
+                            </label>
+
+                            <select id="tipo-${item.id}">
+
+                                <option value="normal"
+                                    ${item.tipo === "normal" ? "selected" : ""}>
+                                    Normal
+                                </option>
+
+                                <option value="avaria"
+                                    ${item.tipo === "avaria" ? "selected" : ""}>
+                                    Avaria
+                                </option>
+
+                                <option value="troca"
+                                    ${item.tipo === "troca" ? "selected" : ""}>
+                                    Troca
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div>
+
+                            <label style="font-size:12px;font-weight:bold;color:#555;">
+                                Compartimento
+                            </label>
+
+                            <input
+                                id="comp-${item.id}"
+                                type="number"
+                                value="${item.compartimento ?? ""}"
+                                placeholder="Nº"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="btn-acao btn-primario"
+                        onclick="salvarEdicao('${item.id}')"
+                    >
+                        Salvar Alterações
+                    </button>
+
+                    <button
+                        class="btn-acao btn-outline"
+                        onclick="cancelarEdicao('${item.id}')"
+                    >
+                        Cancelar
+                    </button>
+
+                </div>
+            `;
+
+            container.appendChild(div);
+
+        });
+
+    });
+
+});
+
+        // Controle de Exibição do Botão Finalizar
+
+        const btnFinal = document.getElementById("btnFinalizar");
+
+        if (podeFinalizarInspecao(implemento.status)) {
+
+            btnFinal.style.display = "block";
+
+        } else {
+
+            btnFinal.style.display = "none";
+
+        }
+
+    }
+
+
+    carregar();
+
+
+    // 🔄 Finalizar inspeção
+
+window.finalizar = async function () {
+
+    if (!confirm("Deseja enviar este implemento para manutenção?")) return;
+
+    const btn = document.getElementById("btnFinalizar");
+    btn.innerText = "⏳ Gerando relatório...";
+    btn.disabled = true;
+
+    try {
+
+        // =========================
+        // BUSCAR NÃO CONFORMIDADES
+        // =========================
+
+        const qItens = query(
+            collection(db, "naoConformidades"),
+            where("inspecaoId", "==", inspecao.id)
+        );
+
+        const itensSnap = await getDocs(qItens);
+
+        const itens = [];
+
+        itensSnap.forEach(doc => {
+            itens.push(doc.data());
+        });
+
+        // =========================
+        // DEFINIR DESTINATÁRIO
+        // =========================
+
+        const tipoOriginal = implemento.tipo || "";
+        const tipoLimpo = tipoOriginal.trim().toLowerCase();
+
+        const responsaveis = {
+            "carreta": "cmcmanutencao@outlook.com",
+            "prancha": "cleider1000@hotmail.com",
+            "comboio": "cleider1000@hotmail.com",
+            "cavalo": "cleider1000@hotmail.com"
+
+        };
+
+        const emailDestino =
+            responsaveis[tipoLimpo] ||
+            "cmcmanutencao@outlook.com";
+
+        // =========================
+        // GERAR PDF
+        // =========================
+
+        const { jsPDF } = window.jspdf;
+
+        const pdf = new jsPDF();
+
+        let y = 20;
+
+        // Cabeçalho
+        pdf.setFillColor(31, 41, 55);
+        pdf.rect(0, 0, 210, 30, 'F');
+
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(18);
+
+        pdf.text(
+            "RELATÓRIO DE INSPEÇÃO",
+            105,
+            18,
+            { align: "center" }
+        );
+
+        // Informações
+        y = 45;
+
+        pdf.setTextColor(0, 0, 0);
+
+        pdf.setFontSize(12);
+
+        pdf.setFont("helvetica", "bold");
+        pdf.text("GO/Placa:", 10, y);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.text(implemento.placa || "-", 35, y);
+
+        y += 8;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Tipo:", 10, y);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.text(implemento.tipo || "-", 35, y);
+
+        y += 8;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Status:", 10, y);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Aguardando manutenção", 35, y);
+
+        y += 8;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Data:", 10, y);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.text(
+            new Date().toLocaleString('pt-BR'),
+            35,
+            y
+        );
+
+        y += 15;
+
+        // Linha divisória
+        pdf.setDrawColor(200, 200, 200);
+        pdf.line(10, y, 200, y);
+
+        y += 12;
+
+        // Título
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+
+        pdf.text("LISTA DE NÃO CONFORMIDADES", 10, y);
+
+        y += 10;
+
+        // Sem itens
+        if (itens.length === 0) {
+
+            pdf.setFont("helvetica", "normal");
+
+            pdf.text(
+                "Nada registrado.",
+                15,
+                y
+            );
+
+        } else {
+
+            // Listagem
+            const itensAgrupados = {};
+
+// Agrupar por setor/grupo
+itens.forEach(item => {
+
+    const grupo = item.grupo || item.setor || "Outros";
+
+    if (!itensAgrupados[grupo]) {
+        itensAgrupados[grupo] = [];
+    }
+
+    itensAgrupados[grupo].push(item);
+});
+
+// Renderizar grupos
+Object.keys(itensAgrupados).forEach(grupo => {
+
+    // =========================
+    // TÍTULO DO GRUPO
+    // =========================
+
+    pdf.setFillColor(31, 41, 55);
+
+    pdf.rect(10, y - 5, 190, 8, 'F');
+
+    pdf.setTextColor(255, 255, 255);
+
+    pdf.setFont("helvetica", "bold");
+
+    pdf.setFontSize(12);
+
+    pdf.text(grupo.toUpperCase(), 15, y);
+
+    y += 12;
+
+    // =========================
+    // ITENS DO GRUPO
+    // =========================
+
+    itensAgrupados[grupo].forEach((item, index) => {
+
+        const localizacao = [
+            item.eixo,
+            item.lado,
+            item.compartimento
+                ? `Comp. ${item.compartimento}`
+                : null
+        ]
+        .filter(Boolean)
+        .join(" - ");
+
+        // Descrição
+        pdf.setTextColor(0, 0, 0);
+
+        pdf.setFont("helvetica", "bold");
+
+        pdf.setFontSize(11);
+
+        pdf.text(
+            `• ${item.descricao}`,
+            15,
+            y
+        );
+
+        y += 6;
+
+        // Tipo de ação
+        pdf.setFont("helvetica", "normal");
+
+        pdf.setFontSize(10);
+
+        pdf.text(
+            `Tipo: ${(item.tipo || "-").toUpperCase()}`,
+            20,
+            y
+        );
+
+        y += 5;
+
+        // Localização
+        if (localizacao) {
+
+            pdf.text(
+                `Local: ${localizacao}`,
+                20,
+                y
+            );
+
+            y += 5;
+        }
+
+        y += 6;
+
+        // Quebra de página
+        if (y > 270) {
+
+            pdf.addPage();
+
+            y = 20;
+        }
+
+    });
+
+    y += 5;
+});
+
+        }
+
+        // =========================
+        // CONVERTER PDF BASE64
+        // =========================
+
+        const pdfBlob = pdf.output("blob");
+
+        const reader = new FileReader();
+
+        reader.readAsDataURL(pdfBlob);
+
+        reader.onloadend = async function () {
+
+            const base64data =
+                reader.result.split(",")[1];
+
+            try {
+
+                // =========================
+                // ATUALIZAR STATUS
+                // =========================
+
+                await updateDoc(
+                    doc(db, "implementos", id),
+                    {
+                        status: "aguardando_manutencao",
+                        dataEnvioManutencao: serverTimestamp()
+                    }
+                );
+
+                // =========================
+                // ENVIAR EMAIL
+                // =========================
+
+                await addDoc(
+                    collection(db, "mail"),
+                    {
+                        to: emailDestino,
+
+                        message: {
+
+                            subject:
+                                `Inspeção finalizada - ${implemento.placa}`,
+
+                            html: `
+                                <h2>Inspeção finalizada</h2>
+
+                                <p>
+                                    O implemento
+                                    <b>${implemento.placa}</b>
+                                    foi enviado para manutenção.
+                                </p>
+
+                                <p>
+                                    Tipo:
+                                    <b>${implemento.tipo || "-"}</b>
+                                </p>
+
+                                <p>
+                                    Segue em anexo o relatório completo da inspeção.
+                                </p>
+                            `,
+
+                            attachments: [
+                                {
+                                    filename:
+                                        `Inspecao_${implemento.placa}.pdf`,
+
+                                    content: base64data,
+
+                                    encoding: "base64"
+                                }
+                            ]
+                        }
+                    }
+                );
+
+                alert(
+                    `Implemento enviado para manutenção.\nE-mail enviado para ${emailDestino}`
+                );
+
+                window.location = "inspecao.html";
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert(
+                    "O implemento foi atualizado, mas o e-mail falhou."
+                );
+
+                btn.disabled = false;
+
+                btn.innerText =
+                    "✅ Enviar para Manutenção";
+            }
+
+        };
+
+    } catch (e) {
+
+        console.error(e);
+
+        alert("Erro ao finalizar.");
+
+        btn.innerText =
+            "✅ Enviar para Manutenção";
+
+        btn.disabled = false;
+    }
+};
+
+    function podeFinalizarInspecao(status) {
+
+        return status === "em_inspecao";
+
+    }
+
+
+    // 🗑️ Remover Item
+
+    window.removerItem = async function(itemId) {
+
+        if (implemento.status !== "em_inspecao") {
+
+            alert("Não é possível excluir neste status");
+
+            return;
+
+        }
+
+        if (!confirm("Deseja realmente excluir esta avaria?")) return;
+
+
+        try {
+
+            await deleteDoc(doc(db, "naoConformidades", itemId));
+
+            carregar(); // Recarrega a tela suavemente
+
+        } catch (e) {
+
+            console.error("Erro ao excluir:", e);
+
+            alert("Erro ao excluir item");
+
+        }
+
+    };
+
+
+    // ✏️ Funções de Edição
+
+    window.abrirEdicao = function(docId) {
+
+        document.getElementById("view-" + docId).style.display = "none";
+
+        document.getElementById("edit-" + docId).style.display = "block";
+
+    }
+
+
+    window.cancelarEdicao = function(docId) {
+
+        document.getElementById("edit-" + docId).style.display = "none";
+
+        document.getElementById("view-" + docId).style.display = "flex";
+
+    }
+
+
+    window.salvarEdicao = async function(docId) {
+
+        if (implemento.status !== "em_inspecao") {
+
+            alert("Não é possível editar fora do status de inspeção.");
+
+            return;
+
+        }
+
+
+        const descricao = document.getElementById("desc-" + docId).value.trim();
+
+        const eixo = document.getElementById("eixo-" + docId).value.trim();
+
+        const lado = document.getElementById("lado-" + docId).value;
+
+        const tipo = document.getElementById("tipo-" + docId).value;
+
+        const compartimento = document.getElementById("comp-" + docId).value;
+
+
+        if (!descricao || !eixo || !lado) {
+
+            alert("Preencha a descrição, eixo e lado.");
+
+            return;
+
+        }
+
+
+        try {
+
+            await updateDoc(doc(db, "naoConformidades", docId), {
+
+                descricao,
+
+                eixo,
+
+                lado,
+
+                tipo,
+
+                compartimento: compartimento ? Number(compartimento) : null
+
+            });
+
+            carregar(); // Recarrega para mostrar as atualizações
+
+        } catch(e) {
+
+            console.error("Erro ao editar:", e);
+
+            alert("Erro ao salvar alterações.");
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+
+</html> 

@@ -1,25 +1,24 @@
 {
-  "name": "Controle Financeiro Familiar",
-  "short_name": "Finanças",
-  "start_url": "./",
+  "name": "Controle de Manutenção CMC",
+  "short_name": "CMC",
+  "description": "Sistema de inspeção e manutenção de implementos.",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#eef6ff",
-  "theme_color": "#2563eb",
-  "description": "Controle financeiro familiar com gastos, entradas, cartão e metas.",
+  "background_color": "#f1f3f6",
+  "theme_color": "#1f2937",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "icone-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "./icon-512.png",
+      "src": "icone-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Manutenção</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #f1f3f6;
+}
+
+.topbar {
+  background: #1f2937;
+  color: white;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.contadores {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+
+.contador-card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.contador-top {
+  font-size: 12px;
+  color: #777;
+}
+
+.contador-numero {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.contador-card.laranja { border-left: 5px solid #ff9800; }
+.contador-card.amarelo { border-left: 5px solid #ffc107; }
+
+.lista {
+  padding: 10px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.card:active {
+  transform: scale(0.97);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.placa {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: white;
+}
+
+.status.laranja { background: #ff9800; }
+.status.amarelo { background: #ffc107; color: black; }
+
+.info {
+  margin-top: 5px;
+  color: #555;
+  font-size: 13px;
+}
+
+/* FILTROS */
+.filtros {
+  background: white;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.topbar {
+  background: #1f2937;
+  color: white;
+
+  padding: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  position: relative;
+}
+
+/* Logo centralizada REAL */
+.logo-topbar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  height: 32px;
+  object-fit: contain;
+}
+
+/* Grupo de botões da direita */
+.topbar-acoes {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Evita texto esmagando a logo */
+.titulo-topbar {
+  min-width: 90px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  🔧 Manutenção
+  <!-- Logo central -->
+  <img src="suzano-logo.png" class="logo-topbar">
+</div>
+
+<div class="filtros">
+  <input id="busca" placeholder="Buscar por placa">
+
+  <select id="filtroTipo">
+    <option value="">Todos os tipos</option>
+    <option value="carreta">Carreta</option>
+    <option value="prancha">Prancha</option>
+    <option value="comboio">Comboio</option>
+    <option value="cavalo">Cavalo</option>
+  </select>
+</div>
+
+<div class="contadores" id="contadores"></div>
+
+<div class="lista" id="lista"></div>
+
+<link rel="stylesheet" href="navbar.css">
+
+<link rel="manifest" href="/manifest.json">
+
+<meta name="theme-color" content="#1f2937">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="apple-touch-icon" href="/icone-192.png">
+
+<script type="module">
+import { db } from "./firebase.js";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { carregarNavbar } from "./navbar.js";
+
+carregarNavbar();
+
+if ("serviceWorker" in navigator) {
+
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("PWA ativo"))
+    .catch(err => console.log(err));
+
+}
+
+// 1. DECLARAÇÕES GLOBAIS (Sempre no topo)
+let dados = [];
+
+// 2. DEFINIÇÃO DA QUERY
+const q = query(
+  collection(db, "implementos"),
+  where("status", "in", ["aguardando_manutencao", "em_manutencao"])
+);
+
+// 3. FUNÇÕES AUXILIARES
+function getStatusInfo(status) {
+  switch(status) {
+    case "aguardando_manutencao": return { nome: "Aguardando", cor: "laranja" };
+    case "em_manutencao": return { nome: "Em manutenção", cor: "amarelo" };
+    default: return { nome: "-", cor: "" };
+  }
+}
+
+function prioridade(status) {
+  if (status === "aguardando_manutencao") return 1;
+  if (status === "em_manutencao") return 2;
+  return 3;
+}
+
+function formatarData(ts) {
+  if (!ts) return "-";
+  try {
+    const d = ts.toDate();
+    return d.toLocaleString("pt-BR");
+  } catch(e) { return "-"; }
+}
+
+function formatarTipoManutencao(tipo) {
+  switch(tipo) {
+    case "preventiva": return "Preventiva";
+    case "revisao": return "Revisão";
+    case "cnp": return "CNP";
+    case "gm": return "GM";
+    default: return tipo || "-";
+  }
+}
+
+// 4. LÓGICA DE RENDERIZAÇÃO E FILTRO
+function render(lista) {
+  // Ordenação
+  lista.sort((a, b) => {
+    const p1 = prioridade(a.status);
+    const p2 = prioridade(b.status);
+    if (p1 !== p2) return p1 - p2;
+    const d1 = a.dataInspecao?.seconds || 0;
+    const d2 = b.dataInspecao?.seconds || 0;
+    return d1 - d2;
+  });
+
+  const container = document.getElementById("lista");
+  container.innerHTML = "";
+
+  lista.forEach(data => {
+    const status = getStatusInfo(data.status);
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div class="card-top">
+        <div class="placa">${data.placa}</div>
+        <div class="status ${status.cor}">${status.nome}</div>
+      </div>
+      <div class="info">
+        Tipo: ${data.tipo}<br>
+        Manutenção: <strong>${formatarTipoManutencao(data.tipoManutencao)}</strong><br>
+        Inspeção: ${formatarData(data.dataInspecao)}
+      </div>
+    `;
+    div.onclick = () => { window.location = "manutencao_detalhe.html?id=" + data.id; };
+    container.appendChild(div);
+  });
+
+  atualizarContadores(lista);
+}
+
+function aplicarFiltros() {
+  const busca = document.getElementById("busca").value.toLowerCase();
+  const tipo = document.getElementById("filtroTipo").value;
+
+  let resultado = dados;
+
+  if (busca) {
+    resultado = resultado.filter(i => i.placa.toLowerCase().includes(busca));
+  }
+  if (tipo) {
+    resultado = resultado.filter(i => i.tipo === tipo);
+  }
+
+  render(resultado);
+}
+
+function atualizarContadores(lista) {
+  const cont = { aguardando_manutencao: 0, em_manutencao: 0 };
+  lista.forEach(i => { if(cont[i.status] !== undefined) cont[i.status]++; });
+
+  document.getElementById("contadores").innerHTML = `
+    <div class="contador-card laranja">
+      <div class="contador-top">Aguardando manutenção</div>
+      <div class="contador-numero">${cont.aguardando_manutencao}</div>
+    </div>
+    <div class="contador-card amarelo">
+      <div class="contador-top">Em manutenção</div>
+      <div class="contador-numero">${cont.em_manutencao}</div>
+    </div>
+  `;
+}
+
+// 5. EVENTOS E ATIVAÇÃO DO TEMPO REAL
+document.getElementById("busca").addEventListener("input", aplicarFiltros);
+document.getElementById("filtroTipo").addEventListener("change", aplicarFiltros);
+
+onSnapshot(q, (snapshot) => {
+  dados = [];
+  snapshot.forEach(doc => {
+    dados.push({ id: doc.id, ...doc.data() });
+  });
+  aplicarFiltros(); 
+});
+</script>
+</body>
+</html>

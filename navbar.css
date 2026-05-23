@@ -1,0 +1,121 @@
+.root-placeholder {}
+
+:root {
+  --bg: #f1f3f6;
+  --text: #111827;
+  --text-muted: #555555;
+  --primary: #2196f3;
+  --surface: #ffffff;
+  --card-bg: #ffffff;
+  --filter-bg: #ffffff;
+  --input-bg: #f9fafb;
+  --input-border: #d1d5db;
+  --button-bg: #2196f3;
+  --button-text: #ffffff;
+  --button-border: #2196f3;
+  --nav-bg: #ffffff;
+  --nav-text: #555;
+  --nav-active: #2196f3;
+  --nav-border: #e5e7eb;
+  --topbar-bg: #1f2937;
+  --topbar-text: #ffffff;
+  --banner-bg: #2196f3;
+  --banner-text: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg: #071226;
+  --text: #e6eef6;
+  --text-muted: #aab8c2;
+  --primary: #3aa0ff;
+  --surface: #0b1220;
+  --card-bg: #0f1522;
+  --filter-bg: #0e192f;
+  --input-bg: #111b2e;
+  --input-border: #18304f;
+  --button-bg: #3aa0ff;
+  --button-text: #ffffff;
+  --button-border: #3aa0ff;
+  --nav-bg: #081225;
+  --nav-text: #aab8c2;
+  --nav-active: #3aa0ff;
+  --nav-border: #122232;
+  --topbar-bg: #081225;
+  --topbar-text: #e6eef6;
+  --banner-bg: #1f6fd8;
+  --banner-text: #ffffff;
+}
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: var(--nav-bg);
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid var(--nav-border);
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+.nav-item {
+  text-align: center;
+  font-size: 12px;
+  color: var(--nav-text);
+}
+
+.nav-item div {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.nav-item small {
+  display: block;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.nav-item.ativo {
+  color: var(--nav-active);
+  font-weight: bold;
+}
+
+body {
+  padding-bottom: 90px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar,
+.card,
+.contador-card,
+.filtros,
+.container,
+.banner-instalacao,
+.btn-home,
+.fab,
+.card-preview,
+.card-highlight {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+
+.filtros {
+  background: var(--filter-bg) !important;
+}
+
+input,
+select,
+textarea {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--input-border) !important;
+}
+
+/* Pequeno ajuste para o botão de tema */
+.theme-toggle {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
