@@ -365,6 +365,17 @@ body {
   box-shadow: 0 10px 22px rgba(0,0,0,0.12);
 }
 
+.topbar > span,
+.titulo-topbar {
+  position: relative;
+  z-index: 2;
+  min-width: 0 !important;
+  max-width: calc(100% - 132px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .navbar {
   left: 12px;
   right: 12px;
@@ -811,6 +822,44 @@ body.dark-mode .tecnico-card > div[style*="display:flex"] {
 }
 
 @media (max-width: 430px) {
+  .topbar {
+    gap: 8px !important;
+    padding: 12px 10px !important;
+  }
+
+  .topbar::before {
+    width: 5px;
+    height: 24px;
+  }
+
+  .topbar > span,
+  .titulo-topbar {
+    flex: 1 1 auto;
+    max-width: none;
+    font-size: calc(var(--fonte-app, 16px) * 0.95) !important;
+  }
+
+  .logo-topbar {
+    position: static !important;
+    transform: none !important;
+    flex: 0 0 auto;
+    height: 26px !important;
+    max-width: 82px;
+    padding: 3px 7px;
+    order: 2;
+  }
+
+  .topbar-acoes,
+  .menu-btn {
+    order: 3;
+    flex: 0 0 auto;
+  }
+
+  .menu-btn {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
   .tecnico-meta-grid {
     grid-template-columns: 1fr;
   }
