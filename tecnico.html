@@ -81,9 +81,28 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   }
 
-  .card:active {
-    transform: scale(0.97);
-  }
+/* CARD - Efeito de clique apenas se o alvo não for um botão */
+.card:active {
+  transform: scale(0.97);
+}
+
+/* Evita que o card diminua se o clique começou dentro de uma div de botões ou select */
+.card:has(button:active),
+.card:has(select:active) {
+  transform: none;
+}
+
+/* Resposta visual individual para o botão Excluir */
+.excluir:active {
+  transform: scale(0.95);
+  background: #d32f2f; /* Vermelho um pouco mais escuro ao clicar */
+}
+
+/* Resposta visual individual para os botões de Relatório */
+.card style button:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
 
   .card-top {
     display: flex;
@@ -544,7 +563,7 @@ const snap = await getDocs(q);
       const status = getStatusInfo(item.status);
 
       const div = document.createElement("div");
-      div.className = "card";
+      div.className = `card tecnico-card status-borda-${status.cor}`;
 
       div.innerHTML = `
     <div class="card-top">
@@ -626,33 +645,33 @@ ${
   }
       </div>
 
-    <div style="
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-top:10px;
-    ">
+<div style="
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
+">
 
-      <button class="excluir"
-        onclick="event.stopPropagation(); excluir('${item.id}')">
-        Excluir
-      </button>
+  <button class="excluir"
+    onclick="event.stopPropagation(); excluir('${item.id}')">
+    Excluir
+  </button>
 
-      <!-- Linha com os dois relatórios lado a lado -->
-      <div style="display:flex; gap: 10px;">
-        
-        <button onclick="event.stopPropagation(); gerarRelatorio('${item.id}')" 
-          style="background:#444; color:white; border:none; padding:8px 12px; border-radius:6px; flex: 1; font-size: 12px;">
-          Rel. Avarias
-        </button>
+  <!-- Linha com os dois relatórios lado a lado -->
+  <div style="display:flex; gap: 10px;" onclick="event.stopPropagation()">
+    
+    <button onclick="event.stopPropagation(); gerarRelatorio('${item.id}')" 
+      style="background:#444; color:white; border:none; padding:8px 12px; border-radius:6px; flex: 1; font-size: 12px;">
+      Rel. Avarias
+    </button>
 
-        <button onclick="event.stopPropagation(); gerarRelatorioManutencao('${item.id}')" 
-          style="background:#111; color:white; border:none; padding:8px 12px; border-radius:6px; flex: 1; font-size: 12px;">
-          Rel. Manutenção
-        </button>
+    <button onclick="event.stopPropagation(); gerarRelatorioManutencao('${item.id}')" 
+      style="background:#111; color:white; border:none; padding:8px 12px; border-radius:6px; flex: 1; font-size: 12px;">
+      Rel. Manutenção
+    </button>
 
-      </div>
-    </div>
+  </div>
+</div>
   `;
 
       div.onclick = () => {

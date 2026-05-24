@@ -631,6 +631,7 @@ Object.entries(itensAgrupados).forEach(([grupoNome, compartimentos]) => {
 
     // HEADER DO GRUPO
     const grupoDiv = document.createElement("div");
+    grupoDiv.className = "grupo-render-header";
 
     grupoDiv.style.background = "#1f2937";
     grupoDiv.style.color = "white";
@@ -661,6 +662,7 @@ Object.entries(itensAgrupados).forEach(([grupoNome, compartimentos]) => {
         if (compNome !== "SEM COMPARTIMENTO") {
 
             const compDiv = document.createElement("div");
+            compDiv.className = "compartimento-render-header";
 
             compDiv.style.background = "#e5e7eb";
             compDiv.style.color = "#1f2937";

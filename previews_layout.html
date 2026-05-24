@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Previews de Layout</title>
+<style>
+:root {
+  --suzano-green: #00a859;
+  --suzano-blue: #0072ce;
+  --suzano-lime: #b7d433;
+  --deep: #071416;
+  --phone: #0c111c;
+  --panel: #141b28;
+  --panel-2: #101721;
+  --text: #f7fbff;
+  --muted: #8fa3ad;
+  --line: rgba(255,255,255,0.09);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 14% 8%, rgba(183, 212, 51, 0.32), transparent 26%),
+    radial-gradient(circle at 82% 14%, rgba(0, 114, 206, 0.34), transparent 28%),
+    linear-gradient(135deg, #003c36 0%, #005c52 38%, #006fb7 100%);
+}
+
+.page {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.page-title h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0;
+}
+
+.page-title p {
+  max-width: 680px;
+  margin: 7px 0 0;
+  color: rgba(255,255,255,0.78);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.logo-shell {
+  width: 150px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.88);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.18);
+}
+
+.logo-shell img {
+  max-width: 118px;
+  max-height: 34px;
+  object-fit: contain;
+}
+
+.phones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  align-items: start;
+}
+
+.concept {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.phone {
+  width: 315px;
+  height: 680px;
+  border-radius: 34px;
+  padding: 14px;
+  background: #05080f;
+  box-shadow:
+    0 28px 80px rgba(0,0,0,0.42),
+    inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.screen {
+  height: 100%;
+  overflow: hidden;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 88% 3%, rgba(0, 114, 206, 0.28), transparent 30%),
+    radial-gradient(circle at 8% 28%, rgba(0, 168, 89, 0.25), transparent 32%),
+    var(--phone);
+  position: relative;
+  padding: 18px;
+}
+
+.screen::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 92px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.2);
+}
+
+.statusbar,
+.appbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statusbar {
+  color: rgba(255,255,255,0.7);
+  font-size: 11px;
+  margin-bottom: 16px;
+}
+
+.appbar {
+  margin-bottom: 18px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
+  font-size: 15px;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.title {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.amount {
+  margin: 5px 0 0;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.card-hero {
+  min-height: 142px;
+  border-radius: 18px;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(0,168,89,0.95), rgba(0,114,206,0.92));
+  box-shadow: 0 18px 36px rgba(0, 114, 206, 0.28);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.card-hero::before {
+  content: "";
+  position: absolute;
+  right: -46px;
+  top: -52px;
+  width: 155px;
+  height: 155px;
+  border-radius: 50%;
+  background: rgba(183,212,51,0.45);
+}
+
+.card-number {
+  position: relative;
+  margin-top: 38px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.card-label {
+  position: relative;
+  margin-top: 15px;
+  color: rgba(255,255,255,0.78);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.brand-dots {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  display: flex;
+}
+
+.brand-dots span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--suzano-lime);
+}
+
+.brand-dots span + span {
+  margin-left: -8px;
+  background: #ffffff;
+  opacity: 0.75;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  width: 150px;
+  margin: 0 auto 18px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+}
+
+.segmented span {
+  min-height: 30px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.72);
+}
+
+.segmented .active {
+  background: var(--text);
+  color: var(--deep);
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+}
+
+.list-item {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid var(--line);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--suzano-green), var(--suzano-blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.item-name {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.item-sub {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.delta {
+  color: #9ff0bd;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.form {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.field {
+  height: 39px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.68);
+  padding: 11px 12px;
+  font-size: 12px;
+}
+
+.primary {
+  width: 132px;
+  height: 42px;
+  margin: 14px auto 0;
+  border: 0;
+  border-radius: 999px;
+  color: #052d29;
+  background: linear-gradient(135deg, var(--suzano-lime), #ffffff);
+  font-weight: 900;
+  box-shadow: 0 15px 30px rgba(183,212,51,0.24);
+}
+
+.balance-bar {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 24px;
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.045);
+}
+
+.balance-bar small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.balance-bar strong {
+  font-size: 18px;
+}
+
+.outline {
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.32);
+  background: transparent;
+  color: white;
+  font-weight: 900;
+}
+
+.chart {
+  height: 185px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 26px 0 18px;
+}
+
+.bar {
+  flex: 1;
+  border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, var(--suzano-lime), var(--suzano-green), var(--suzano-blue));
+  box-shadow: 0 12px 24px rgba(0,168,89,0.2);
+}
+
+.bar:nth-child(1) { height: 48%; }
+.bar:nth-child(2) { height: 60%; }
+.bar:nth-child(3) { height: 72%; }
+.bar:nth-child(4) { height: 84%; }
+.bar:nth-child(5) { height: 94%; }
+
+.breakdown {
+  margin-top: 12px;
+}
+
+.breakdown h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+.rings {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.ring {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 8px solid rgba(255,255,255,0.07);
+  border-top-color: var(--suzano-green);
+  color: #9ff0bd;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.ring:nth-child(2) { border-top-color: var(--suzano-blue); color: #8cc9ff; }
+.ring:nth-child(3) { border-top-color: var(--suzano-lime); color: #e7f58c; }
+.ring:nth-child(4) { border-top-color: #ffffff; color: white; }
+
+.bottom-nav {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 24px;
+  height: 52px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  justify-items: center;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.055);
+  color: rgba(255,255,255,0.75);
+}
+
+.bottom-nav strong {
+  color: var(--suzano-lime);
+}
+
+.caption {
+  width: min(315px, 100%);
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 16px;
+  background: rgba(0,0,0,0.18);
+  backdrop-filter: blur(8px);
+}
+
+.caption h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.caption p {
+  margin: 0;
+  color: rgba(255,255,255,0.78);
+  font-size: 13px;
+  line-height: 1.42;
+}
+
+@media (max-width: 1080px) {
+  .phones {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 420px) {
+  .page {
+    padding: 16px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 315px;
+  }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="page-title">
+    <div>
+      <h1>Previews modernos para o app CMC</h1>
+      <p>Mesma pegada premium da referência: telas escuras, cartões vivos, bordas luminosas e acentos em verde, azul e lime inspirados na Suzano.</p>
+    </div>
+    <div class="logo-shell">
+      <img src="suzano-logo.png" alt="Suzano">
+    </div>
+  </header>
+
+  <section class="phones">
+    <article class="concept">
+      <div class="phone">
+        <div class="screen">
+          <div class="statusbar"><span>CMC</span><span>09:24</span></div>
+          <div class="appbar">
+            <span class="icon-btn">☰</span>
+            <span class="icon-btn">⚙</span>
+          </div>
+          <div class="eyebrow">Fila operacional</div>
+          <h2 class="title">Manutenções</h2>
+          <div class="amount">18 abertas</div>
+
+          <div class="card-hero">
+            <div class="eyebrow">Prioridade alta</div>
+            <div class="card-number">RXY 4B21 • CARRETA</div>
+            <div class="card-label">Preventiva • 4 não conformidades</div>
+            <div class="brand-dots"><span></span><span></span></div>
+          </div>
+
+          <div class="segmented">
+            <span class="active">Fila</span>
+            <span>Técnico</span>
+          </div>
+
+          <div class="list">
+            <div class="list-item"><div class="avatar">M</div><div><div class="item-name">Aguardando manutenção</div><div class="item-sub">Carreta • Oficina 2</div></div><div class="delta">+8</div></div>
+            <div class="list-item"><div class="avatar">I</div><div><div class="item-name">Em inspeção</div><div class="item-sub">Cavalo • João</div></div><div class="delta">+5</div></div>
+            <div class="list-item"><div class="avatar">R</div><div><div class="item-name">Relatórios prontos</div><div class="item-sub">PDF e histórico</div></div><div class="delta">+3</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="caption">
+        <h2>Opção 1 - Dashboard Mobile</h2>
+        <p>Mais próxima do seu app atual, só que com visual escuro, card principal colorido e lista mais moderna.</p>
+      </div>
+    </article>
+
+    <article class="concept">
+      <div class="phone">
+        <div class="screen">
+          <div class="statusbar"><span>Nova inspeção</span><span>09:24</span></div>
+          <div class="appbar">
+            <span class="icon-btn">←</span>
+            <span class="icon-btn">⚙</span>
+          </div>
+          <div class="eyebrow">Criar registro</div>
+          <h2 class="title">Nova Inspeção</h2>
+          <p class="item-sub">Fluxo rápido para abrir uma inspeção com menos campos soltos na tela.</p>
+
+          <div class="card-hero">
+            <div class="eyebrow">Implemento selecionado</div>
+            <div class="card-number">HJL 8C10 • CAVALO</div>
+            <div class="card-label">Corretiva • Inspetor Carlos Souza</div>
+            <div class="brand-dots"><span></span><span></span></div>
+          </div>
+
+          <div class="form">
+            <div class="field">Placa: HJL-8C10</div>
+            <div class="field">Tipo: Cavalo Mecânico</div>
+            <div class="field">Manutenção: Corretiva</div>
+            <div class="field">Responsável: Carlos Souza</div>
+          </div>
+          <button class="primary">Continuar</button>
+
+          <div class="balance-bar">
+            <div><small>Checklist</small><strong>12 itens</strong></div>
+            <button class="outline">Adicionar</button>
+          </div>
+        </div>
+      </div>
+      <div class="caption">
+        <h2>Opção 2 - Fluxo Premium</h2>
+        <p>Boa para telas de criação e edição. Dá sensação de aplicativo moderno e guia melhor o usuário.</p>
+      </div>
+    </article>
+
+    <article class="concept">
+      <div class="phone">
+        <div class="screen">
+          <div class="statusbar"><span>Indicadores</span><span>09:24</span></div>
+          <div class="appbar">
+            <span class="icon-btn">←</span>
+            <span class="icon-btn">◎</span>
+          </div>
+          <div class="eyebrow">Visão da operação</div>
+          <h2 class="title">Painel Técnico</h2>
+
+          <div class="chart">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+
+          <div class="breakdown">
+            <h3>Distribuição por status</h3>
+            <div class="rings">
+              <div class="ring">42%</div>
+              <div class="ring">28%</div>
+              <div class="ring">20%</div>
+              <div class="ring">10%</div>
+            </div>
+          </div>
+
+          <div class="form">
+            <div class="field">Filtro: Todos os tipos</div>
+            <div class="field">Busca: Placa ou técnico</div>
+          </div>
+
+          <nav class="bottom-nav">
+            <span>⌂</span>
+            <strong>▣</strong>
+            <span>⚙</span>
+            <span>☰</span>
+          </nav>
+        </div>
+      </div>
+      <div class="caption">
+        <h2>Opção 3 - Analytics Escuro</h2>
+        <p>Melhor para tela inicial, técnico ou gestão. Visual mais marcante, com gráficos e indicadores.</p>
+      </div>
+    </article>
+  </section>
+</main>
+</body>
+</html>

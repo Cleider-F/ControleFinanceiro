@@ -325,7 +325,7 @@ onSnapshot(q, (snapshot) => {
     const status = getStatusInfo(data.status);
 
     const div = document.createElement("div");
-    div.className = "card";
+    div.className = `card status-borda-${status.cor}`;
 
     div.innerHTML = `
       <div class="card-top">
