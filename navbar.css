@@ -342,6 +342,10 @@ body {
   position: sticky !important;
   top: 0;
   z-index: 900;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center !important;
+  gap: 10px;
   background:
     linear-gradient(135deg, var(--sz-deep), #00584f 48%, var(--sz-blue)) !important;
   color: #fff !important;
@@ -351,14 +355,22 @@ body {
 
 .topbar::before {
   content: "";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 7px;
   height: 28px;
   border-radius: 999px;
   background: var(--sz-lime);
-  flex: 0 0 auto;
 }
 
 .logo-topbar {
+  position: static !important;
+  left: auto !important;
+  transform: none !important;
+  grid-column: 2;
+  justify-self: center;
   background: rgba(255,255,255,0.94);
   border-radius: 999px;
   padding: 4px 10px;
@@ -367,13 +379,20 @@ body {
 
 .topbar > span,
 .titulo-topbar {
-  position: relative;
-  z-index: 2;
+  grid-column: 1;
+  justify-self: start;
+  padding-left: 18px;
   min-width: 0 !important;
-  max-width: calc(100% - 132px);
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.topbar-acoes,
+.menu-btn {
+  grid-column: 3;
+  justify-self: end;
 }
 
 .navbar {
