@@ -330,15 +330,12 @@ button {
 }
 
 body {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(183, 212, 51, 0.16), transparent 30%),
-    radial-gradient(circle at 92% 14%, rgba(0, 114, 206, 0.12), transparent 34%),
-    var(--sz-bg) !important;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef8f3 48%, #e4f1ee 100%) fixed !important;
   color: var(--sz-ink) !important;
 }
 
 .topbar {
-  min-height: 58px;
+  min-height: 48px;
   position: sticky !important;
   top: 0;
   z-index: 900;
@@ -346,6 +343,9 @@ body {
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center !important;
   gap: 10px;
+  padding: 8px 14px 8px 28px !important;
+  font-size: calc(var(--fonte-app, 16px) * 0.95) !important;
+  font-weight: 800 !important;
   background:
     linear-gradient(135deg, var(--sz-deep), #00584f 48%, var(--sz-blue)) !important;
   color: #fff !important;
@@ -360,7 +360,7 @@ body {
   top: 50%;
   transform: translateY(-50%);
   width: 7px;
-  height: 28px;
+  height: 22px;
   border-radius: 999px;
   background: var(--sz-lime);
 }
@@ -371,22 +371,27 @@ body {
   transform: none !important;
   grid-column: 2;
   justify-self: center;
-  background: rgba(255,255,255,0.94);
-  border-radius: 999px;
-  padding: 4px 10px;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 0 1px rgba(255,255,255,0.85))
+          drop-shadow(0 0 1px rgba(255,255,255,0.85))
+          drop-shadow(0 0 1px rgba(255,255,255,0.85));
 }
 
 .topbar > span,
 .titulo-topbar {
   grid-column: 1;
   justify-self: start;
-  padding-left: 18px;
+  padding-left: 0;
   min-width: 0 !important;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: calc(var(--fonte-app, 16px) * 1) !important;
+  font-weight: 800 !important;
 }
 
 .topbar-acoes,
@@ -608,10 +613,7 @@ button:not(.btn-controle-fonte):not(.btn-flutuante-config):not(.btn-icon) {
 }
 
 body.dark-mode {
-  background:
-    radial-gradient(circle at 14% 0%, rgba(0,168,89,0.18), transparent 30%),
-    radial-gradient(circle at 88% 10%, rgba(0,114,206,0.2), transparent 34%),
-    #071416 !important;
+  background: linear-gradient(180deg, #061816 0%, #071f23 52%, #082a32 100%) fixed !important;
   color: #f7fbff !important;
 }
 
@@ -843,10 +845,13 @@ body.dark-mode .tecnico-card > div[style*="display:flex"] {
 @media (max-width: 430px) {
   .topbar {
     gap: 8px !important;
-    padding: 12px 10px !important;
+    padding: 11px 10px 11px 34px !important;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    font-size: calc(var(--fonte-app, 16px) * 0.95) !important;
   }
 
   .topbar::before {
+    left: 14px;
     width: 5px;
     height: 24px;
   }
