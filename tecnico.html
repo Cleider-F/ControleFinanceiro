@@ -3,24 +3,16 @@
   <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Dashboard Técnico</title>
+<link rel="stylesheet" href="navbar.css">
+<title>Dashboard Técnico</title>
 
   <style>
   body {
     margin: 0;
-    font-family: Arial;
+    font-family: "Montserrat", Arial, sans-serif;
     background: #f1f3f6;
   }
 
-  /* TOPO */
-  .topbar {
-    background: #1f2937;
-    color: white;
-    padding: 15px;
-    font-size: 18px;
-    font-weight: bold;
-  }
 
   /* FILTROS */
   .filtros {
@@ -151,13 +143,6 @@
     float: right;
   }
 
-  /* Estilo da Topbar Ajustada */
-  .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-  }
-
   .menu-btn{
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.12);
@@ -199,40 +184,6 @@
       display: block;
       margin-bottom: 5px;
       color: #666;
-  }
-  .topbar {
-    background: #1f2937;
-    color: white;
-
-    padding: 15px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    position: relative;
-  }
-
-  /* Logo centralizada REAL */
-  .logo-topbar {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-
-    height: 32px;
-    object-fit: contain;
-  }
-
-  /* Grupo de botões da direita */
-  .topbar-acoes {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-
-  /* Evita texto esmagando a logo */
-  .titulo-topbar {
-    min-width: 90px;
   }
 
   </style>
@@ -356,9 +307,6 @@
   <div class="contadores" id="contadores"></div>
 
   <div class="lista" id="lista"></div>
-
-  <link rel="stylesheet" href="navbar.css">
-
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 

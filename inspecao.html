@@ -3,162 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="navbar.css">
 
 <title>Dashboard Inspeção</title>
 
 <style>
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: "Montserrat", Arial, sans-serif;
   background: #f1f3f6;
 }
 
-.topbar {
-  background: #1f2937;
-  color: white;
-  padding: 15px;
-  font-size: 18px;
-  font-weight: bold;
-}
-
 .contadores {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  background: white;
-}
-
-.contador {
-  text-align: center;
-}
-
-.azul { color: #2196f3; }
-.laranja { color: #ff9800; }
-.amarelo { color: #ffc107; }
-.verde { color: #4caf50; }
-
-.lista {
-  padding: 10px;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.card:active {
-  transform: scale(0.97);
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-}
-
-.placa {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.status {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  color: white;
-}
-
-.status.azul { background: #2196f3; }
-.status.laranja { background: #ff9800; }
-.status.amarelo { background: #ffc107; color: black; }
-.status.verde { background: #4caf50; }
-
-.info {
-  margin-top: 5px;
-  color: #555;
-}
-
-.fab {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background: #2196f3;
-  color: white;
-  border: none;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  font-size: 30px;
-}
-
-/* Estilos para Celulares (telas até 768px) */
-@media (max-width: 768px) {
-  .contadores {
-    display: grid;
-    grid-template-columns: 1-fr 1-fr; /* Divide em 2 colunas em vez de uma linha só */
-    gap: 10px;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background: white;
   }
 
-  .topbar {
+  .contador {
     text-align: center;
-    font-size: 16px;
+  }
+
+  .azul { color: #2196f3; }
+  .laranja { color: #ff9800; }
+  .amarelo { color: #ffc107; }
+  .verde { color: #4caf50; }
+
+  .lista {
+    padding: 10px;
   }
 
   .card {
-    margin: 8px; /* Reduz margens para ganhar espaço */
-    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   }
 
-  /* Ajuste do botão para não atrapalhar o toque no rodapé */
-  .fab {
-    width: 55px;
-    height: 55px;
-    bottom: 85px; 
-    right: 15px;
+  .card:active {
+    transform: scale(0.97);
   }
-  
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .placa {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+  }
+
+  .status.azul { background: #2196f3; }
+  .status.laranja { background: #ff9800; }
+  .status.amarelo { background: #ffc107; color: black; }
+  .status.verde { background: #4caf50; }
+
+  .info {
+    margin-top: 5px;
+    color: #555;
+  }
+
+  .add-inspecao-btn {
+    position: sticky;
+    top: 68px;
+    z-index: 950;
+    width: calc(100% - 32px);
+    max-width: 680px;
+    margin: 8px auto;
+    display: block;
+    background: #1f2937;
+    color: white;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 18px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    cursor: pointer;
+  }
+
+  .add-inspecao-btn:hover {
+    background: #111;
+  }
+
+  /* Estilos para Celulares (telas até 768px) */
+  @media (max-width: 768px) {
+    .contadores {
+      display: grid;
+      grid-template-columns: 1-fr 1-fr; /* Divide em 2 colunas em vez de uma linha só */
+      gap: 10px;
+    }
+
+    .card {
+      margin: 8px; /* Reduz margens para ganhar espaço */
+      padding: 12px;
+    }
+
+    .add-inspecao-btn {
+      width: calc(100% - 24px);
+      margin: 8px auto;
+    }
+  }
+
   /* Adiciona um espaçamento no fim da lista para o conteúdo não ficar 
      escondido atrás da navbar ao rolar até o fim */
   body {
     padding-bottom: 70px; 
-  }
-}
-
-.topbar {
-  background: #1f2937;
-  color: white;
-
-  padding: 15px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  position: relative;
-}
-
-/* Logo centralizada REAL */
-.logo-topbar {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-
-  height: 32px;
-  object-fit: contain;
-}
-
-/* Grupo de botões da direita */
-.topbar-acoes {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* Evita texto esmagando a logo */
-.titulo-topbar {
-  min-width: 90px;
 }
 </style>
 
@@ -167,11 +128,12 @@ body {
 <body>
 
 <div class="topbar">
-  🔍 Inspeção
+  <span class="titulo-topbar">🔍 Inspeção</span>
   <!-- Logo central -->
   <img src="suzano-logo.png" class="logo-topbar">
 </div>
 
+<button class="add-inspecao-btn" onclick="nova()">+ Adicionar inspeção</button>
 
 <div class="lista" id="lista"></div>
 
@@ -239,9 +201,6 @@ body {
   </div>
 </div>
 
-<button class="fab" onclick="nova()">+</button>
-
-<link rel="stylesheet" href="navbar.css">
 <script src="lista_solicitantes.js"></script>
 
 <link rel="manifest" href="/manifest.json">

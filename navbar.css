@@ -1,3 +1,19 @@
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat/Montserrat-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --fonte-app: 16px;
+}
+
+body {
+  font-family: "Montserrat", Arial, sans-serif;
+}
+
 .navbar {
   position: fixed;
   bottom: 0;
@@ -330,12 +346,13 @@ button {
 }
 
 body {
+  font-family: "Montserrat", Arial, sans-serif;
   background: linear-gradient(180deg, #f7fbf8 0%, #eef8f3 48%, #e4f1ee 100%) fixed !important;
   color: var(--sz-ink) !important;
 }
 
 .topbar {
-  min-height: 48px;
+  min-height: 58px;
   position: sticky !important;
   top: 0;
   z-index: 900;
@@ -343,8 +360,8 @@ body {
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center !important;
   gap: 10px;
-  padding: 8px 14px 8px 28px !important;
-  font-size: calc(var(--fonte-app, 16px) * 0.95) !important;
+  padding: 12px 14px 12px 42px !important;
+  font-size: calc(var(--fonte-app, 16px) * 1) !important;
   font-weight: 800 !important;
   background:
     linear-gradient(135deg, var(--sz-deep), #00584f 48%, var(--sz-blue)) !important;
@@ -360,24 +377,23 @@ body {
   top: 50%;
   transform: translateY(-50%);
   width: 7px;
-  height: 22px;
+  height: 28px;
   border-radius: 999px;
   background: var(--sz-lime);
 }
 
-.logo-topbar {
+..logo-topbar {
   position: static !important;
   left: auto !important;
   transform: none !important;
   grid-column: 2;
   justify-self: center;
+  align-self: center !important;
   background: transparent !important;
   border-radius: 0 !important;
   padding: 0 !important;
   box-shadow: none !important;
-  filter: drop-shadow(0 0 1px rgba(255,255,255,0.85))
-          drop-shadow(0 0 1px rgba(255,255,255,0.85))
-          drop-shadow(0 0 1px rgba(255,255,255,0.85));
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff);
 }
 
 .topbar > span,
@@ -869,8 +885,12 @@ body.dark-mode .tecnico-card > div[style*="display:flex"] {
     flex: 0 0 auto;
     height: 26px !important;
     max-width: 82px;
-    padding: 3px 7px;
+    padding: 0 !important;
     order: 2;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff);
   }
 
   .topbar-acoes,
