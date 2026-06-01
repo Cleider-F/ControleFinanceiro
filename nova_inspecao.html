@@ -92,6 +92,12 @@
             gap: 12px;
         }
 
+        .grid-acao-item {
+            display: grid;
+            grid-template-columns: minmax(130px, 0.85fr) minmax(0, 1.5fr);
+            gap: 12px;
+        }
+
         /* Botões padronizados */
         button { 
             width: 100%; 
@@ -184,6 +190,12 @@
     background: #f44336;
     border-color: #f44336;
 }
+
+@media (max-width: 520px) {
+    .grid-acao-item {
+        grid-template-columns: 1fr;
+    }
+}
     </style>
 </head>
 
@@ -247,9 +259,26 @@
         <!-- CARD 2: ADICIONAR NÃO CONFORMIDADE MANUAL -->
         <div class="card">
             <h3>Novo Item</h3>
-            <div class="form-group">
-                <label>Descrição do Item</label>
-                <input id="descricao" placeholder="Ex: Lâmpada queimada">
+            <div class="grid-acao-item">
+                <div class="form-group">
+                    <label>Selecionar</label>
+                    <select id="acaoManutencaoItem">
+                        <option value="substituir">Substituir</option>
+                        <option value="corrigir">Corrigir</option>
+                        <option value="soldar">Soldar</option>
+                        <option value="fixar">Fixar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Item</label>
+                    <input
+                        id="itemManutencao"
+                        list="catalogoItensManutencao"
+                        placeholder="Ex: Lâmpada queimada"
+                    >
+                    <datalist id="catalogoItensManutencao"></datalist>
+                </div>
             </div>
 
 <!-- EIXO -->
@@ -290,7 +319,7 @@
 
 <!-- TIPO -->
 <div class="form-group">
-    <label>Tipo</label>
+    <label>Classificação</label>
 
     <div class="grupo-botoes" id="grupoTipo">
 
@@ -372,7 +401,7 @@
     protegerPagina(["inspetor","tecnico"]);
 
     import { db, storage, auth } from "./firebase.js";
-    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { collection, addDoc, setDoc, doc, getDocs, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
     
     import { carregarNavbar } from "./navbar.js";
@@ -384,6 +413,9 @@
     const horimetroField = document.getElementById("horimetroField");
     const compartimentosField = document.getElementById("compartimentosField");
     const compartimentoItem = document.getElementById("compartimentoItem");
+    const acaoManutencaoItem = document.getElementById("acaoManutencaoItem");
+    const itemManutencaoInput = document.getElementById("itemManutencao");
+    const catalogoItensManutencao = document.getElementById("catalogoItensManutencao");
     const foto = document.getElementById("foto");
     const preview = document.getElementById("preview");
 
@@ -393,7 +425,17 @@
     let planoComboioPrev = [];
     let planoCarregado = false;
     let naoConformidades = [];
+    let sugestoesItensManutencao = [];
     let fotoFile = null;
+
+    const acoesManutencao = {
+        substituir: "Substituir",
+        corrigir: "Corrigir",
+        soldar: "Soldar",
+        fixar: "Fixar"
+    };
+
+    carregarCatalogoItensManutencao();
 
     // --- CARREGAMENTO DOS PLANOS ---
     Promise.all([
@@ -594,12 +636,17 @@ document.querySelectorAll(".btn-opcao").forEach(btn => {
 });
 
     window.adicionarItem = async function() {
-        const desc = document.getElementById("descricao").value.trim();
+        const acaoManutencao = acaoManutencaoItem.value;
+        const itemManutencao = itemManutencaoInput.value.trim();
+        const acaoLabel = formatarAcaoManutencao(acaoManutencao);
+        const desc = `${acaoLabel}: ${itemManutencao}`;
         const eixo = eixoSelecionado;
         const lado = ladoSelecionado;
         const tipo = tipoSelecionado;
         const comp = compartimentoSelecionado;
-        if (!desc || !eixo || !lado) return alert("Preencha Descrição, Eixo e Lado");
+        if (!acaoManutencao || !itemManutencao || !eixo || !lado) {
+            return alert("Preencha Selecionar, Item, Eixo e Lado");
+        }
 
         let fotos = [];
 // Localize este trecho dentro de window.adicionarItem e substitua:
@@ -615,11 +662,20 @@ if (fotoFile) {
     fotos.push(url);
 }
         naoConformidades.push({
-            grupo: "MANUAL", descricao: desc, eixo: eixo, lado: lado, tipo: tipo,
+            grupo: "MANUAL",
+            descricao: desc,
+            acaoManutencao,
+            acaoManutencaoLabel: acaoLabel,
+            itemManutencao,
+            itemManutencaoNormalizado: normalizarTexto(itemManutencao),
+            eixo: eixo,
+            lado: lado,
+            tipo: tipo,
             compartimento: comp ? Number(comp) : null,
             fotos: fotos, resolvido: false, origem: "manual"
         });
 
+        adicionarSugestaoLocal(itemManutencao);
         limparCamposItem();
         renderLista();
     };
@@ -705,6 +761,10 @@ function renderLista() {
                     : "#0d47a1";
 
             const div = document.createElement("div");
+            const itemTitulo = item.itemManutencao || item.descricao;
+            const acaoTexto = item.acaoManutencao
+                ? formatarAcaoManutencao(item.acaoManutencao)
+                : "";
 
             div.className = "item-lista";
 
@@ -713,9 +773,26 @@ function renderLista() {
             div.innerHTML = `
                 <div class="item-info">
 
-                    <strong>${item.descricao}</strong>
+                    <strong>${escapeHtml(itemTitulo)}</strong>
 
                     <small>
+
+                        ${
+                            acaoTexto
+                            ? `
+                        <span style="
+                            background:#e8f5e9;
+                            color:#1b5e20;
+                            padding: 2px 6px;
+                            border-radius: 4px;
+                            font-weight: bold;
+                            margin-right: 4px;
+                        ">
+                            ${acaoTexto.toUpperCase()}
+                        </span>
+                            `
+                            : ""
+                        }
 
                         <span style="
                             background:${corBadge};
@@ -799,9 +876,26 @@ function renderLista() {
         const usuario = getUsuarioLogado();
         const dataInfo = formatarDataHora();
 
+        const hoje = new Date();
+
+const dataId =
+  hoje.getFullYear() + "-" +
+  String(hoje.getMonth() + 1).padStart(2, "0") + "-" +
+  String(hoje.getDate()).padStart(2, "0");
+
+const placaLimpa = placaVal
+  .trim()
+  .replace(/\s/g, "")
+  .replace(/[^\w]/g, "");
+
+const implementoId =
+  `${placaLimpa}_${dataId}`;
+
         try {
-            const implementoRef = await addDoc(collection(db, "implementos"), {
-                placa: placaVal,
+const implementoRef =
+  doc(db, "implementos", implementoId);
+
+await setDoc(implementoRef, {                placa: placaVal,
                 tipo: tipoVal,
                 status: "em_inspecao",
                 dataInspecao: dataInfo.timestamp,
@@ -812,7 +906,10 @@ function renderLista() {
                 tipoManutencao: tipoManutencaoVal
             });
 
-            const inspecaoRef = await addDoc(collection(db, "inspecoes"), {
+const inspecaoRef =
+  doc(db, "inspecoes", implementoId);
+
+await setDoc(inspecaoRef, {
                 implementoId: implementoRef.id,
                 km: Number(document.getElementById("km").value) || null,
                 horimetro: Number(document.getElementById("horimetro").value) || null,
@@ -823,12 +920,33 @@ function renderLista() {
                 inspecionadoPor: usuario.nome
             });
 
-            for (const item of naoConformidades) {
-                await addDoc(collection(db, "naoConformidades"), {
-                    ...item,
-                    inspecaoId: inspecaoRef.id
-                });
-            }
+let contadorNc = 1;
+
+for (const item of naoConformidades) {
+
+  const descLimpa = item.descricao
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_")
+    .replace(/[^\w]/g, "");
+
+  const ncId =
+    `${implementoId}_${descLimpa}_${String(contadorNc).padStart(3, "0")}`;
+
+  await setDoc(
+    doc(db, "naoConformidades", ncId),
+    {
+      ...item,
+      inspecaoId: implementoId
+    }
+  );
+
+  await salvarItemNoCatalogo(item, usuario, tipoVal);
+
+  contadorNc++;
+}
+
 
             alert("Inspeção Criada com sucesso!");
             location.href = "detalhe.html?id=" + implementoRef.id;
@@ -859,10 +977,112 @@ function renderLista() {
     }
 
     function limparCamposItem() {
-        document.getElementById("descricao").value = "";
+        acaoManutencaoItem.value = "substituir";
+        itemManutencaoInput.value = "";
         document.getElementById("foto").value = "";
         document.getElementById("preview").style.display = "none";
         fotoFile = null;
+    }
+
+    function formatarAcaoManutencao(acao) {
+        return acoesManutencao[acao] || acao || "";
+    }
+
+    function normalizarTexto(texto) {
+        return String(texto || "")
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, " ");
+    }
+
+    function criarIdCatalogoItem(texto) {
+        return normalizarTexto(texto)
+            .replace(/[^\w]+/g, "_")
+            .replace(/^_+|_+$/g, "")
+            .slice(0, 120) || String(Date.now());
+    }
+
+    function escapeHtml(valor) {
+        return String(valor || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    async function carregarCatalogoItensManutencao() {
+        try {
+            const snap = await getDocs(collection(db, "catalogoItensManutencao"));
+            sugestoesItensManutencao = [];
+
+            snap.forEach(docSnap => {
+                const item = docSnap.data();
+
+                if (item.nome) {
+                    sugestoesItensManutencao.push(item.nome);
+                }
+            });
+
+            sugestoesItensManutencao = [...new Set(sugestoesItensManutencao)]
+                .sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+            renderizarSugestoesItens();
+        } catch (e) {
+            console.warn("Não foi possível carregar sugestões de itens.", e);
+        }
+    }
+
+    function renderizarSugestoesItens() {
+        catalogoItensManutencao.innerHTML = sugestoesItensManutencao
+            .map(nome => `<option value="${escapeHtml(nome)}"></option>`)
+            .join("");
+    }
+
+    function adicionarSugestaoLocal(nome) {
+        const existe = sugestoesItensManutencao.some(
+            item => normalizarTexto(item) === normalizarTexto(nome)
+        );
+
+        if (existe) return;
+
+        sugestoesItensManutencao.push(nome);
+        sugestoesItensManutencao.sort((a, b) => a.localeCompare(b, "pt-BR"));
+        renderizarSugestoesItens();
+    }
+
+    async function salvarItemNoCatalogo(item, usuario, tipoImplemento) {
+        if (item.origem !== "manual" || !item.itemManutencao) return;
+
+        const acao = item.acaoManutencao || "sem_acao";
+        const catalogoRef = doc(
+            db,
+            "catalogoItensManutencao",
+            criarIdCatalogoItem(item.itemManutencao)
+        );
+
+        try {
+            await setDoc(
+                catalogoRef,
+                {
+                    nome: item.itemManutencao,
+                    nomeNormalizado: item.itemManutencaoNormalizado || normalizarTexto(item.itemManutencao),
+                    ultimaAcaoManutencao: acao,
+                    ultimoTipoImplemento: tipoImplemento || "",
+                    atualizadoEm: serverTimestamp(),
+                    atualizadoPor: usuario.email || usuario.nome || "",
+                    totalUsos: increment(1),
+                    acoes: {
+                        [acao]: increment(1)
+                    }
+                },
+                { merge: true }
+            );
+        } catch (e) {
+            console.warn("Não foi possível atualizar o catálogo de itens.", e);
+        }
     }
 
     // Função para reduzir o tamanho da imagem antes do upload
