@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualizar sugestoes de layout</title>
+<style>
+:root {
+  --ink: #0b1720;
+  --muted: #657586;
+  --line: rgba(11, 23, 32, 0.12);
+  --green: #00a859;
+  --blue: #0072ce;
+  --lime: #b7d433;
+  --cyan: #11d7ff;
+  --orange: #ff9f1c;
+  --red: #ff4d5e;
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Montserrat", Arial, sans-serif;
+  color: var(--ink);
+  background:
+    linear-gradient(120deg, rgba(0,168,89,0.12), rgba(0,114,206,0.10) 42%, rgba(183,212,51,0.16)),
+    #f5f8fb;
+}
+
+.page {
+  width: min(1260px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 44px);
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.intro p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.brand {
+  width: 176px;
+  min-height: 70px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.85);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.86);
+  box-shadow: 0 18px 46px rgba(8, 44, 62, 0.16);
+  display: grid;
+  place-items: center;
+}
+
+.brand img {
+  max-width: 136px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+.notice {
+  margin-bottom: 24px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(0,114,206,0.18);
+  background: rgba(255,255,255,0.72);
+  color: #204052;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.concept {
+  min-width: 0;
+  border: 1px solid rgba(11,23,32,0.1);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.74);
+  box-shadow: 0 20px 56px rgba(8, 44, 62, 0.14);
+  overflow: hidden;
+}
+
+.concept-head {
+  min-height: 112px;
+  padding: 18px;
+  display: grid;
+  gap: 8px;
+  align-content: center;
+}
+
+.concept-head h2 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: 0;
+}
+
+.concept-head p {
+  margin: 0;
+  color: rgba(255,255,255,0.86);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.concept-body {
+  padding: 18px;
+}
+
+.device-row {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.phone {
+  width: 280px;
+  height: 560px;
+  border-radius: 28px;
+  padding: 12px;
+  background: #05070d;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 18px 50px rgba(4, 14, 22, 0.32);
+}
+
+.screen {
+  height: 100%;
+  overflow: hidden;
+  border-radius: 21px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen-pad {
+  padding: 16px;
+}
+
+.mock-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.mock-logo {
+  width: 92px;
+  height: 28px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.9);
+  display: grid;
+  place-items: center;
+  padding: 5px;
+}
+
+.mock-logo img {
+  max-width: 78px;
+  max-height: 20px;
+}
+
+.icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.title-sm {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.title-lg {
+  margin: 4px 0 0;
+  font-size: 27px;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.meta {
+  color: inherit;
+  opacity: 0.72;
+  font-size: 12px;
+}
+
+.mock-card {
+  border-radius: var(--radius);
+  padding: 13px;
+}
+
+.mock-list {
+  display: grid;
+  gap: 9px;
+}
+
+.mock-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  min-height: 58px;
+  padding: 10px;
+  border-radius: var(--radius);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.row-title {
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-sub {
+  margin-top: 3px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.pill {
+  min-width: 58px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.mock-nav {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 10px;
+  border-radius: 14px 14px 0 0;
+}
+
+.mock-nav span {
+  min-height: 38px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.spec {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.spec-block {
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(11,23,32,0.1);
+  background: rgba(255,255,255,0.78);
+}
+
+.spec-block h3 {
+  margin: 0 0 7px;
+  font-size: 14px;
+}
+
+.spec-block p {
+  margin: 0;
+  color: #526373;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.swatches {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+/* Option 1 */
+.dark-neon .concept-head {
+  color: white;
+  background: linear-gradient(135deg, #061816, #082a32 48%, #004a7a);
+}
+
+.dark-neon .screen {
+  color: #f8fbff;
+  background:
+    linear-gradient(160deg, rgba(0,229,138,0.18), transparent 30%),
+    linear-gradient(20deg, rgba(17,215,255,0.20), transparent 36%),
+    #071018;
+}
+
+.dark-neon .icon,
+.dark-neon .mock-row,
+.dark-neon .mock-nav {
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.055);
+}
+
+.dark-neon .hero-card {
+  margin: 14px 0;
+  color: #041411;
+  background: linear-gradient(135deg, #b7ff59, #00e58a 48%, #11d7ff);
+  box-shadow: 0 18px 34px rgba(0,229,138,0.24);
+}
+
+.dark-neon .avatar {
+  color: #041411;
+  background: linear-gradient(135deg, #b7ff59, #11d7ff);
+}
+
+.dark-neon .pill {
+  color: #041411;
+  background: #b7ff59;
+}
+
+.dark-neon .mock-nav span.active {
+  color: #041411;
+  background: #ffffff;
+}
+
+/* Option 2 */
+.neo-light .concept-head {
+  color: white;
+  background: linear-gradient(135deg, #008c4a, #0072ce 64%, #62cfff);
+}
+
+.neo-light .screen {
+  color: #0b1720;
+  background: linear-gradient(180deg, #f7fff9, #eaf8ff);
+}
+
+.neo-light .app-band {
+  margin: -16px -16px 14px;
+  padding: 16px;
+  color: white;
+  background: linear-gradient(135deg, #007f51, #0072ce);
+}
+
+.neo-light .metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.neo-light .metric {
+  min-height: 74px;
+  border: 1px solid rgba(0,114,206,0.16);
+  background: rgba(255,255,255,0.82);
+}
+
+.neo-light .mock-row {
+  background: #ffffff;
+  border: 1px solid rgba(0,114,206,0.12);
+  box-shadow: 0 8px 18px rgba(0,114,206,0.08);
+}
+
+.neo-light .avatar {
+  color: white;
+  background: linear-gradient(135deg, #00a859, #0072ce);
+}
+
+.neo-light .pill {
+  color: #063a2e;
+  background: #dff69f;
+}
+
+.neo-light .mock-nav {
+  background: rgba(255,255,255,0.9);
+  border-top: 1px solid rgba(0,114,206,0.12);
+}
+
+.neo-light .mock-nav span.active {
+  color: white;
+  background: linear-gradient(135deg, #00a859, #0072ce);
+}
+
+/* Option 3 */
+.command .concept-head {
+  color: white;
+  background: linear-gradient(135deg, #08202f, #004f73 42%, #00a859);
+}
+
+.tablet {
+  min-height: 560px;
+  border-radius: 24px;
+  padding: 12px;
+  background: #05070d;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 18px 50px rgba(4, 14, 22, 0.28);
+}
+
+.tablet-screen {
+  min-height: 536px;
+  border-radius: 16px;
+  overflow: hidden;
+  color: #f8fbff;
+  background: #071018;
+  display: grid;
+  grid-template-columns: 86px 1fr;
+}
+
+.rail {
+  padding: 14px 10px;
+  background: linear-gradient(180deg, #0b2633, #06201d);
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+
+.rail .r {
+  height: 46px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,0.72);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.rail .r.active {
+  color: #071018;
+  background: #b7d433;
+}
+
+.dash {
+  padding: 16px;
+  min-width: 0;
+}
+
+.dash-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+
+.searchbar {
+  min-width: 180px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.11);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.72);
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.kpi {
+  min-height: 78px;
+  padding: 11px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.055);
+}
+
+.kpi strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 25px;
+}
+
+.work-grid {
+  display: grid;
+  grid-template-columns: 1fr 150px;
+  gap: 10px;
+}
+
+.queue {
+  display: grid;
+  gap: 8px;
+}
+
+.command .mock-row {
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.09);
+}
+
+.command .avatar {
+  color: #071018;
+  background: linear-gradient(135deg, #b7d433, #11d7ff);
+}
+
+.bars {
+  min-height: 264px;
+  border-radius: var(--radius);
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.055);
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+
+.bar {
+  flex: 1;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, #b7d433, #00a859, #0072ce);
+}
+
+.bar:nth-child(1) { height: 42%; }
+.bar:nth-child(2) { height: 70%; }
+.bar:nth-child(3) { height: 56%; }
+.bar:nth-child(4) { height: 86%; }
+.bar:nth-child(5) { height: 62%; }
+
+/* Option 4 */
+.guided .concept-head {
+  color: white;
+  background: linear-gradient(135deg, #102027, #00a859 48%, #b7d433);
+}
+
+.guided .screen {
+  color: #0b1720;
+  background: linear-gradient(180deg, #ffffff, #edf9f2);
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin: 14px 0;
+}
+
+.step {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(0,168,89,0.16);
+}
+
+.step.active {
+  background: linear-gradient(90deg, #00a859, #0072ce);
+}
+
+.guided .form-card {
+  background: white;
+  border: 1px solid rgba(0,168,89,0.14);
+  box-shadow: 0 12px 28px rgba(0,168,89,0.09);
+}
+
+.field {
+  height: 44px;
+  margin-top: 9px;
+  padding: 0 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  color: #526373;
+  font-size: 12px;
+  background: #f5fbf8;
+  border: 1px solid rgba(0,168,89,0.16);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.chip {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: #edf9f2;
+  color: #0b6842;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.chip.active {
+  color: white;
+  background: linear-gradient(135deg, #00a859, #0072ce);
+}
+
+.guided .primary-action {
+  margin-top: 14px;
+  min-height: 46px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00a859, #0072ce);
+  box-shadow: 0 14px 28px rgba(0,114,206,0.2);
+}
+
+@media (max-width: 1120px) {
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    width: min(100% - 22px, 540px);
+    padding-top: 18px;
+  }
+
+  .intro {
+    grid-template-columns: 1fr;
+  }
+
+  .brand {
+    width: 100%;
+  }
+
+  .device-row {
+    grid-template-columns: 1fr;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .tablet-screen {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-flow: column;
+  }
+
+  .kpi-grid,
+  .work-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bars {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 460px) {
+  .kpi-grid,
+  .work-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="intro">
+    <div>
+      <h1>Sugestoes visuais para o app</h1>
+      <p>Quatro caminhos de layout para comparar antes de alterar o sistema real. As telas abaixo sao mockups: servem para escolher direcao visual, cores, densidade e estilo de navegacao.</p>
+    </div>
+    <div class="brand">
+      <img src="suzano-logo.png" alt="Suzano">
+    </div>
+  </header>
+
+  <div class="notice">
+    Preview separado: nenhum arquivo principal do app foi alterado. Esta pagina apenas simula como Home, Inspecao, Manutencao e Tecnico poderiam ficar.
+  </div>
+
+  <section class="gallery">
+    <article class="concept dark-neon">
+      <div class="concept-head">
+        <h2>Opcao 1 - Dark Neon Operacional</h2>
+        <p>Mais futurista: fundo escuro, gradientes vivos e cards com brilho discreto para manutencao, tecnico e filas de prioridade.</p>
+      </div>
+      <div class="concept-body">
+        <div class="device-row">
+          <div class="phone">
+            <div class="screen screen-pad">
+              <div class="mock-top">
+                <div class="icon">M</div>
+                <div class="mock-logo"><img src="suzano-logo.png" alt=""></div>
+                <div class="icon">CFG</div>
+              </div>
+              <p class="title-sm">Fila operacional</p>
+              <h3 class="title-lg">Manutencao</h3>
+              <div class="mock-card hero-card">
+                <p class="title-sm">Prioridade alta</p>
+                <h3 style="margin:8px 0 2px;font-size:25px;">18 abertas</h3>
+                <div class="meta">Carreta, comboio e cavalo em fluxo</div>
+              </div>
+              <div class="mock-list">
+                <div class="mock-row">
+                  <div class="avatar">A</div>
+                  <div><div class="row-title">Aguardando box</div><div class="row-sub">GO 8C10 - Preventiva</div></div>
+                  <div class="pill">8</div>
+                </div>
+                <div class="mock-row">
+                  <div class="avatar">E</div>
+                  <div><div class="row-title">Em execucao</div><div class="row-sub">Equipe Oficina 2</div></div>
+                  <div class="pill">6</div>
+                </div>
+                <div class="mock-row">
+                  <div class="avatar">L</div>
+                  <div><div class="row-title">Liberados hoje</div><div class="row-sub">Relatorios enviados</div></div>
+                  <div class="pill">4</div>
+                </div>
+              </div>
+              <nav class="mock-nav">
+                <span>HOME</span>
+                <span class="active">MAN</span>
+                <span>INS</span>
+                <span>TEC</span>
+              </nav>
+            </div>
+          </div>
+          <div class="spec">
+            <div class="spec-block">
+              <h3>Melhor uso</h3>
+              <p>Telas de acompanhamento, tecnico, manutencao e dashboards. Fica com cara de central moderna.</p>
+            </div>
+            <div class="spec-block">
+              <h3>Paleta</h3>
+              <div class="swatches">
+                <span class="swatch" style="background:#061816"></span>
+                <span class="swatch" style="background:#082a32"></span>
+                <span class="swatch" style="background:#00e58a"></span>
+                <span class="swatch" style="background:#11d7ff"></span>
+                <span class="swatch" style="background:#b7ff59"></span>
+              </div>
+            </div>
+            <div class="spec-block">
+              <h3>Sensacao</h3>
+              <p>Impactante e premium. Requer cuidado com contraste para manter leitura boa durante uso prolongado.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="concept neo-light">
+      <div class="concept-head">
+        <h2>Opcao 2 - Suzano Neo Claro</h2>
+        <p>Mais seguro para uso diario: claro, limpo, vivo e alinhado com verde, azul e lime da identidade atual.</p>
+      </div>
+      <div class="concept-body">
+        <div class="device-row">
+          <div class="phone">
+            <div class="screen screen-pad">
+              <div class="app-band">
+                <div class="mock-top">
+                  <div class="icon" style="background:rgba(255,255,255,0.16);color:white;">IN</div>
+                  <div class="mock-logo"><img src="suzano-logo.png" alt=""></div>
+                  <div class="icon" style="background:rgba(255,255,255,0.16);color:white;">SAIR</div>
+                </div>
+                <p class="title-sm">Painel geral</p>
+                <h3 class="title-lg">Inicio</h3>
+              </div>
+              <div class="metric-grid">
+                <div class="mock-card metric"><div class="meta">Inspecao</div><h3 style="margin:8px 0 0;">12</h3></div>
+                <div class="mock-card metric"><div class="meta">Manutencao</div><h3 style="margin:8px 0 0;">18</h3></div>
+                <div class="mock-card metric"><div class="meta">Liberado</div><h3 style="margin:8px 0 0;">32</h3></div>
+                <div class="mock-card metric"><div class="meta">Tecnico</div><h3 style="margin:8px 0 0;">45</h3></div>
+              </div>
+              <div class="mock-list">
+                <div class="mock-row">
+                  <div class="avatar">+</div>
+                  <div><div class="row-title">Nova inspecao</div><div class="row-sub">Criar registro rapido</div></div>
+                  <div class="pill">Abrir</div>
+                </div>
+                <div class="mock-row">
+                  <div class="avatar">F</div>
+                  <div><div class="row-title">Filas e filtros</div><div class="row-sub">Busca por GO ou placa</div></div>
+                  <div class="pill">Ver</div>
+                </div>
+              </div>
+              <nav class="mock-nav">
+                <span class="active">HOME</span>
+                <span>MAN</span>
+                <span>INS</span>
+                <span>TEC</span>
+              </nav>
+            </div>
+          </div>
+          <div class="spec">
+            <div class="spec-block">
+              <h3>Melhor uso</h3>
+              <p>Padrao global do app. Mantem tudo moderno sem perder clareza no celular.</p>
+            </div>
+            <div class="spec-block">
+              <h3>Paleta</h3>
+              <div class="swatches">
+                <span class="swatch" style="background:#f7fff9"></span>
+                <span class="swatch" style="background:#eaf8ff"></span>
+                <span class="swatch" style="background:#00a859"></span>
+                <span class="swatch" style="background:#0072ce"></span>
+                <span class="swatch" style="background:#b7d433"></span>
+              </div>
+            </div>
+            <div class="spec-block">
+              <h3>Sensacao</h3>
+              <p>Profissional, leve e vivo. E o caminho mais equilibrado para aplicar no app inteiro.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="concept command">
+      <div class="concept-head">
+        <h2>Opcao 3 - Central de Comando</h2>
+        <p>Mais denso e operacional: indicadores no topo, fila compacta, painel lateral e status fortes para gestao tecnica.</p>
+      </div>
+      <div class="concept-body">
+        <div class="tablet">
+          <div class="tablet-screen">
+            <aside class="rail">
+              <div class="r active">H</div>
+              <div class="r">M</div>
+              <div class="r">I</div>
+              <div class="r">T</div>
+              <div class="r">R</div>
+            </aside>
+            <section class="dash">
+              <div class="dash-top">
+                <div>
+                  <p class="title-sm" style="color:#9fb3c1;">Visao da operacao</p>
+                  <h3 class="title-lg" style="font-size:26px;">Painel Tecnico</h3>
+                </div>
+                <div class="searchbar">Buscar GO, placa ou box</div>
+              </div>
+              <div class="kpi-grid">
+                <div class="kpi"><div class="meta">Inspecao</div><strong>12</strong></div>
+                <div class="kpi"><div class="meta">Aguardando</div><strong>8</strong></div>
+                <div class="kpi"><div class="meta">Manutencao</div><strong>6</strong></div>
+                <div class="kpi"><div class="meta">Liberado</div><strong>19</strong></div>
+              </div>
+              <div class="work-grid">
+                <div class="queue">
+                  <div class="mock-row">
+                    <div class="avatar">B2</div>
+                    <div><div class="row-title">GO 8C10 - Carreta</div><div class="row-sub">Aguardando manutencao</div></div>
+                    <div class="pill" style="background:#ff9f1c;color:#071018;">Alta</div>
+                  </div>
+                  <div class="mock-row">
+                    <div class="avatar">B7</div>
+                    <div><div class="row-title">HJL 4B21 - Comboio</div><div class="row-sub">Equipe em execucao</div></div>
+                    <div class="pill" style="background:#11d7ff;color:#071018;">Box 7</div>
+                  </div>
+                  <div class="mock-row">
+                    <div class="avatar">OK</div>
+                    <div><div class="row-title">RXY 2A90 - Prancha</div><div class="row-sub">Relatorio enviado</div></div>
+                    <div class="pill" style="background:#b7d433;color:#071018;">Livre</div>
+                  </div>
+                </div>
+                <div class="bars">
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="spec" style="grid-template-columns:repeat(3,1fr);margin-top:14px;">
+          <div class="spec-block">
+            <h3>Melhor uso</h3>
+            <p>Tecnico, manutencao, relatorios e telas de monitoramento.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Vantagem</h3>
+            <p>Mostra mais informacao sem parecer baguncado.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Cuidado</h3>
+            <p>Precisa de versao mobile bem compacta para nao sobrecarregar.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="concept guided">
+      <div class="concept-head">
+        <h2>Opcao 4 - Inspecao Guiada Premium</h2>
+        <p>Fluxo em etapas para criacao, detalhe e execucao: menos campos soltos, mais orientacao e botoes grandes.</p>
+      </div>
+      <div class="concept-body">
+        <div class="device-row">
+          <div class="phone">
+            <div class="screen screen-pad">
+              <div class="mock-top">
+                <div class="icon" style="background:#edf9f2;color:#0b6842;">VOLT</div>
+                <div class="mock-logo"><img src="suzano-logo.png" alt=""></div>
+                <div class="icon" style="background:#edf9f2;color:#0b6842;">CFG</div>
+              </div>
+              <p class="title-sm" style="color:#0b6842;">Nova inspecao</p>
+              <h3 class="title-lg">Equipamento</h3>
+              <div class="stepper">
+                <div class="step active"></div>
+                <div class="step active"></div>
+                <div class="step"></div>
+                <div class="step"></div>
+              </div>
+              <div class="mock-card form-card">
+                <div class="meta">GO ou placa</div>
+                <div class="field">ABC-1234</div>
+                <div class="field">Tipo: Carreta</div>
+                <div class="field">Manutencao: Preventiva</div>
+              </div>
+              <div class="mock-card form-card" style="margin-top:12px;">
+                <div class="meta">Item da lista</div>
+                <div class="field">Descricao da avaria</div>
+                <div class="chips">
+                  <span class="chip active">Normal</span>
+                  <span class="chip">Avaria</span>
+                  <span class="chip">Troca</span>
+                </div>
+              </div>
+              <div class="primary-action">Continuar</div>
+              <nav class="mock-nav" style="background:rgba(255,255,255,0.85);border-top:1px solid rgba(0,168,89,0.14);">
+                <span>HOME</span>
+                <span>MAN</span>
+                <span class="active" style="color:white;background:linear-gradient(135deg,#00a859,#0072ce);">INS</span>
+                <span>TEC</span>
+              </nav>
+            </div>
+          </div>
+          <div class="spec">
+            <div class="spec-block">
+              <h3>Melhor uso</h3>
+              <p>Nova inspecao, detalhe da inspecao e manutencao_detalhe.</p>
+            </div>
+            <div class="spec-block">
+              <h3>Paleta</h3>
+              <div class="swatches">
+                <span class="swatch" style="background:#ffffff"></span>
+                <span class="swatch" style="background:#edf9f2"></span>
+                <span class="swatch" style="background:#00a859"></span>
+                <span class="swatch" style="background:#0072ce"></span>
+                <span class="swatch" style="background:#ff9f1c"></span>
+              </div>
+            </div>
+            <div class="spec-block">
+              <h3>Sensacao</h3>
+              <p>Mais guiado e elegante. Bom para reduzir erro no preenchimento em campo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+</body>
+</html>

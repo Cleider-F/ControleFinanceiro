@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview de layouts profissionais</title>
+<style>
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat/Montserrat-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --green: #00a859;
+  --blue: #0072ce;
+  --lime: #b7d433;
+  --ink: #102027;
+  --muted: #667985;
+  --line: rgba(16, 32, 39, 0.12);
+  --surface: #ffffff;
+  --page: #f3f7f8;
+  --shadow: 0 22px 60px rgba(5, 26, 38, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Montserrat", Arial, sans-serif;
+  color: var(--ink);
+  background:
+    linear-gradient(130deg, rgba(0, 168, 89, 0.08), rgba(0, 114, 206, 0.08)),
+    var(--page);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.page {
+  width: min(1360px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 26px 0 52px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 24px;
+  align-items: center;
+  min-height: 190px;
+  padding: 24px;
+  border: 1px solid rgba(0, 114, 206, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(232, 248, 243, 0.92)),
+    #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(28px, 4.5vw, 54px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 820px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.brand-box {
+  min-height: 96px;
+  padding: 18px;
+  border: 1px solid rgba(0, 168, 89, 0.18);
+  border-radius: 8px;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.brand-box img {
+  max-width: 160px;
+  max-height: 54px;
+  object-fit: contain;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 10px;
+  border: 1px solid rgba(16, 32, 39, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 12px 36px rgba(5, 26, 38, 0.08);
+}
+
+.toolbar strong {
+  padding: 0 8px;
+  font-size: 13px;
+}
+
+.jump-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.jump-list a {
+  min-height: 36px;
+  padding: 9px 12px;
+  border: 1px solid rgba(0, 114, 206, 0.18);
+  border-radius: 8px;
+  color: #0f4f78;
+  background: #f5fbff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.concept {
+  margin-top: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(16, 32, 39, 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(5, 26, 38, 0.12);
+}
+
+.concept-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  color: #ffffff;
+}
+
+.concept:nth-of-type(1) .concept-head {
+  background: linear-gradient(135deg, #06322d, #006b73 48%, #0072ce);
+}
+
+.concept:nth-of-type(2) .concept-head {
+  background: linear-gradient(135deg, #0d1b2a, #16435a 52%, #00a859);
+}
+
+.concept:nth-of-type(3) .concept-head {
+  background: linear-gradient(135deg, #1b2a32, #5e6d1d 48%, #00a859);
+}
+
+.concept:nth-of-type(4) .concept-head {
+  background: linear-gradient(135deg, #071719, #083b4d 50%, #5ebd5e);
+}
+
+#opcao-5 .concept-head {
+  background: linear-gradient(135deg, #06322d, #0072ce 48%, #00a859);
+}
+
+.concept h2 {
+  margin: 0;
+  font-size: 25px;
+  letter-spacing: 0;
+}
+
+.concept p {
+  margin: 7px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.score {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 8px;
+}
+
+.score span {
+  min-width: 74px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.preview-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, #f8fbfb, #eef5f6);
+}
+
+.mock {
+  min-width: 0;
+  border-radius: 8px;
+  padding: 12px;
+  background: #d9e5e8;
+}
+
+.mock.dark {
+  background: #061114;
+}
+
+.mock-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  color: #2f4652;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mock.dark .mock-title {
+  color: #d9f4ff;
+}
+
+.device {
+  min-height: 610px;
+  overflow: hidden;
+  border: 10px solid #071015;
+  border-radius: 30px;
+  background: #ffffff;
+  box-shadow: 0 24px 52px rgba(5, 26, 38, 0.22);
+}
+
+.wide .device {
+  min-height: 560px;
+  border-radius: 22px;
+}
+
+.app {
+  min-height: 590px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wide .app {
+  min-height: 540px;
+}
+
+.light-clean {
+  color: #12242c;
+  background: linear-gradient(180deg, #f9fffb, #eef8f6);
+}
+
+.dark-clean {
+  color: #f7fbff;
+  background: linear-gradient(180deg, #061816, #082931);
+}
+
+.light-command {
+  color: #102027;
+  background: #f4f7f7;
+}
+
+.dark-command {
+  color: #f4fbff;
+  background: #071114;
+}
+
+.light-field {
+  color: #16262d;
+  background: #fbfcf3;
+}
+
+.dark-field {
+  color: #f9fbef;
+  background: #151b13;
+}
+
+.light-exec {
+  color: #102027;
+  background: #f6f8fa;
+}
+
+.dark-exec {
+  color: #f6fbff;
+  background: #070f16;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 54px;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.light-clean .topbar {
+  color: #ffffff;
+  background: linear-gradient(135deg, #006a57, #0072ce);
+}
+
+.dark-clean .topbar,
+.dark-field .topbar,
+.dark-exec .topbar {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light-field .topbar {
+  color: #ffffff;
+  background: linear-gradient(135deg, #3c5b18, #00a859);
+}
+
+.light-exec .topbar {
+  color: #ffffff;
+  background: linear-gradient(135deg, #082b45, #00a859);
+}
+
+.title {
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+}
+
+.screen-title {
+  margin-top: 2px;
+  font-size: 18px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo-pill {
+  width: 86px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.logo-pill img {
+  max-width: 72px;
+  max-height: 20px;
+  object-fit: contain;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.section-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.action-card,
+.kpi,
+.row,
+.filter-box,
+.form-card,
+.detail-card,
+.media-card {
+  border-radius: 8px;
+}
+
+.light-clean .action-card,
+.light-clean .kpi,
+.light-clean .row,
+.light-clean .filter-box,
+.light-clean .form-card,
+.light-clean .detail-card,
+.light-clean .media-card,
+.light-command .action-card,
+.light-command .kpi,
+.light-command .row,
+.light-command .filter-box,
+.light-command .form-card,
+.light-command .detail-card,
+.light-command .media-card,
+.light-field .action-card,
+.light-field .kpi,
+.light-field .row,
+.light-field .filter-box,
+.light-field .form-card,
+.light-field .detail-card,
+.light-field .media-card,
+.light-exec .action-card,
+.light-exec .kpi,
+.light-exec .row,
+.light-exec .filter-box,
+.light-exec .form-card,
+.light-exec .detail-card,
+.light-exec .media-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(16, 32, 39, 0.1);
+  box-shadow: 0 12px 28px rgba(5, 26, 38, 0.08);
+}
+
+.dark-clean .action-card,
+.dark-clean .kpi,
+.dark-clean .row,
+.dark-clean .filter-box,
+.dark-clean .form-card,
+.dark-clean .detail-card,
+.dark-clean .media-card,
+.dark-command .action-card,
+.dark-command .kpi,
+.dark-command .row,
+.dark-command .filter-box,
+.dark-command .form-card,
+.dark-command .detail-card,
+.dark-command .media-card,
+.dark-field .action-card,
+.dark-field .kpi,
+.dark-field .row,
+.dark-field .filter-box,
+.dark-field .form-card,
+.dark-field .detail-card,
+.dark-field .media-card,
+.dark-exec .action-card,
+.dark-exec .kpi,
+.dark-exec .row,
+.dark-exec .filter-box,
+.dark-exec .form-card,
+.dark-exec .detail-card,
+.dark-exec .media-card {
+  background: rgba(255, 255, 255, 0.065);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.action-card {
+  min-height: 110px;
+  padding: 13px;
+  display: grid;
+  align-content: space-between;
+}
+
+.action-mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.action-card strong {
+  display: block;
+  font-size: 14px;
+}
+
+.action-card small,
+.row small,
+.kpi small,
+.detail-card small,
+.form-card small {
+  color: inherit;
+  opacity: 0.66;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.kpi {
+  min-height: 84px;
+  padding: 11px;
+}
+
+.kpi strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 24px;
+}
+
+.filter-box {
+  display: grid;
+  grid-template-columns: 1fr 112px;
+  gap: 8px;
+  padding: 10px;
+  margin-top: 12px;
+}
+
+.fake-input {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: rgba(0, 114, 206, 0.08);
+  color: inherit;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.dark-clean .fake-input,
+.dark-command .fake-input,
+.dark-field .fake-input,
+.dark-exec .fake-input {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 66px;
+  padding: 10px;
+}
+
+.badge-square {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #00a859, #0072ce);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.row strong {
+  display: block;
+  min-width: 0;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-pill {
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.waiting {
+  color: #4b2c00;
+  background: #ffe0a3;
+}
+
+.running {
+  color: #003b3f;
+  background: #a8f2ff;
+}
+
+.done {
+  color: #113d13;
+  background: #c8f5ca;
+}
+
+.dark-command .waiting,
+.dark-clean .waiting,
+.dark-field .waiting,
+.dark-exec .waiting {
+  color: #ffd894;
+  background: rgba(255, 159, 28, 0.16);
+}
+
+.dark-command .running,
+.dark-clean .running,
+.dark-field .running,
+.dark-exec .running {
+  color: #91ecff;
+  background: rgba(0, 114, 206, 0.22);
+}
+
+.dark-command .done,
+.dark-clean .done,
+.dark-field .done,
+.dark-exec .done {
+  color: #aff4b6;
+  background: rgba(0, 168, 89, 0.18);
+}
+
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.bottom-nav span {
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.light-clean .bottom-nav span,
+.light-field .bottom-nav span,
+.light-exec .bottom-nav span,
+.light-command .bottom-nav span {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(16, 32, 39, 0.08);
+}
+
+.dark-clean .bottom-nav span,
+.dark-field .bottom-nav span,
+.dark-exec .bottom-nav span,
+.dark-command .bottom-nav span {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bottom-nav .active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #00a859, #0072ce) !important;
+  border-color: transparent !important;
+}
+
+.split-layout {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  min-height: 540px;
+}
+
+.rail {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 12px;
+}
+
+.light-command .rail {
+  background: #ffffff;
+  border-right: 1px solid rgba(16, 32, 39, 0.1);
+}
+
+.dark-command .rail {
+  background: #0b171c;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rail span {
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.light-command .rail span {
+  background: #f1f6f7;
+}
+
+.dark-command .rail span {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.rail .active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #00a859, #0072ce) !important;
+}
+
+.command-main {
+  padding: 16px;
+}
+
+.command-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
+  align-items: center;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(210px, 0.6fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.bars {
+  min-height: 250px;
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+
+.bar {
+  flex: 1;
+  min-height: 40px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, #b7d433, #00a859, #0072ce);
+}
+
+.bar:nth-child(1) { height: 48%; }
+.bar:nth-child(2) { height: 72%; }
+.bar:nth-child(3) { height: 60%; }
+.bar:nth-child(4) { height: 88%; }
+.bar:nth-child(5) { height: 54%; }
+
+.form-card {
+  padding: 12px;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin: 12px 0;
+}
+
+.stepper span {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(0, 168, 89, 0.16);
+}
+
+.stepper .active {
+  background: linear-gradient(90deg, #00a859, #0072ce);
+}
+
+.form-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.chip {
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.light-field .chip,
+.light-clean .chip,
+.light-exec .chip,
+.light-command .chip {
+  color: #0b6842;
+  background: #e8f6ec;
+}
+
+.dark-field .chip,
+.dark-clean .chip,
+.dark-exec .chip,
+.dark-command .chip {
+  color: #bdf2c3;
+  background: rgba(0, 168, 89, 0.16);
+}
+
+.chip.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #00a859, #0072ce);
+}
+
+.primary-action {
+  min-height: 46px;
+  display: grid;
+  place-items: center;
+  margin-top: 12px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #00a859, #0072ce);
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(0, 114, 206, 0.18);
+}
+
+.media-card {
+  overflow: hidden;
+}
+
+.media-card img {
+  width: 100%;
+  height: 126px;
+  display: block;
+  object-fit: cover;
+}
+
+.media-card div {
+  padding: 10px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.detail-card {
+  min-height: 110px;
+  padding: 12px;
+}
+
+.detail-card strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 22px;
+}
+
+.concept-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 18px 18px;
+  background: #eef5f6;
+}
+
+.note {
+  padding: 13px;
+  border: 1px solid rgba(16, 32, 39, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.note strong {
+  display: block;
+  font-size: 13px;
+}
+
+.note p {
+  margin: 6px 0 0;
+  color: #526874;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1180px) {
+  .preview-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .device {
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .wide .device {
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    width: min(100% - 22px, 560px);
+    padding-top: 14px;
+  }
+
+  .hero,
+  .concept-head,
+  .command-head,
+  .chart-grid,
+  .concept-notes {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .score {
+    grid-auto-flow: row;
+  }
+
+  .kpi-grid,
+  .details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .split-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-flow: column;
+  }
+}
+
+@media (max-width: 460px) {
+  .hero,
+  .concept-body,
+  .preview-pair {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .kpi-grid,
+  .details-grid,
+  .actions,
+  .filter-box,
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .device {
+    border-width: 8px;
+  }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div>
+      <h1>Preview de layouts profissionais</h1>
+      <p>Cinco direções visuais para deixar o app com cara de ferramenta de operação: mais limpo, mais consistente e com versões claras e escuras lado a lado.</p>
+    </div>
+    <div class="brand-box">
+      <img src="suzano-logo.png" alt="Suzano">
+    </div>
+  </section>
+
+  <nav class="toolbar">
+    <strong>Ir para opção</strong>
+    <div class="jump-list">
+      <a href="#opcao-1">Operacional Limpo</a>
+      <a href="#opcao-2">Command Center</a>
+      <a href="#opcao-3">Campo Guiado</a>
+      <a href="#opcao-4">Gestão Executiva</a>
+      <a href="#opcao-5">Mistura 1 + 3</a>
+    </div>
+  </nav>
+
+  <section class="concept" id="opcao-1">
+    <header class="concept-head">
+      <div>
+        <h2>Opção 1 - Operacional Limpo</h2>
+        <p>Visual mais seguro para aplicar no app inteiro. Preserva simplicidade, mas troca a aparência amadora por cards, filtros e status mais consistentes.</p>
+      </div>
+      <div class="score">
+        <span>Uso diário</span>
+        <span>Mobile</span>
+        <span>Baixo risco</span>
+      </div>
+    </header>
+
+    <div class="preview-pair">
+      <article class="mock">
+        <div class="mock-title"><span>Tema claro</span><span>Home + filas</span></div>
+        <div class="device">
+          <div class="app light-clean">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Painel geral</div>
+                <div class="screen-title">Início</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">SAIR</div>
+            </div>
+
+            <div class="section-grid actions">
+              <div class="action-card"><div class="action-mark">NI</div><div><strong>Nova inspeção</strong><small>Registrar novo item</small></div></div>
+              <div class="action-card"><div class="action-mark">IN</div><div><strong>Inspeção</strong><small>Acompanhar abertas</small></div></div>
+              <div class="action-card"><div class="action-mark">MN</div><div><strong>Manutenção</strong><small>Fila da oficina</small></div></div>
+              <div class="action-card"><div class="action-mark">TC</div><div><strong>Técnico</strong><small>Relatórios e gestão</small></div></div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi"><small>Inspeção</small><strong>12</strong></div>
+              <div class="kpi"><small>Aguardando</small><strong>8</strong></div>
+              <div class="kpi"><small>Manutenção</small><strong>6</strong></div>
+              <div class="kpi"><small>Liberado</small><strong>19</strong></div>
+            </div>
+
+            <div class="section-grid">
+              <div class="row"><span class="badge-square">B2</span><div><strong>GO 8C10 - Carreta</strong><small>Preventiva aberta hoje</small></div><span class="status-pill waiting">Aguardando</span></div>
+              <div class="row"><span class="badge-square">B7</span><div><strong>HJL 4B21 - Comboio</strong><small>Equipe em execução</small></div><span class="status-pill running">Em box</span></div>
+              <div class="row"><span class="badge-square">OK</span><div><strong>RXY 2A90 - Prancha</strong><small>Relatório enviado</small></div><span class="status-pill done">Liberado</span></div>
+            </div>
+
+            <nav class="bottom-nav">
+              <span class="active">HOME</span>
+              <span>MAN</span>
+              <span>INS</span>
+              <span>TEC</span>
+            </nav>
+          </div>
+        </div>
+      </article>
+
+      <article class="mock dark">
+        <div class="mock-title"><span>Tema escuro</span><span>Home + filas</span></div>
+        <div class="device">
+          <div class="app dark-clean">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Painel geral</div>
+                <div class="screen-title">Início</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">SAIR</div>
+            </div>
+
+            <div class="section-grid actions">
+              <div class="action-card"><div class="action-mark">NI</div><div><strong>Nova inspeção</strong><small>Registrar novo item</small></div></div>
+              <div class="action-card"><div class="action-mark">IN</div><div><strong>Inspeção</strong><small>Acompanhar abertas</small></div></div>
+              <div class="action-card"><div class="action-mark">MN</div><div><strong>Manutenção</strong><small>Fila da oficina</small></div></div>
+              <div class="action-card"><div class="action-mark">TC</div><div><strong>Técnico</strong><small>Relatórios e gestão</small></div></div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi"><small>Inspeção</small><strong>12</strong></div>
+              <div class="kpi"><small>Aguardando</small><strong>8</strong></div>
+              <div class="kpi"><small>Manutenção</small><strong>6</strong></div>
+              <div class="kpi"><small>Liberado</small><strong>19</strong></div>
+            </div>
+
+            <div class="section-grid">
+              <div class="row"><span class="badge-square">B2</span><div><strong>GO 8C10 - Carreta</strong><small>Preventiva aberta hoje</small></div><span class="status-pill waiting">Aguardando</span></div>
+              <div class="row"><span class="badge-square">B7</span><div><strong>HJL 4B21 - Comboio</strong><small>Equipe em execução</small></div><span class="status-pill running">Em box</span></div>
+              <div class="row"><span class="badge-square">OK</span><div><strong>RXY 2A90 - Prancha</strong><small>Relatório enviado</small></div><span class="status-pill done">Liberado</span></div>
+            </div>
+
+            <nav class="bottom-nav">
+              <span class="active">HOME</span>
+              <span>MAN</span>
+              <span>INS</span>
+              <span>TEC</span>
+            </nav>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="concept-notes">
+      <div class="note"><strong>Onde encaixa</strong><p>Ideal para trocar o visual de todas as telas mantendo a estrutura atual.</p></div>
+      <div class="note"><strong>O que melhora</strong><p>Cards, status, botões e filtros ficam padronizados e mais profissionais.</p></div>
+      <div class="note"><strong>Risco</strong><p>Baixo. É uma evolução visual sem mexer pesado no fluxo.</p></div>
+    </div>
+  </section>
+
+  <section class="concept" id="opcao-2">
+    <header class="concept-head">
+      <div>
+        <h2>Opção 2 - Command Center</h2>
+        <p>Mais forte para técnico, manutenção e gestão. Tem cara de sala de controle, com navegação lateral, KPIs e listas densas.</p>
+      </div>
+      <div class="score">
+        <span>Gestão</span>
+        <span>Desktop</span>
+        <span>Dados</span>
+      </div>
+    </header>
+
+    <div class="preview-pair">
+      <article class="mock wide">
+        <div class="mock-title"><span>Tema claro</span><span>Painel técnico</span></div>
+        <div class="device">
+          <div class="app light-command split-layout">
+            <aside class="rail">
+              <span class="active">HOME</span>
+              <span>MAN</span>
+              <span>INS</span>
+              <span>TEC</span>
+            </aside>
+            <section class="command-main">
+              <div class="command-head">
+                <div>
+                  <div class="eyebrow">Visão da operação</div>
+                  <div class="screen-title">Painel técnico</div>
+                </div>
+                <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              </div>
+
+              <div class="filter-box">
+                <div class="fake-input">Buscar GO, placa, box ou técnico</div>
+                <div class="fake-input">Todos</div>
+              </div>
+
+              <div class="kpi-grid">
+                <div class="kpi"><small>Inspeção</small><strong>12</strong></div>
+                <div class="kpi"><small>Aguardando</small><strong>8</strong></div>
+                <div class="kpi"><small>Manutenção</small><strong>6</strong></div>
+                <div class="kpi"><small>Liberado</small><strong>19</strong></div>
+              </div>
+
+              <div class="chart-grid">
+                <div class="section-grid">
+                  <div class="row"><span class="badge-square">B2</span><div><strong>GO 8C10 - Carreta</strong><small>Box recomendado: 2</small></div><span class="status-pill waiting">Alta</span></div>
+                  <div class="row"><span class="badge-square">B7</span><div><strong>HJL 4B21 - Comboio</strong><small>Equipe: Oficina 1</small></div><span class="status-pill running">Execução</span></div>
+                  <div class="row"><span class="badge-square">B4</span><div><strong>TRP 9D44 - Cavalo</strong><small>2 itens pendentes</small></div><span class="status-pill waiting">Fila</span></div>
+                </div>
+                <div class="bars detail-card">
+                  <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <article class="mock dark wide">
+        <div class="mock-title"><span>Tema escuro</span><span>Painel técnico</span></div>
+        <div class="device">
+          <div class="app dark-command split-layout">
+            <aside class="rail">
+              <span class="active">HOME</span>
+              <span>MAN</span>
+              <span>INS</span>
+              <span>TEC</span>
+            </aside>
+            <section class="command-main">
+              <div class="command-head">
+                <div>
+                  <div class="eyebrow">Visão da operação</div>
+                  <div class="screen-title">Painel técnico</div>
+                </div>
+                <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              </div>
+
+              <div class="filter-box">
+                <div class="fake-input">Buscar GO, placa, box ou técnico</div>
+                <div class="fake-input">Todos</div>
+              </div>
+
+              <div class="kpi-grid">
+                <div class="kpi"><small>Inspeção</small><strong>12</strong></div>
+                <div class="kpi"><small>Aguardando</small><strong>8</strong></div>
+                <div class="kpi"><small>Manutenção</small><strong>6</strong></div>
+                <div class="kpi"><small>Liberado</small><strong>19</strong></div>
+              </div>
+
+              <div class="chart-grid">
+                <div class="section-grid">
+                  <div class="row"><span class="badge-square">B2</span><div><strong>GO 8C10 - Carreta</strong><small>Box recomendado: 2</small></div><span class="status-pill waiting">Alta</span></div>
+                  <div class="row"><span class="badge-square">B7</span><div><strong>HJL 4B21 - Comboio</strong><small>Equipe: Oficina 1</small></div><span class="status-pill running">Execução</span></div>
+                  <div class="row"><span class="badge-square">B4</span><div><strong>TRP 9D44 - Cavalo</strong><small>2 itens pendentes</small></div><span class="status-pill waiting">Fila</span></div>
+                </div>
+                <div class="bars detail-card">
+                  <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="concept-notes">
+      <div class="note"><strong>Onde encaixa</strong><p>Técnico, manutenção e relatórios consolidados.</p></div>
+      <div class="note"><strong>O que melhora</strong><p>Dá sensação de central de controle e aproveita melhor desktop/tablet.</p></div>
+      <div class="note"><strong>Risco</strong><p>Médio. No celular precisa de adaptação para não ficar apertado.</p></div>
+    </div>
+  </section>
+
+  <section class="concept" id="opcao-3">
+    <header class="concept-head">
+      <div>
+        <h2>Opção 3 - Campo Guiado</h2>
+        <p>Foco em nova inspeção e manutenção no celular. Fluxo mais orientado, campos grandes e leitura rápida para uso em oficina/campo.</p>
+      </div>
+      <div class="score">
+        <span>Campo</span>
+        <span>Formulários</span>
+        <span>Mobile</span>
+      </div>
+    </header>
+
+    <div class="preview-pair">
+      <article class="mock">
+        <div class="mock-title"><span>Tema claro</span><span>Nova inspeção</span></div>
+        <div class="device">
+          <div class="app light-field">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Criar registro</div>
+                <div class="screen-title">Nova inspeção</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">OK</div>
+            </div>
+
+            <div class="stepper"><span class="active"></span><span class="active"></span><span></span><span></span></div>
+
+            <div class="form-card">
+              <small>Equipamento</small>
+              <div class="form-grid">
+                <div class="fake-input">GO ou placa: ABC-1234</div>
+                <div class="field-row">
+                  <div class="fake-input">Carreta</div>
+                  <div class="fake-input">Preventiva</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-card" style="margin-top:10px;">
+              <small>Novo item</small>
+              <div class="form-grid">
+                <div class="field-row">
+                  <div class="fake-input">Substituir</div>
+                  <div class="fake-input">Lâmpada traseira</div>
+                </div>
+                <div class="chips">
+                  <span class="chip active">Normal</span>
+                  <span class="chip">Avaria</span>
+                  <span class="chip">1º eixo</span>
+                  <span class="chip">Direito</span>
+                </div>
+              </div>
+              <div class="primary-action">Adicionar à lista</div>
+            </div>
+
+            <div class="section-grid">
+              <div class="row"><span class="badge-square">01</span><div><strong>Lâmpada traseira</strong><small>Substituir - lado direito</small></div><span class="status-pill waiting">Novo</span></div>
+              <div class="row"><span class="badge-square">02</span><div><strong>Suporte lateral</strong><small>Soldar - compartimento 2</small></div><span class="status-pill running">Foto</span></div>
+            </div>
+
+            <nav class="bottom-nav">
+              <span>HOME</span><span>MAN</span><span class="active">INS</span><span>TEC</span>
+            </nav>
+          </div>
+        </div>
+      </article>
+
+      <article class="mock dark">
+        <div class="mock-title"><span>Tema escuro</span><span>Nova inspeção</span></div>
+        <div class="device">
+          <div class="app dark-field">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Criar registro</div>
+                <div class="screen-title">Nova inspeção</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">OK</div>
+            </div>
+
+            <div class="stepper"><span class="active"></span><span class="active"></span><span></span><span></span></div>
+
+            <div class="form-card">
+              <small>Equipamento</small>
+              <div class="form-grid">
+                <div class="fake-input">GO ou placa: ABC-1234</div>
+                <div class="field-row">
+                  <div class="fake-input">Carreta</div>
+                  <div class="fake-input">Preventiva</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-card" style="margin-top:10px;">
+              <small>Novo item</small>
+              <div class="form-grid">
+                <div class="field-row">
+                  <div class="fake-input">Substituir</div>
+                  <div class="fake-input">Lâmpada traseira</div>
+                </div>
+                <div class="chips">
+                  <span class="chip active">Normal</span>
+                  <span class="chip">Avaria</span>
+                  <span class="chip">1º eixo</span>
+                  <span class="chip">Direito</span>
+                </div>
+              </div>
+              <div class="primary-action">Adicionar à lista</div>
+            </div>
+
+            <div class="section-grid">
+              <div class="row"><span class="badge-square">01</span><div><strong>Lâmpada traseira</strong><small>Substituir - lado direito</small></div><span class="status-pill waiting">Novo</span></div>
+              <div class="row"><span class="badge-square">02</span><div><strong>Suporte lateral</strong><small>Soldar - compartimento 2</small></div><span class="status-pill running">Foto</span></div>
+            </div>
+
+            <nav class="bottom-nav">
+              <span>HOME</span><span>MAN</span><span class="active">INS</span><span>TEC</span>
+            </nav>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="concept-notes">
+      <div class="note"><strong>Onde encaixa</strong><p>Nova inspeção, detalhe da inspeção e execução da manutenção.</p></div>
+      <div class="note"><strong>O que melhora</strong><p>Menos sensação de formulário solto e mais fluxo guiado para o inspetor.</p></div>
+      <div class="note"><strong>Risco</strong><p>Médio. Pode exigir pequenos ajustes no HTML das telas de formulário.</p></div>
+    </div>
+  </section>
+
+  <section class="concept" id="opcao-4">
+    <header class="concept-head">
+      <div>
+        <h2>Opção 4 - Gestão Executiva</h2>
+        <p>Visual mais premium para relatórios, histórico e indicadores. Menos operacional, mais bom para apresentação e acompanhamento gerencial.</p>
+      </div>
+      <div class="score">
+        <span>Relatórios</span>
+        <span>Indicadores</span>
+        <span>Premium</span>
+      </div>
+    </header>
+
+    <div class="preview-pair">
+      <article class="mock wide">
+        <div class="mock-title"><span>Tema claro</span><span>Detalhe + relatório</span></div>
+        <div class="device">
+          <div class="app light-exec">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Relatório operacional</div>
+                <div class="screen-title">GO 8C10 - Carreta</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">PDF</div>
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-card"><small>Total de itens</small><strong>18</strong></div>
+              <div class="detail-card"><small>Concluídos</small><strong>14</strong></div>
+              <div class="detail-card"><small>Pendentes</small><strong>4</strong></div>
+            </div>
+
+            <div class="chart-grid">
+              <div class="section-grid">
+                <div class="row"><span class="badge-square">SB</span><div><strong>Substituir - Lâmpada traseira</strong><small>3 ocorrências nos últimos registros</small></div><span class="status-pill waiting">Atenção</span></div>
+                <div class="row"><span class="badge-square">SL</span><div><strong>Soldar - Suporte lateral</strong><small>2 ocorrências no compartimento 2</small></div><span class="status-pill running">Oficina</span></div>
+                <div class="row"><span class="badge-square">FX</span><div><strong>Fixar - Paralama</strong><small>Histórico regular</small></div><span class="status-pill done">OK</span></div>
+              </div>
+              <div class="media-card">
+                <img src="Teste 01 - avaria fueiro.png" alt="Avaria">
+                <div><strong>Evidência</strong><br><small>Foto vinculada ao item selecionado</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="mock dark wide">
+        <div class="mock-title"><span>Tema escuro</span><span>Detalhe + relatório</span></div>
+        <div class="device">
+          <div class="app dark-exec">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Relatório operacional</div>
+                <div class="screen-title">GO 8C10 - Carreta</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">PDF</div>
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-card"><small>Total de itens</small><strong>18</strong></div>
+              <div class="detail-card"><small>Concluídos</small><strong>14</strong></div>
+              <div class="detail-card"><small>Pendentes</small><strong>4</strong></div>
+            </div>
+
+            <div class="chart-grid">
+              <div class="section-grid">
+                <div class="row"><span class="badge-square">SB</span><div><strong>Substituir - Lâmpada traseira</strong><small>3 ocorrências nos últimos registros</small></div><span class="status-pill waiting">Atenção</span></div>
+                <div class="row"><span class="badge-square">SL</span><div><strong>Soldar - Suporte lateral</strong><small>2 ocorrências no compartimento 2</small></div><span class="status-pill running">Oficina</span></div>
+                <div class="row"><span class="badge-square">FX</span><div><strong>Fixar - Paralama</strong><small>Histórico regular</small></div><span class="status-pill done">OK</span></div>
+              </div>
+              <div class="media-card">
+                <img src="Teste 01 - avaria fueiro.png" alt="Avaria">
+                <div><strong>Evidência</strong><br><small>Foto vinculada ao item selecionado</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="concept-notes">
+      <div class="note"><strong>Onde encaixa</strong><p>Histórico, relatórios, tela técnica e futura análise de recorrência.</p></div>
+      <div class="note"><strong>O que melhora</strong><p>Ajuda a vender valor para gestão: tendência, repetição e evidência.</p></div>
+      <div class="note"><strong>Risco</strong><p>Mais alto se aplicado em tudo. Melhor usar só onde tiver dados e relatórios.</p></div>
+    </div>
+  </section>
+
+  <section class="concept" id="opcao-5">
+    <header class="concept-head">
+      <div>
+        <h2>Opção 5 - Operacional Guiado</h2>
+        <p>Mistura da opção 1 com a opção 3: visual limpo para o app inteiro, mas com fluxo guiado nos pontos em que o operador precisa preencher dados.</p>
+      </div>
+      <div class="score">
+        <span>Minha escolha</span>
+        <span>Mobile</span>
+        <span>Fluxo claro</span>
+      </div>
+    </header>
+
+    <div class="preview-pair">
+      <article class="mock">
+        <div class="mock-title"><span>Tema claro</span><span>Home + nova inspeção</span></div>
+        <div class="device">
+          <div class="app light-clean">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Operação guiada</div>
+                <div class="screen-title">Nova inspeção</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">OK</div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi"><small>Inspeção</small><strong>12</strong></div>
+              <div class="kpi"><small>Aguardando</small><strong>8</strong></div>
+              <div class="kpi"><small>Manutenção</small><strong>6</strong></div>
+              <div class="kpi"><small>Liberado</small><strong>19</strong></div>
+            </div>
+
+            <div class="stepper"><span class="active"></span><span class="active"></span><span></span><span></span></div>
+
+            <div class="form-card">
+              <small>Equipamento</small>
+              <div class="form-grid">
+                <div class="fake-input">GO ou placa: ABC-1234</div>
+                <div class="field-row">
+                  <div class="fake-input">Carreta</div>
+                  <div class="fake-input">Preventiva</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-card" style="margin-top:10px;">
+              <small>Novo item rastreável</small>
+              <div class="form-grid">
+                <div class="field-row">
+                  <div class="fake-input">Substituir</div>
+                  <div class="fake-input">Lâmpada traseira</div>
+                </div>
+                <div class="chips">
+                  <span class="chip active">Normal</span>
+                  <span class="chip">Avaria</span>
+                  <span class="chip">N/A</span>
+                  <span class="chip">Direito</span>
+                </div>
+              </div>
+              <div class="primary-action">Adicionar à lista</div>
+            </div>
+
+            <div class="section-grid">
+              <div class="row"><span class="badge-square">01</span><div><strong>Lâmpada traseira</strong><small>Substituir - lado direito</small></div><span class="status-pill waiting">Novo</span></div>
+              <div class="row"><span class="badge-square">02</span><div><strong>Suporte lateral</strong><small>Soldar - compartimento 2</small></div><span class="status-pill running">Foto</span></div>
+            </div>
+
+            <nav class="bottom-nav">
+              <span>HOME</span><span>MAN</span><span class="active">INS</span><span>TEC</span>
+            </nav>
+          </div>
+        </div>
+      </article>
+
+      <article class="mock dark">
+        <div class="mock-title"><span>Tema escuro</span><span>Home + nova inspeção</span></div>
+        <div class="device">
+          <div class="app dark-clean">
+            <div class="topbar">
+              <div class="title">
+                <div class="eyebrow">Operação guiada</div>
+                <div class="screen-title">Nova inspeção</div>
+              </div>
+              <div class="logo-pill"><img src="suzano-logo.png" alt=""></div>
+              <div class="icon-btn">OK</div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi"><small>Inspeção</small><strong>12</strong></div>
+              <div class="kpi"><small>Aguardando</small><strong>8</strong></div>
+              <div class="kpi"><small>Manutenção</small><strong>6</strong></div>
+              <div class="kpi"><small>Liberado</small><strong>19</strong></div>
+            </div>
+
+            <div class="stepper"><span class="active"></span><span class="active"></span><span></span><span></span></div>
+
+            <div class="form-card">
+              <small>Equipamento</small>
+              <div class="form-grid">
+                <div class="fake-input">GO ou placa: ABC-1234</div>
+                <div class="field-row">
+                  <div class="fake-input">Carreta</div>
+                  <div class="fake-input">Preventiva</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-card" style="margin-top:10px;">
+              <small>Novo item rastreável</small>
+              <div class="form-grid">
+                <div class="field-row">
+                  <div class="fake-input">Substituir</div>
+                  <div class="fake-input">Lâmpada traseira</div>
+                </div>
+                <div class="chips">
+                  <span class="chip active">Normal</span>
+                  <span class="chip">Avaria</span>
+                  <span class="chip">N/A</span>
+                  <span class="chip">Direito</span>
+                </div>
+              </div>
+              <div class="primary-action">Adicionar à lista</div>
+            </div>
+
+            <div class="section-grid">
+              <div class="row"><span class="badge-square">01</span><div><strong>Lâmpada traseira</strong><small>Substituir - lado direito</small></div><span class="status-pill waiting">Novo</span></div>
+              <div class="row"><span class="badge-square">02</span><div><strong>Suporte lateral</strong><small>Soldar - compartimento 2</small></div><span class="status-pill running">Foto</span></div>
+            </div>
+
+            <nav class="bottom-nav">
+              <span>HOME</span><span>MAN</span><span class="active">INS</span><span>TEC</span>
+            </nav>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="concept-notes">
+      <div class="note"><strong>Onde encaixa</strong><p>Serve como padrão principal: Home, inspeção, manutenção e técnico podem seguir a mesma linguagem.</p></div>
+      <div class="note"><strong>O que mistura</strong><p>Da opção 1 vem a base limpa e consistente; da opção 3 vem o fluxo guiado para preencher sem confusão.</p></div>
+      <div class="note"><strong>Próximo passo</strong><p>Se você curtir, dá para transformar isso em um CSS global e aplicar primeiro na nova inspeção.</p></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

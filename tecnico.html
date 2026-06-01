@@ -143,16 +143,7 @@
     float: right;
   }
 
-  .menu-btn{
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: white;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  font-size: 20px;
-  cursor: pointer;
-}
+
 
   /* Menu Lateral (Sidebar) */
 .sidebar {
@@ -187,6 +178,7 @@
   }
 
   </style>
+  <link rel="stylesheet" href="opcao5-app.css">
 
   </head>
 
@@ -194,14 +186,22 @@
 
   <!-- Ajuste na Topbar para incluir o botão -->
   <!-- Ajuste na Topbar -->
-  <div class="topbar">
-      <span>👷🏻‍♂️ Técnico</span>
-      <!-- Logo central -->
+<div class="topbar">
+
+    <div class="titulo-topbar">
+      👷🏻‍♂️ Técnico
+    </div>
+
     <img src="suzano-logo.png" class="logo-topbar">
-      <!-- Trocado de 🔍 para as três listrinhas -->
-<button onclick="toggleFiltros()" class="menu-btn">
-  &#9776;
-</button>  </div>
+
+    <div class="topbar-acoes">
+      <button onclick="toggleFiltros()" class="menu-btn">
+        &#9776;
+      </button>
+    </div>
+
+</div>
+
 
 <div class="filtros">
   <input id="busca" placeholder="Buscar por GO/Placa">

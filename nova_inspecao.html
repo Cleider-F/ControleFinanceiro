@@ -197,6 +197,7 @@
     }
 }
     </style>
+    <link rel="stylesheet" href="opcao5-app.css">
 </head>
 
 <body>
@@ -204,6 +205,15 @@
     <div class="topbar">➕ Nova Inspeção</div>
 
     <div class="container">
+        <div class="op5-caption">
+            Fluxo guiado: preencha o equipamento, adicione os itens rastreáveis e finalize a inspeção.
+        </div>
+        <div class="op5-flow" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
         
         <!-- CARD 1: DADOS DO IMPLEMENTO -->
         <div class="card">
@@ -395,6 +405,7 @@
     </div>
 
 <link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="opcao5-app.css">
 
 <script type="module">
     import { protegerPagina } from "./auth.js";

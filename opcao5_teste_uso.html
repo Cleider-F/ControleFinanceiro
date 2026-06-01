@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opcao 5 - Teste de uso</title>
+<style>
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat/Montserrat-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --green: #00a859;
+  --blue: #0072ce;
+  --lime: #b7d433;
+  --danger: #e53935;
+  --warning: #f59e0b;
+  --radius: 8px;
+  --shadow: 0 14px 34px rgba(6, 47, 43, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Montserrat", Arial, sans-serif;
+  background: var(--page-bg);
+  color: var(--text);
+}
+
+body[data-theme="light"] {
+  --page-bg: linear-gradient(180deg, #f7fffb, #e9f5f2 56%, #deeeee);
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-2: #f4fbfb;
+  --surface-3: #eaf4f7;
+  --text: #102027;
+  --muted: #637680;
+  --line: rgba(16, 32, 39, 0.12);
+  --soft: rgba(0, 168, 89, 0.1);
+  --top: linear-gradient(135deg, #006a57, #0072ce);
+}
+
+body[data-theme="dark"] {
+  --page-bg: linear-gradient(180deg, #061816, #071f23 52%, #082a32);
+  --surface: rgba(14, 28, 34, 0.96);
+  --surface-2: rgba(255, 255, 255, 0.055);
+  --surface-3: rgba(255, 255, 255, 0.08);
+  --text: #f7fbff;
+  --muted: #a6bac4;
+  --line: rgba(255, 255, 255, 0.12);
+  --soft: rgba(0, 168, 89, 0.16);
+  --top: rgba(255, 255, 255, 0.075);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 12px 12px 92px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 64px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius);
+  color: #fff;
+  background: var(--top);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.title {
+  min-width: 0;
+  margin-top: 2px;
+  font-size: 19px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo-box {
+  width: 92px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.logo-box img {
+  max-width: 78px;
+  max-height: 22px;
+}
+
+.theme-btn,
+.ghost-btn,
+.icon-btn {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: inherit;
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.topbar .theme-btn {
+  width: 42px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.notice {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.grid {
+  display: grid;
+  gap: 10px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.card,
+.kpi,
+.row,
+.form-panel,
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.card {
+  min-height: 112px;
+  padding: 14px;
+  display: grid;
+  align-content: space-between;
+  text-align: left;
+}
+
+.mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: #fff;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.card strong,
+.row strong,
+.panel strong {
+  display: block;
+  min-width: 0;
+}
+
+.muted,
+.card small,
+.kpi small,
+.row small,
+.panel small,
+.form-panel small {
+  color: var(--muted);
+}
+
+.kpi {
+  min-height: 82px;
+  padding: 11px;
+}
+
+.kpi strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+}
+
+.panel {
+  padding: 14px;
+}
+
+.panel-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.panel-title h2,
+.panel-title h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.form-panel {
+  padding: 14px;
+}
+
+.form-panel h2,
+.form-panel h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin: 12px 0;
+}
+
+.stepper span {
+  height: 7px;
+  border-radius: 999px;
+  background: var(--surface-3);
+}
+
+.stepper span.active {
+  background: linear-gradient(90deg, var(--green), var(--blue));
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  background: var(--surface-2);
+  outline: none;
+}
+
+textarea {
+  min-height: 82px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(0, 168, 89, 0.15);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.chip {
+  width: auto;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--surface-2);
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.chip.active {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+}
+
+.primary,
+.danger,
+.secondary {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: var(--radius);
+  color: #fff;
+  font-weight: 900;
+}
+
+.primary {
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  box-shadow: 0 12px 24px rgba(0, 114, 206, 0.2);
+}
+
+.secondary {
+  color: var(--text);
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.danger {
+  background: var(--danger);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 68px;
+  padding: 10px;
+  box-shadow: none;
+}
+
+.row strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.row-actions button {
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.badge {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: #fff;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.pill {
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.pill.inspecao {
+  color: #063a2e;
+  background: #c8f5ca;
+}
+
+.pill.aguardando {
+  color: #4b2c00;
+  background: #ffe0a3;
+}
+
+.pill.manutencao {
+  color: #003b3f;
+  background: #a8f2ff;
+}
+
+.pill.liberado {
+  color: #113d13;
+  background: #d8f7d8;
+}
+
+body[data-theme="dark"] .pill.inspecao {
+  color: #bdf2c3;
+  background: rgba(0, 168, 89, 0.18);
+}
+
+body[data-theme="dark"] .pill.aguardando {
+  color: #ffd894;
+  background: rgba(245, 158, 11, 0.18);
+}
+
+body[data-theme="dark"] .pill.manutencao {
+  color: #91ecff;
+  background: rgba(0, 114, 206, 0.22);
+}
+
+body[data-theme="dark"] .pill.liberado {
+  color: #c8f5ca;
+  background: rgba(183, 212, 51, 0.16);
+}
+
+.photo-preview {
+  width: 100%;
+  max-height: 170px;
+  display: none;
+  margin-top: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
+.empty {
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-align: center;
+  background: var(--surface-2);
+  font-size: 13px;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  z-index: 25;
+  width: min(620px, calc(100% - 20px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 38px rgba(6, 47, 43, 0.2);
+}
+
+.bottom-nav button {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.bottom-nav button.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+}
+
+.desktop-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  gap: 12px;
+}
+
+.bars {
+  min-height: 210px;
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  padding: 14px;
+}
+
+.bar {
+  flex: 1;
+  min-height: 30px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--lime), var(--green), var(--blue));
+}
+
+.bar:nth-child(1) { height: 46%; }
+.bar:nth-child(2) { height: 72%; }
+.bar:nth-child(3) { height: 58%; }
+.bar:nth-child(4) { height: 88%; }
+.bar:nth-child(5) { height: 62%; }
+
+.view {
+  margin-top: 12px;
+}
+
+.hide {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .desktop-grid,
+  .grid-4,
+  .grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .logo-box {
+    display: none;
+  }
+
+  .grid-2,
+  .desktop-grid,
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .row {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .row-actions {
+    grid-column: 1 / -1;
+  }
+
+  .row-actions button {
+    flex: 1;
+  }
+}
+</style>
+</head>
+<body data-theme="light">
+<main class="app-shell">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow" id="topEyebrow">Opcao 5 em teste</div>
+      <div class="title" id="topTitle">Operacional Guiado</div>
+    </div>
+    <div class="logo-box"><img src="suzano-logo.png" alt="Suzano"></div>
+    <button class="theme-btn" type="button" data-action="toggle-theme">DM</button>
+  </header>
+
+  <div class="notice">
+    Prototipo local: voce pode clicar, adicionar itens e finalizar inspecoes de teste. Nada aqui grava no Firebase ou muda o app real.
+  </div>
+
+  <section class="view" id="view"></section>
+</main>
+
+<nav class="bottom-nav" aria-label="Navegacao do prototipo">
+  <button type="button" data-view="home" class="active">HOME</button>
+  <button type="button" data-view="new">INS</button>
+  <button type="button" data-view="maintenance">MAN</button>
+  <button type="button" data-view="tech">TEC</button>
+</nav>
+
+<datalist id="catalogList"></datalist>
+
+<script>
+const STORAGE_KEY = "opcao5TesteUso";
+const THEME_KEY = "opcao5TesteTema";
+
+const statusLabels = {
+  em_inspecao: "Inspecao",
+  aguardando_manutencao: "Aguardando",
+  em_manutencao: "Manutencao",
+  liberado: "Liberado"
+};
+
+const statusClass = {
+  em_inspecao: "inspecao",
+  aguardando_manutencao: "aguardando",
+  em_manutencao: "manutencao",
+  liberado: "liberado"
+};
+
+const nextStatus = {
+  em_inspecao: "aguardando_manutencao",
+  aguardando_manutencao: "em_manutencao",
+  em_manutencao: "liberado"
+};
+
+const nextStatusText = {
+  em_inspecao: "Enviar manut.",
+  aguardando_manutencao: "Iniciar",
+  em_manutencao: "Liberar"
+};
+
+const sampleRecords = [
+  {
+    id: "demo-1",
+    placa: "GO 8C10",
+    tipo: "carreta",
+    tipoManutencao: "preventiva",
+    status: "aguardando_manutencao",
+    createdAt: "01/06/2026 08:35",
+    items: [
+      { acao: "substituir", item: "Lampada traseira", classificacao: "normal", eixo: "N/A", lado: "direito", compartimento: "2" },
+      { acao: "soldar", item: "Suporte lateral", classificacao: "avaria", eixo: "N/A", lado: "esquerdo", compartimento: "2" }
+    ]
+  },
+  {
+    id: "demo-2",
+    placa: "HJL 4B21",
+    tipo: "comboio",
+    tipoManutencao: "revisao",
+    status: "em_manutencao",
+    createdAt: "01/06/2026 09:12",
+    items: [
+      { acao: "corrigir", item: "Vazamento de mangueira", classificacao: "avaria", eixo: "N/A", lado: "N/A", compartimento: "" }
+    ]
+  },
+  {
+    id: "demo-3",
+    placa: "RXY 2A90",
+    tipo: "prancha",
+    tipoManutencao: "cnp",
+    status: "liberado",
+    createdAt: "31/05/2026 16:20",
+    items: [
+      { acao: "fixar", item: "Paralama", classificacao: "normal", eixo: "2o eixo", lado: "direito", compartimento: "" }
+    ]
+  }
+];
+
+const state = {
+  view: "home",
+  records: [],
+  draftItems: [],
+  photoPreview: "",
+  filters: {
+    busca: "",
+    status: ""
+  },
+  draft: {
+    placa: "",
+    tipo: "",
+    tipoManutencao: "",
+    acao: "substituir",
+    item: "",
+    eixo: "N/A",
+    lado: "N/A",
+    classificacao: "normal",
+    compartimento: ""
+  },
+  catalog: {
+    "Lampada traseira": { total: 1, substituir: 1 },
+    "Suporte lateral": { total: 1, soldar: 1 },
+    "Paralama": { total: 1, fixar: 1 },
+    "Vazamento de mangueira": { total: 1, corrigir: 1 }
+  }
+};
+
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      state.records = Array.isArray(parsed.records) ? parsed.records : sampleRecords;
+      state.catalog = parsed.catalog || state.catalog;
+    } catch {
+      state.records = sampleRecords;
+    }
+  } else {
+    state.records = sampleRecords;
+  }
+
+  document.body.dataset.theme = localStorage.getItem(THEME_KEY) || "light";
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    records: state.records,
+    catalog: state.catalog
+  }));
+}
+
+function setTop(title, eyebrow) {
+  document.getElementById("topTitle").textContent = title;
+  document.getElementById("topEyebrow").textContent = eyebrow;
+}
+
+function render() {
+  document.querySelectorAll("[data-view]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.view === state.view);
+  });
+
+  renderCatalog();
+
+  if (state.view === "home") renderHome();
+  if (state.view === "new") renderNewInspection();
+  if (state.view === "maintenance") renderMaintenance();
+  if (state.view === "tech") renderTech();
+}
+
+function counts() {
+  return state.records.reduce((acc, item) => {
+    acc[item.status] = (acc[item.status] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function renderKpis() {
+  const c = counts();
+  return `
+    <div class="grid grid-4">
+      <div class="kpi"><small>Inspecao</small><strong>${c.em_inspecao || 0}</strong></div>
+      <div class="kpi"><small>Aguardando</small><strong>${c.aguardando_manutencao || 0}</strong></div>
+      <div class="kpi"><small>Manutencao</small><strong>${c.em_manutencao || 0}</strong></div>
+      <div class="kpi"><small>Liberado</small><strong>${c.liberado || 0}</strong></div>
+    </div>
+  `;
+}
+
+function renderHome() {
+  setTop("Operacional Guiado", "Opcao 5 em teste");
+  const recent = [...state.records].slice(-4).reverse();
+
+  document.getElementById("view").innerHTML = `
+    ${renderKpis()}
+    <div class="grid grid-2" style="margin-top:12px;">
+      <button type="button" class="card" data-open-view="new">
+        <span class="mark">NI</span>
+        <span><strong>Nova inspecao</strong><small>Fluxo guiado com item rastreavel</small></span>
+      </button>
+      <button type="button" class="card" data-open-view="maintenance">
+        <span class="mark">MN</span>
+        <span><strong>Manutencao</strong><small>Simular mudanca de status</small></span>
+      </button>
+      <button type="button" class="card" data-open-view="tech">
+        <span class="mark">TC</span>
+        <span><strong>Tecnico</strong><small>Contadores e catalogo</small></span>
+      </button>
+      <button type="button" class="card" data-action="reset-demo">
+        <span class="mark">RS</span>
+        <span><strong>Resetar teste</strong><small>Voltar aos dados iniciais</small></span>
+      </button>
+    </div>
+    <div class="panel" style="margin-top:12px;">
+      <div class="panel-title">
+        <h2>Ultimos registros</h2>
+        <button type="button" class="ghost-btn" data-open-view="maintenance">Ver todos</button>
+      </div>
+      <div class="grid">
+        ${recent.map(renderRecordRow).join("") || `<div class="empty">Nenhum registro ainda.</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderNewInspection() {
+  setTop("Nova inspecao", "Operacao guiada");
+  const itemList = state.draftItems.map((item, index) => renderDraftItem(item, index)).join("");
+
+  document.getElementById("view").innerHTML = `
+    ${renderKpis()}
+    <div class="stepper"><span class="active"></span><span class="active"></span><span></span><span></span></div>
+
+    <div class="desktop-grid">
+      <section class="grid">
+        <div class="form-panel">
+          <h2>Equipamento</h2>
+          <div class="grid grid-2">
+            <div>
+              <label>GO ou placa</label>
+              <input id="placa" value="${escapeHtml(state.draft.placa)}" placeholder="Ex: ABC-1234" data-field="placa">
+            </div>
+            <div>
+              <label>Tipo</label>
+              <select id="tipo" data-field="tipo">
+                ${option("", "Selecione", state.draft.tipo)}
+                ${option("carreta", "Carreta", state.draft.tipo)}
+                ${option("prancha", "Prancha", state.draft.tipo)}
+                ${option("comboio", "Comboio", state.draft.tipo)}
+                ${option("cavalo", "Cavalo mecanico", state.draft.tipo)}
+              </select>
+            </div>
+            <div>
+              <label>Manutencao</label>
+              <select data-field="tipoManutencao">
+                ${option("", "Selecione", state.draft.tipoManutencao)}
+                ${option("preventiva", "Preventiva", state.draft.tipoManutencao)}
+                ${option("revisao", "Revisao", state.draft.tipoManutencao)}
+                ${option("cnp", "CNP", state.draft.tipoManutencao)}
+                ${option("gm", "GM", state.draft.tipoManutencao)}
+                ${option("acidente", "Acidente", state.draft.tipoManutencao)}
+              </select>
+            </div>
+            <div>
+              <label>Campo auxiliar</label>
+              <input placeholder="KM, horimetro ou observacao">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-panel">
+          <h2>Novo item rastreavel</h2>
+          <div class="field-row">
+            <div>
+              <label>Selecionar</label>
+              <select data-field="acao">
+                ${option("substituir", "Substituir", state.draft.acao)}
+                ${option("corrigir", "Corrigir", state.draft.acao)}
+                ${option("soldar", "Soldar", state.draft.acao)}
+                ${option("fixar", "Fixar", state.draft.acao)}
+              </select>
+            </div>
+            <div>
+              <label>Item</label>
+              <input list="catalogList" value="${escapeHtml(state.draft.item)}" placeholder="Ex: Lampada traseira" data-field="item">
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label>Eixo</label>
+            <div class="chips" data-chip-group="eixo">
+              ${chip("eixo", "N/A", "N/A")}
+              ${chip("eixo", "1o eixo", "1o eixo")}
+              ${chip("eixo", "2o eixo", "2o eixo")}
+              ${chip("eixo", "3o eixo", "3o eixo")}
+              ${chip("eixo", "4o eixo", "4o eixo")}
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label>Lado</label>
+            <div class="chips" data-chip-group="lado">
+              ${chip("lado", "N/A", "N/A")}
+              ${chip("lado", "Esquerdo", "esquerdo")}
+              ${chip("lado", "Direito", "direito")}
+              ${chip("lado", "Ambos", "ambos")}
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label>Classificacao</label>
+            <div class="chips" data-chip-group="classificacao">
+              ${chip("classificacao", "Normal", "normal")}
+              ${chip("classificacao", "Avaria", "avaria")}
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label>Compartimento</label>
+            <input value="${escapeHtml(state.draft.compartimento)}" placeholder="Opcional" data-field="compartimento">
+          </div>
+
+          <div style="margin-top:12px;">
+            <label>Foto da evidencia</label>
+            <input type="file" accept="image/*" data-action="photo">
+            <img class="photo-preview" id="photoPreview" src="${state.photoPreview}" alt="Preview">
+          </div>
+
+          <div style="margin-top:12px;">
+            <button type="button" class="primary" data-action="add-item">Adicionar a lista</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-title">
+          <h3>Itens da inspecao</h3>
+          <small>${state.draftItems.length} item(ns)</small>
+        </div>
+        <div class="grid">
+          ${itemList || `<div class="empty">Adicione itens para sentir o fluxo da tela.</div>`}
+        </div>
+        <div class="grid grid-2" style="margin-top:12px;">
+          <button type="button" class="secondary" data-action="clear-draft">Limpar</button>
+          <button type="button" class="primary" data-action="finish-inspection">Finalizar teste</button>
+        </div>
+      </aside>
+    </div>
+  `;
+
+  updatePhotoPreview();
+}
+
+function renderMaintenance() {
+  setTop("Manutencao", "Fila operacional");
+  const list = filteredRecords();
+
+  document.getElementById("view").innerHTML = `
+    ${renderKpis()}
+    <div class="panel" style="margin-top:12px;">
+      <div class="panel-title">
+        <h2>Filtros</h2>
+        <button type="button" class="ghost-btn" data-action="clear-filters">Limpar</button>
+      </div>
+      <div class="grid grid-2">
+        <input value="${escapeHtml(state.filters.busca)}" placeholder="Buscar GO ou placa" data-filter="busca">
+        <select data-filter="status">
+          ${option("", "Todos os status", state.filters.status)}
+          ${option("em_inspecao", "Inspecao", state.filters.status)}
+          ${option("aguardando_manutencao", "Aguardando", state.filters.status)}
+          ${option("em_manutencao", "Manutencao", state.filters.status)}
+          ${option("liberado", "Liberado", state.filters.status)}
+        </select>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:12px;">
+      <div class="panel-title">
+        <h2>Registros</h2>
+        <small>${list.length} encontrado(s)</small>
+      </div>
+      <div class="grid">
+        ${list.map(renderRecordRow).join("") || `<div class="empty">Nenhum registro encontrado.</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderTech() {
+  setTop("Tecnico", "Indicadores e catalogo");
+  const catalogRows = Object.entries(state.catalog)
+    .sort((a, b) => (b[1].total || 0) - (a[1].total || 0))
+    .slice(0, 8)
+    .map(([name, data], index) => `
+      <div class="row">
+        <span class="badge">${String(index + 1).padStart(2, "0")}</span>
+        <div>
+          <strong>${escapeHtml(name)}</strong>
+          <small>Usos: ${data.total || 0} | Sub: ${data.substituir || 0} | Corr: ${data.corrigir || 0} | Sold: ${data.soldar || 0} | Fix: ${data.fixar || 0}</small>
+        </div>
+        <span class="pill manutencao">Item</span>
+      </div>
+    `).join("");
+
+  document.getElementById("view").innerHTML = `
+    ${renderKpis()}
+    <div class="desktop-grid" style="margin-top:12px;">
+      <section class="panel">
+        <div class="panel-title">
+          <h2>Itens mais recorrentes</h2>
+          <small>Catalogo local</small>
+        </div>
+        <div class="grid">
+          ${catalogRows || `<div class="empty">Finalize uma inspecao para alimentar o catalogo.</div>`}
+        </div>
+      </section>
+      <aside class="panel">
+        <div class="panel-title">
+          <h2>Tendencia visual</h2>
+          <small>Mock de grafico</small>
+        </div>
+        <div class="bars">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </aside>
+    </div>
+  `;
+}
+
+function renderRecordRow(record) {
+  const items = record.items || [];
+  const next = nextStatus[record.status];
+  return `
+    <div class="row">
+      <span class="badge">${escapeHtml(record.placa.split(" ")[0] || "GO")}</span>
+      <div>
+        <strong>${escapeHtml(record.placa)} - ${escapeHtml(formatTitle(record.tipo))}</strong>
+        <small>${escapeHtml(formatTitle(record.tipoManutencao))} | ${items.length} item(ns) | ${record.createdAt || "-"}</small>
+      </div>
+      <div class="row-actions">
+        <span class="pill ${statusClass[record.status]}">${statusLabels[record.status]}</span>
+        ${next ? `<button type="button" data-action="advance-status" data-id="${record.id}">${nextStatusText[record.status]}</button>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function renderDraftItem(item, index) {
+  return `
+    <div class="row">
+      <span class="badge">${String(index + 1).padStart(2, "0")}</span>
+      <div>
+        <strong>${escapeHtml(item.item)}</strong>
+        <small>${formatTitle(item.acao)} | ${formatTitle(item.classificacao)} | ${item.eixo} | ${item.lado}${item.compartimento ? " | Comp. " + escapeHtml(item.compartimento) : ""}</small>
+      </div>
+      <div class="row-actions">
+        <button type="button" data-action="remove-draft-item" data-index="${index}">Remover</button>
+      </div>
+    </div>
+  `;
+}
+
+function filteredRecords() {
+  return state.records.filter(record => {
+    const busca = state.filters.busca.trim().toLowerCase();
+    const matchBusca = !busca || record.placa.toLowerCase().includes(busca);
+    const matchStatus = !state.filters.status || record.status === state.filters.status;
+    return matchBusca && matchStatus;
+  });
+}
+
+function renderCatalog() {
+  document.getElementById("catalogList").innerHTML = Object.keys(state.catalog)
+    .sort((a, b) => a.localeCompare(b, "pt-BR"))
+    .map(name => `<option value="${escapeHtml(name)}"></option>`)
+    .join("");
+}
+
+function option(value, label, selected) {
+  return `<option value="${value}" ${value === selected ? "selected" : ""}>${label}</option>`;
+}
+
+function chip(field, label, value) {
+  return `<button type="button" class="chip ${state.draft[field] === value ? "active" : ""}" data-chip="${field}" data-value="${value}">${label}</button>`;
+}
+
+function formatTitle(value) {
+  return String(value || "-")
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function updatePhotoPreview() {
+  const img = document.getElementById("photoPreview");
+  if (!img) return;
+  img.style.display = state.photoPreview ? "block" : "none";
+}
+
+function addToCatalog(item) {
+  const name = item.item.trim();
+  if (!name) return;
+  const current = state.catalog[name] || { total: 0 };
+  current.total = (current.total || 0) + 1;
+  current[item.acao] = (current[item.acao] || 0) + 1;
+  state.catalog[name] = current;
+}
+
+function resetDraft() {
+  state.draft = {
+    placa: "",
+    tipo: "",
+    tipoManutencao: "",
+    acao: "substituir",
+    item: "",
+    eixo: "N/A",
+    lado: "N/A",
+    classificacao: "normal",
+    compartimento: ""
+  };
+  state.draftItems = [];
+  state.photoPreview = "";
+}
+
+document.addEventListener("click", event => {
+  const openView = event.target.closest("[data-open-view]");
+  if (openView) {
+    state.view = openView.dataset.openView;
+    render();
+    return;
+  }
+
+  const nav = event.target.closest("[data-view]");
+  if (nav) {
+    state.view = nav.dataset.view;
+    render();
+    return;
+  }
+
+  const chipButton = event.target.closest("[data-chip]");
+  if (chipButton) {
+    state.draft[chipButton.dataset.chip] = chipButton.dataset.value;
+    renderNewInspection();
+    return;
+  }
+
+  const action = event.target.closest("[data-action]");
+  if (!action) return;
+
+  if (action.dataset.action === "toggle-theme") {
+    const next = document.body.dataset.theme === "light" ? "dark" : "light";
+    document.body.dataset.theme = next;
+    localStorage.setItem(THEME_KEY, next);
+    return;
+  }
+
+  if (action.dataset.action === "add-item") {
+    if (!state.draft.item.trim()) {
+      alert("Informe o item de manutencao.");
+      return;
+    }
+    state.draftItems.push({
+      acao: state.draft.acao,
+      item: state.draft.item.trim(),
+      eixo: state.draft.eixo,
+      lado: state.draft.lado,
+      classificacao: state.draft.classificacao,
+      compartimento: state.draft.compartimento.trim()
+    });
+    state.draft.item = "";
+    state.draft.compartimento = "";
+    state.photoPreview = "";
+    renderNewInspection();
+    return;
+  }
+
+  if (action.dataset.action === "remove-draft-item") {
+    state.draftItems.splice(Number(action.dataset.index), 1);
+    renderNewInspection();
+    return;
+  }
+
+  if (action.dataset.action === "clear-draft") {
+    resetDraft();
+    renderNewInspection();
+    return;
+  }
+
+  if (action.dataset.action === "finish-inspection") {
+    if (!state.draft.placa.trim() || !state.draft.tipo || !state.draft.tipoManutencao) {
+      alert("Preencha GO/placa, tipo e manutencao.");
+      return;
+    }
+    if (!state.draftItems.length) {
+      alert("Adicione pelo menos um item.");
+      return;
+    }
+    const record = {
+      id: "teste-" + Date.now(),
+      placa: state.draft.placa.trim(),
+      tipo: state.draft.tipo,
+      tipoManutencao: state.draft.tipoManutencao,
+      status: "em_inspecao",
+      createdAt: new Date().toLocaleString("pt-BR"),
+      items: state.draftItems
+    };
+    state.draftItems.forEach(addToCatalog);
+    state.records.unshift(record);
+    resetDraft();
+    saveState();
+    state.view = "maintenance";
+    render();
+    return;
+  }
+
+  if (action.dataset.action === "advance-status") {
+    const record = state.records.find(item => item.id === action.dataset.id);
+    if (record && nextStatus[record.status]) {
+      record.status = nextStatus[record.status];
+      saveState();
+      render();
+    }
+    return;
+  }
+
+  if (action.dataset.action === "clear-filters") {
+    state.filters.busca = "";
+    state.filters.status = "";
+    renderMaintenance();
+    return;
+  }
+
+  if (action.dataset.action === "reset-demo") {
+    localStorage.removeItem(STORAGE_KEY);
+    state.records = JSON.parse(JSON.stringify(sampleRecords));
+    state.catalog = {
+      "Lampada traseira": { total: 1, substituir: 1 },
+      "Suporte lateral": { total: 1, soldar: 1 },
+      "Paralama": { total: 1, fixar: 1 },
+      "Vazamento de mangueira": { total: 1, corrigir: 1 }
+    };
+    resetDraft();
+    render();
+  }
+});
+
+document.addEventListener("input", event => {
+  const field = event.target.dataset.field;
+  if (field) {
+    state.draft[field] = event.target.value;
+  }
+
+  const filter = event.target.dataset.filter;
+  if (filter) {
+    state.filters[filter] = event.target.value;
+    renderMaintenance();
+  }
+
+  if (event.target.dataset.action === "photo" && event.target.files && event.target.files[0]) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      state.photoPreview = reader.result;
+      updatePhotoPreview();
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  }
+});
+
+document.addEventListener("change", event => {
+  const field = event.target.dataset.field;
+  if (field) {
+    state.draft[field] = event.target.value;
+    if (state.view === "new") renderNewInspection();
+  }
+
+  const filter = event.target.dataset.filter;
+  if (filter) {
+    state.filters[filter] = event.target.value;
+    renderMaintenance();
+  }
+});
+
+loadState();
+render();
+</script>
+</body>
+</html>
