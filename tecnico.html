@@ -64,6 +64,50 @@
     padding: 10px;
   }
 
+  .paginacao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 0 4px;
+  }
+
+  .paginacao-info {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .paginacao-botao {
+    min-width: 38px;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #ffffff;
+    color: #1f2937;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    cursor: pointer;
+  }
+
+  .paginacao-botao.ativo {
+    background: #1f2937;
+    color: #ffffff;
+  }
+
+  .paginacao-botao:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .lista-vazia {
+    padding: 18px;
+    text-align: center;
+    color: #666;
+  }
+
   /* CARD */
   .card {
     background: white;
@@ -178,7 +222,6 @@
   }
 
   </style>
-  <link rel="stylesheet" href="opcao5-app.css">
 
   </head>
 
@@ -280,6 +323,9 @@
       <button onclick="gerarRelatorioGeral()" class="btn-sucesso" style="background:#2e7d32; margin-top:10px;">
           📊 Gerar PDF por Período
       </button>
+      <button onclick="gerarRelatorioRecorrencia()" class="btn-sucesso" style="background:#1565c0; margin-top:10px;">
+          📈 Relatório de Recorrência
+      </button>
       <hr style="margin:20px 0; border:none; border-top:1px solid #ddd;">
 </div>
 
@@ -326,6 +372,7 @@
   protegerPagina(["tecnico"]);
 
   import { db } from "./firebase.js";
+  import { excluirNaoConformidadeComRecorrencia } from "./recorrencia.js";
   import {
     collection,
     getDoc,
@@ -338,7 +385,9 @@
     addDoc,
     Timestamp,
     limit,
-    orderBy
+    orderBy,
+    startAt,
+    endAt
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 if ("serviceWorker" in navigator) {
@@ -350,6 +399,8 @@ if ("serviceWorker" in navigator) {
 }
 
   let dados = [];
+  let paginaAtual = 1;
+  const itensPorPagina = 15;
 
  
   // 🎨 STATUS
@@ -459,7 +510,11 @@ const snap = await getDocs(q);
   }
 
   // 🔎 FILTROS
-  function aplicarFiltros() {
+  function aplicarFiltros(resetarPagina = true) {
+
+    if (resetarPagina) {
+      paginaAtual = 1;
+    }
 
     const busca = document.getElementById("busca").value.toLowerCase();
     const tipo = document.getElementById("filtroTipo").value;
@@ -506,7 +561,22 @@ const snap = await getDocs(q);
     const container = document.getElementById("lista");
     container.innerHTML = "";
 
-    lista.forEach(item => {
+    if (!lista.length) {
+      container.innerHTML = `<div class="card lista-vazia">Nenhuma frota encontrada.</div>`;
+      return;
+    }
+
+    const totalPaginas = Math.ceil(lista.length / itensPorPagina);
+
+    if (paginaAtual > totalPaginas) {
+      paginaAtual = totalPaginas;
+    }
+
+    const inicio = (paginaAtual - 1) * itensPorPagina;
+    const fim = inicio + itensPorPagina;
+    const listaPaginada = lista.slice(inicio, fim);
+
+    listaPaginada.forEach(item => {
 
       const status = getStatusInfo(item.status);
 
@@ -628,7 +698,54 @@ ${
 
       container.appendChild(div);
     });
+
+    renderPaginacao(container, lista.length, totalPaginas, inicio, listaPaginada.length);
   }
+
+  function renderPaginacao(container, totalItens, totalPaginas, inicio, quantidadePagina) {
+    if (totalPaginas <= 1) return;
+
+    const paginacao = document.createElement("div");
+    paginacao.className = "paginacao";
+
+    const fimExibicao = inicio + quantidadePagina;
+    const botoes = [];
+
+    botoes.push(`
+      <button class="paginacao-botao" onclick="irParaPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? "disabled" : ""}>
+        &lt;
+      </button>
+    `);
+
+    for (let pagina = 1; pagina <= totalPaginas; pagina++) {
+      botoes.push(`
+        <button class="paginacao-botao ${pagina === paginaAtual ? "ativo" : ""}" onclick="irParaPagina(${pagina})">
+          ${pagina}
+        </button>
+      `);
+    }
+
+    botoes.push(`
+      <button class="paginacao-botao" onclick="irParaPagina(${paginaAtual + 1})" ${paginaAtual === totalPaginas ? "disabled" : ""}>
+        &gt;
+      </button>
+    `);
+
+    paginacao.innerHTML = `
+      <div class="paginacao-info">
+        Mostrando ${inicio + 1}-${fimExibicao} de ${totalItens} frotas
+      </div>
+      ${botoes.join("")}
+    `;
+
+    container.appendChild(paginacao);
+  }
+
+  window.irParaPagina = function(pagina) {
+    paginaAtual = Math.max(1, pagina);
+    aplicarFiltros(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // 🔄 EVENTOS
   document.getElementById("busca").addEventListener("input", aplicarFiltros);
@@ -684,7 +801,10 @@ ${
         const snapItens = await getDocs(qItens);
 
         for (const item of snapItens.docs) {
-          await deleteDoc(doc(db, "naoConformidades", item.id));
+          await excluirNaoConformidadeComRecorrencia(
+            db,
+            doc(db, "naoConformidades", item.id)
+          );
         }
 
         await deleteDoc(doc(db, "inspecoes", inspecaoId));
@@ -943,6 +1063,123 @@ ${
       });
 
       pdf.save(`Relatorio_Manutencao_${new Date().getTime()}.pdf`);
+  };
+
+  function getAnoMesFiltro(valor, fallback) {
+      if (!valor) return fallback;
+      return valor.slice(0, 7);
+  }
+
+  function formatarAcaoManutencao(acao) {
+      const mapa = {
+          corrigir: "Corrigir",
+          substituir: "Substituir",
+          avaliar: "Avaliar",
+          instalar: "Instalar",
+          retirar: "Retirar",
+          nao_informada: "Não informada"
+      };
+
+      return mapa[acao] || String(acao || "-").replaceAll("_", " ");
+  }
+
+  function consolidarRecorrencias(docs) {
+      const mapa = {};
+
+      docs.forEach(docSnap => {
+          const item = docSnap.data();
+          const chave = `${item.tipoEquipamento || "nao_informado"}__${item.acaoManutencao || "nao_informada"}__${item.itemManutencaoId || docSnap.id}`;
+
+          if (!mapa[chave]) {
+              mapa[chave] = {
+                  tipoEquipamento: item.tipoEquipamento || "-",
+                  acaoManutencao: item.acaoManutencao || "nao_informada",
+                  descricaoPadronizada: item.descricaoPadronizada || "-",
+                  total: 0
+              };
+          }
+
+          mapa[chave].total += Number(item.total || 0);
+      });
+
+      return Object.values(mapa)
+          .filter(item => item.total > 0)
+          .sort((a, b) => b.total - a.total || a.descricaoPadronizada.localeCompare(b.descricaoPadronizada));
+  }
+
+  window.gerarRelatorioRecorrencia = async function() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('l', 'mm', 'a4');
+
+      const dInicio = document.getElementById("dataInicio").value;
+      const dFim = document.getElementById("dataFim").value;
+      const fTipo = document.querySelector("#sidebarFiltros #filtroTipo")?.value || "";
+
+      const usarPeriodo = Boolean(dInicio || dFim);
+      const inicioMes = getAnoMesFiltro(dInicio, "0000-01");
+      const fimMes = getAnoMesFiltro(dFim, "9999-12");
+
+      const qRecorrencia = usarPeriodo
+          ? query(
+              collection(db, "recorrenciaManutencaoMensal"),
+              orderBy("anoMes"),
+              startAt(inicioMes),
+              endAt(fimMes)
+          )
+          : query(
+              collection(db, "recorrenciaManutencao"),
+              orderBy("total", "desc"),
+              limit(300)
+          );
+
+      const snap = await getDocs(qRecorrencia);
+      let recorrencias = consolidarRecorrencias(snap.docs);
+
+      if (fTipo) {
+          recorrencias = recorrencias.filter(item => item.tipoEquipamento === fTipo);
+      }
+
+      if (!recorrencias.length) {
+          alert("Nenhuma recorrência encontrada para este filtro.");
+          return;
+      }
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(16);
+      pdf.text("Relatório de Recorrência de Manutenção", 148, 15, { align: "center" });
+      pdf.setFontSize(10);
+      pdf.text(`Período: ${dInicio || 'Início'} até ${dFim || 'Hoje'}`, 148, 22, { align: "center" });
+
+      let y = 35;
+      pdf.setFillColor(31, 41, 55);
+      pdf.rect(10, y, 277, 8, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.text("TIPO EQUIP.", 12, y + 5);
+      pdf.text("AÇÃO", 55, y + 5);
+      pdf.text("ITEM", 105, y + 5);
+      pdf.text("TOTAL", 265, y + 5);
+
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFont("helvetica", "normal");
+
+      recorrencias.slice(0, 120).forEach(item => {
+          y += 8;
+          if (y > 185) {
+              pdf.addPage('l');
+              y = 20;
+          }
+
+          const descricao = pdf.splitTextToSize(item.descricaoPadronizada || "-", 145)[0] || "-";
+          pdf.text(item.tipoEquipamento || "-", 12, y + 5);
+          pdf.text(formatarAcaoManutencao(item.acaoManutencao), 55, y + 5);
+          pdf.text(descricao, 105, y + 5);
+          pdf.text(String(item.total), 268, y + 5);
+
+          pdf.setDrawColor(230);
+          pdf.line(10, y + 8, 287, y + 8);
+      });
+
+      pdf.save(`Relatorio_Recorrencia_${new Date().getTime()}.pdf`);
   };
 
   window.toggleFiltros = function() {

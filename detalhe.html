@@ -368,7 +368,6 @@
 
 
     </style>
-    <link rel="stylesheet" href="opcao5-app.css">
 
 </head>
 
@@ -420,7 +419,6 @@
 
 
 <link rel="stylesheet" href="navbar.css">
-<link rel="stylesheet" href="opcao5-app.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -435,13 +433,19 @@
     query,
     where,
     getDocs,
+    setDoc,
     updateDoc,
     deleteDoc,
     addDoc,
+    arrayUnion,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     import { carregarNavbar } from "./navbar.js";
+    import {
+        atualizarNaoConformidadeComRecorrencia,
+        excluirNaoConformidadeComRecorrencia
+    } from "./recorrencia.js";
 
 
     carregarNavbar();
@@ -455,6 +459,51 @@
     let implemento = null;
 
     let inspecao = null;
+
+    function normalizarTextoItem(texto) {
+        return String(texto || "")
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, " ");
+    }
+
+    function criarIdItemManutencao(descricao) {
+        return normalizarTextoItem(descricao)
+            .replace(/[^a-z0-9]+/g, "_")
+            .replace(/^_+|_+$/g, "")
+            .slice(0, 120) || "item_manutencao";
+    }
+
+    function montarDadosCatalogo(descricao, tipoEquipamento = "") {
+        const descricaoPadronizada = descricao.trim().replace(/\s+/g, " ");
+        return {
+            id: criarIdItemManutencao(descricaoPadronizada),
+            descricaoPadronizada,
+            descricaoBusca: normalizarTextoItem(descricaoPadronizada),
+            tipoEquipamento: tipoEquipamento || null
+        };
+    }
+
+    async function salvarItemNoCatalogo(descricao, tipoEquipamento) {
+        const dados = montarDadosCatalogo(descricao, tipoEquipamento);
+        if (!dados.descricaoBusca) return dados;
+
+        await setDoc(
+            doc(db, "itensManutencao", dados.id),
+            {
+                descricao: dados.descricaoPadronizada,
+                descricaoPadronizada: dados.descricaoPadronizada,
+                descricaoBusca: dados.descricaoBusca,
+                tiposEquipamento: tipoEquipamento ? arrayUnion(tipoEquipamento) : arrayUnion("geral"),
+                atualizadoEm: serverTimestamp()
+            },
+            { merge: true }
+        );
+
+        return dados;
+    }
 
 
     // Helper para formatar o status com cores
@@ -937,10 +986,10 @@ window.finalizar = async function () {
         const tipoLimpo = tipoOriginal.trim().toLowerCase();
 
         const responsaveis = {
-            "carreta": "cmcmanutencao@outlook.com",
-            "prancha": "cleider1000@hotmail.com",
-            "comboio": "cleider1000@hotmail.com",
-            "cavalo": "cleider1000@hotmail.com"
+            "carreta": "cmcmanutencao@outlook.com , douglassales@suzano.com.br",
+                "prancha": "cmcmanutencao@outlook.com , douglassales@suzano.com.br",
+                "comboio": "cmcmanutencao@outlook.com , cleiton.cp@suzano.com.br, gleysonmurca@suzano.com.br",
+                "cavalo": "cmcmanutencao@outlook.com , robson@suzano.com.br"
 
         };
 
@@ -1287,7 +1336,10 @@ Object.keys(itensAgrupados).forEach(grupo => {
 
         try {
 
-            await deleteDoc(doc(db, "naoConformidades", itemId));
+            await excluirNaoConformidadeComRecorrencia(
+                db,
+                doc(db, "naoConformidades", itemId)
+            );
 
             carregar(); // Recarrega a tela suavemente
 
@@ -1354,10 +1406,19 @@ Object.keys(itensAgrupados).forEach(grupo => {
 
 
         try {
+            const tipoEquipamento = implemento?.tipo || "";
+            const itemCatalogo = await salvarItemNoCatalogo(descricao, tipoEquipamento);
 
-            await updateDoc(doc(db, "naoConformidades", docId), {
+            await atualizarNaoConformidadeComRecorrencia(
+                db,
+                doc(db, "naoConformidades", docId),
+                {
 
                 descricao,
+                itemManutencaoId: itemCatalogo.id,
+                descricaoPadronizada: itemCatalogo.descricaoPadronizada,
+                descricaoBusca: itemCatalogo.descricaoBusca,
+                tipoEquipamento: tipoEquipamento || null,
 
                 eixo,
 
@@ -1367,7 +1428,8 @@ Object.keys(itensAgrupados).forEach(grupo => {
 
                 compartimento: compartimento ? Number(compartimento) : null
 
-            });
+                }
+            );
 
             carregar(); // Recarrega para mostrar as atualizações
 

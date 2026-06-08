@@ -59,6 +59,19 @@
     .botao div { font-size: 28px; margin-bottom: 5px; }
     .botao:active { transform: scale(0.96); }
 
+    .credito-desenvolvimento {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+
+    body.dark-mode .credito-desenvolvimento {
+      color: #d1d5db;
+    }
+
     /* Novo Layout: Banner de Instalação do PWA */
 .banner-instalacao {
   background: #2196f3;
@@ -90,7 +103,6 @@
   to { transform: translateY(0); opacity: 1; }
 }
   </style>
-  <link rel="stylesheet" href="opcao5-app.css">
 </head>
 
 <body> 
@@ -114,6 +126,7 @@
     <div class="botao" onclick="ir('inspecao.html')"><div>🔍</div>Inspeção</div>
     <div class="botao" onclick="ir('manutencao.html')"><div>🔧</div>Manutenção</div>
     <div class="botao" onclick="ir('tecnico.html')"><div>👷🏻‍♂️</div>Técnico</div>
+    <span class="credito-desenvolvimento">Criado e desenvolvido por Cleider Filho</span>
   </div>
 
   <script type="module">
