@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BI de Inspeções</title>
+  <title>BI Executivo</title>
   <link rel="stylesheet" href="navbar.css">
 
   <style>
@@ -16,6 +16,7 @@
       --bg: #f1f3f6;
       --line: rgba(6, 47, 43, 0.14);
       --muted: #64748b;
+      --soft: #f8fafc;
     }
 
     body {
@@ -27,7 +28,7 @@
     }
 
     .page {
-      max-width: 1220px;
+      max-width: 1320px;
       margin: 0 auto;
       padding: 14px;
     }
@@ -36,7 +37,8 @@
     .panel,
     .metric-card,
     .rank-card,
-    .detail-card {
+    .detail-card,
+    .insight-card {
       background: white;
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -47,7 +49,7 @@
       padding: 14px;
       margin-bottom: 14px;
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       gap: 10px;
       align-items: end;
     }
@@ -87,6 +89,29 @@
     .btn-primary { background: var(--primary); }
     .btn-success { background: var(--success); }
 
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 0 12px;
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #334155;
+      background: white;
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .tab.active {
+      color: white;
+      background: var(--dark);
+    }
+
     .metrics {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -112,19 +137,40 @@
 
     .metric-value {
       margin-top: 6px;
-      font-size: 28px;
+      font-size: 27px;
       font-weight: 900;
     }
 
-    .grid {
+    .metric-foot {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .grid,
+    .grid-balanced,
+    .grid-3 {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(310px, 0.65fr);
       gap: 14px;
       align-items: start;
     }
 
+    .grid {
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+    }
+
+    .grid-balanced {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .panel {
       overflow: hidden;
+      margin-bottom: 14px;
     }
 
     .panel-header {
@@ -133,7 +179,7 @@
       align-items: center;
       gap: 10px;
       padding: 14px;
-      background: #f8fafc;
+      background: var(--soft);
       border-bottom: 1px solid var(--line);
     }
 
@@ -175,7 +221,7 @@
     }
 
     .rank-count {
-      min-width: 56px;
+      min-width: 58px;
       padding: 6px 8px;
       border-radius: 999px;
       background: #e3f2fd;
@@ -184,7 +230,8 @@
       font-weight: 900;
     }
 
-    .rank-meta {
+    .rank-meta,
+    .detail-meta {
       margin-top: 6px;
       color: var(--muted);
       font-size: 13px;
@@ -212,22 +259,18 @@
       text-align: center;
     }
 
-    .detail-card {
+    .detail-card,
+    .insight-card {
       padding: 12px;
       margin-bottom: 10px;
       border-left: 5px solid var(--warning);
     }
 
-    .detail-card strong {
+    .detail-card strong,
+    .insight-card strong {
       display: block;
       margin-bottom: 5px;
       font-size: 16px;
-    }
-
-    .detail-meta {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
     }
 
     .chips {
@@ -249,6 +292,64 @@
       font-weight: 800;
     }
 
+    .mini-chart {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 7px;
+      min-height: 170px;
+      align-items: end;
+      padding-top: 8px;
+    }
+
+    .mini-bar {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 6px;
+      min-width: 26px;
+      height: 170px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .mini-bar span {
+      align-self: end;
+      display: block;
+      min-height: 3px;
+      border-radius: 8px 8px 0 0;
+      background: linear-gradient(180deg, var(--primary), var(--success));
+    }
+
+    .heatmap {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .heatmap th,
+    .heatmap td {
+      padding: 8px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    .heatmap th:first-child,
+    .heatmap td:first-child {
+      text-align: left;
+    }
+
+    .heat {
+      border-radius: 8px;
+      color: white;
+      font-weight: 900;
+      background: #94a3b8;
+    }
+
+    .heat.low { background: var(--success); }
+    .heat.mid { background: var(--warning); color: #1f2937; }
+    .heat.high { background: var(--danger); }
+
     #toast {
       position: fixed;
       left: 50%;
@@ -267,10 +368,12 @@
       z-index: 3000;
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 1080px) {
       .toolbar,
       .metrics,
-      .grid {
+      .grid,
+      .grid-balanced,
+      .grid-3 {
         grid-template-columns: 1fr;
       }
     }
@@ -279,7 +382,7 @@
 
 <body>
   <div class="topbar">
-    <span class="titulo-topbar">BI de Inspeções</span>
+    <span class="titulo-topbar">BI Executivo</span>
     <img src="suzano-logo.png" class="logo-topbar">
   </div>
 
@@ -319,6 +422,17 @@
       </div>
 
       <div>
+        <label>Status</label>
+        <select id="filtroStatus">
+          <option value="">Todos</option>
+          <option value="em_inspecao">Em inspeção</option>
+          <option value="aguardando_manutencao">Aguardando</option>
+          <option value="em_manutencao">Em manutenção</option>
+          <option value="liberado">Liberado</option>
+        </select>
+      </div>
+
+      <div>
         <label>Tipo do item</label>
         <select id="filtroTipoItem">
           <option value="">Todos</option>
@@ -332,48 +446,21 @@
       <button id="btnAtualizar" class="btn-primary">Atualizar</button>
     </section>
 
-    <section class="metrics">
-      <div class="metric-card">
-        <div class="metric-label">Inspeções no filtro</div>
-        <div id="totalInspecoes" class="metric-value">0</div>
-      </div>
+    <nav class="tabs">
+      <button class="tab active" data-view="executivo">Executivo</button>
+      <button class="tab" data-view="recorrencias">Recorrências</button>
+      <button class="tab" data-view="frota">Frota Problema</button>
+      <button class="tab" data-view="componentes">Componentes</button>
+      <button class="tab" data-view="oficina">Oficina</button>
+      <button class="tab" data-view="inspetores">Inspetores</button>
+    </nav>
 
-      <div class="metric-card warning">
-        <div class="metric-label">Itens inspecionados</div>
-        <div id="totalItens" class="metric-value">0</div>
-      </div>
-
-      <div class="metric-card danger">
-        <div class="metric-label">Avarias</div>
-        <div id="totalAvarias" class="metric-value">0</div>
-      </div>
-
-      <div class="metric-card success">
-        <div class="metric-label">Itens recorrentes</div>
-        <div id="totalRecorrentes" class="metric-value">0</div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <section class="panel">
-        <div class="panel-header">
-          <h2>Recorrência por Item</h2>
-          <button id="btnExportar" class="btn-success">CSV</button>
-        </div>
-        <div id="ranking" class="panel-body rank-list">
-          <div class="empty">Carregando dados...</div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-header">
-          <h2>Detalhe do Item</h2>
-        </div>
-        <div id="detalhe" class="panel-body">
-          <div class="empty">Selecione um item do ranking.</div>
-        </div>
-      </section>
-    </section>
+    <section id="view-executivo" class="view"></section>
+    <section id="view-recorrencias" class="view" style="display:none;"></section>
+    <section id="view-frota" class="view" style="display:none;"></section>
+    <section id="view-componentes" class="view" style="display:none;"></section>
+    <section id="view-oficina" class="view" style="display:none;"></section>
+    <section id="view-inspetores" class="view" style="display:none;"></section>
   </main>
 
   <div id="toast"></div>
@@ -394,20 +481,24 @@
 
     carregarNavbar();
 
-    const dataInicioEl = document.getElementById("dataInicio");
-    const dataFimEl = document.getElementById("dataFim");
-    const filtroTipoEquipamentoEl = document.getElementById("filtroTipoEquipamento");
-    const filtroManutencaoEl = document.getElementById("filtroManutencao");
-    const filtroTipoItemEl = document.getElementById("filtroTipoItem");
-    const btnAtualizar = document.getElementById("btnAtualizar");
-    const btnExportar = document.getElementById("btnExportar");
-    const rankingEl = document.getElementById("ranking");
-    const detalheEl = document.getElementById("detalhe");
+    const els = {
+      dataInicio: document.getElementById("dataInicio"),
+      dataFim: document.getElementById("dataFim"),
+      tipoEquipamento: document.getElementById("filtroTipoEquipamento"),
+      manutencao: document.getElementById("filtroManutencao"),
+      status: document.getElementById("filtroStatus"),
+      tipoItem: document.getElementById("filtroTipoItem"),
+      btnAtualizar: document.getElementById("btnAtualizar")
+    };
 
-    let implementos = [];
-    let itens = [];
-    let resultadoAtual = [];
-    let itemSelecionadoKey = null;
+    const views = {
+      executivo: document.getElementById("view-executivo"),
+      recorrencias: document.getElementById("view-recorrencias"),
+      frota: document.getElementById("view-frota"),
+      componentes: document.getElementById("view-componentes"),
+      oficina: document.getElementById("view-oficina"),
+      inspetores: document.getElementById("view-inspetores")
+    };
 
     const statusLabels = {
       em_inspecao: "Em inspeção",
@@ -424,41 +515,65 @@
       acidente: "Acidente"
     };
 
-    btnAtualizar.addEventListener("click", carregarDados);
-    btnExportar.addEventListener("click", exportarCSV);
+    const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
-    [
-      dataInicioEl,
-      dataFimEl,
-      filtroTipoEquipamentoEl,
-      filtroManutencaoEl,
-      filtroTipoItemEl
-    ].forEach(el => el.addEventListener("change", processar));
+    const componentes = [
+      { nome: "Freios", termos: ["freio", "cuica", "lona", "tambor", "catraca", "patim", "camara", "abs"] },
+      { nome: "Pneus/Rodas", termos: ["pneu", "roda", "cubo", "rolamento", "retentor", "parafuso roda"] },
+      { nome: "Suspensão", termos: ["suspensao", "bolsa", "mola", "bucha", "amortecedor", "balanco"] },
+      { nome: "Elétrica", termos: ["eletrica", "lanterna", "chicote", "sensor", "luz", "lampada", "pisca", "tomada"] },
+      { nome: "Motor", termos: ["motor", "oleo", "correia", "mangueira", "vazamento", "radiador", "filtro"] },
+      { nome: "Hidráulico", termos: ["hidraul", "bomba", "pto", "cilindro", "reservatorio", "valvula"] },
+      { nome: "Estrutural", termos: ["chassi", "trinca", "solda", "quinta roda", "pino rei", "fueiro", "longarina"] }
+    ];
+
+    let implementos = [];
+    let itens = [];
+    let bi = null;
+    let activeView = "executivo";
+    let selectedRecurrence = null;
+    let selectedFleet = null;
+
+    els.btnAtualizar.addEventListener("click", carregarDados);
+    Object.values(els)
+      .filter(el => el.tagName !== "BUTTON")
+      .forEach(el => el.addEventListener("change", processar));
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        activeView = tab.dataset.view;
+        document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === tab));
+        Object.entries(views).forEach(([key, view]) => {
+          view.style.display = key === activeView ? "block" : "none";
+        });
+      });
+    });
 
     function aplicarPeriodoPadrao() {
       const fim = new Date();
       const inicio = new Date();
-      inicio.setDate(inicio.getDate() - 30);
+      inicio.setDate(inicio.getDate() - 90);
 
-      dataInicioEl.value = toInputDate(inicio);
-      dataFimEl.value = toInputDate(fim);
+      els.dataInicio.value = toInputDate(inicio);
+      els.dataFim.value = toInputDate(fim);
     }
 
     async function carregarDados() {
-      btnAtualizar.disabled = true;
-      rankingEl.innerHTML = `<div class="empty">Carregando dados...</div>`;
-      detalheEl.innerHTML = `<div class="empty">Selecione um item do ranking.</div>`;
+      els.btnAtualizar.disabled = true;
+      Object.values(views).forEach(view => {
+        view.innerHTML = `<div class="panel"><div class="empty">Carregando dados...</div></div>`;
+      });
 
       try {
         const qImplementos = query(
           collection(db, "implementos"),
           orderBy("dataInspecao", "desc"),
-          limit(1000)
+          limit(1500)
         );
 
         const qItens = query(
           collection(db, "naoConformidades"),
-          limit(5000)
+          limit(9000)
         );
 
         const [snapImplementos, snapItens] = await Promise.all([
@@ -473,227 +588,676 @@
         showToast("BI atualizado.");
       } catch (e) {
         console.error(e);
-        rankingEl.innerHTML = `<div class="empty">Erro ao carregar dados do BI.</div>`;
+        Object.values(views).forEach(view => {
+          view.innerHTML = `<div class="panel"><div class="empty">Erro ao carregar dados do BI.</div></div>`;
+        });
       } finally {
-        btnAtualizar.disabled = false;
+        els.btnAtualizar.disabled = false;
       }
     }
 
     function processar() {
-      const inicio = dataInicioEl.value ? new Date(dataInicioEl.value + "T00:00:00") : null;
-      const fim = dataFimEl.value ? new Date(dataFimEl.value + "T23:59:59") : null;
-      const tipoEquipamento = filtroTipoEquipamentoEl.value;
-      const tipoManutencao = filtroManutencaoEl.value;
-      const tipoItem = filtroTipoItemEl.value;
+      const inicio = els.dataInicio.value ? new Date(els.dataInicio.value + "T00:00:00") : null;
+      const fim = els.dataFim.value ? new Date(els.dataFim.value + "T23:59:59") : null;
+      const tipoEquipamento = els.tipoEquipamento.value;
+      const manutencao = els.manutencao.value;
+      const status = els.status.value;
+      const tipoItem = els.tipoItem.value;
 
-      const implementosFiltrados = implementos.filter(impl => {
+      const implFiltrados = implementos.filter(impl => {
         const data = toDate(impl.dataInspecao);
-
         if (inicio && (!data || data < inicio)) return false;
         if (fim && (!data || data > fim)) return false;
         if (tipoEquipamento && impl.tipo !== tipoEquipamento) return false;
-        if (tipoManutencao && impl.tipoManutencao !== tipoManutencao) return false;
-
+        if (manutencao && impl.tipoManutencao !== manutencao) return false;
+        if (status && impl.status !== status) return false;
         return true;
       });
 
-      const implementosPorId = new Map(
-        implementosFiltrados.map(impl => [impl.id, impl])
-      );
-
+      const implPorId = new Map(implFiltrados.map(impl => [impl.id, impl]));
       const itensFiltrados = itens.filter(item => {
-        const impl = implementosPorId.get(item.inspecaoId);
-
-        if (!impl) return false;
+        if (!implPorId.has(item.inspecaoId)) return false;
         if (tipoItem && item.tipo !== tipoItem) return false;
-
         return true;
       });
 
+      bi = montarBI(implFiltrados, itensFiltrados, implPorId);
+      renderTudo();
+    }
+
+    function montarBI(implFiltrados, itensFiltrados, implPorId) {
+      const abertas = implFiltrados.filter(i => ["aguardando_manutencao", "em_manutencao"].includes(i.status));
+      const finalizadas = implFiltrados.filter(i => i.status === "liberado");
+      const emManutencao = implFiltrados.filter(i => i.status === "em_manutencao");
+      const aguardandoBox = implFiltrados.filter(i => i.status === "aguardando_manutencao");
+      const disponibilidade = implFiltrados.length ? (finalizadas.length / implFiltrados.length) * 100 : 0;
+
+      const tempoInicio = mediaHoras(implFiltrados.map(i => diffHoras(i.dataInspecao, i.inicioManutencao)));
+      const tempoOficina = mediaHoras(implFiltrados.map(i => diffHoras(i.inicioManutencao, i.dataLiberacao)));
+
+      const recorrencias = calcularRecorrencias(itensFiltrados, implPorId);
+      const frota = calcularFrota(itensFiltrados, implFiltrados, implPorId);
+      const componentesRank = calcularComponentes(itensFiltrados);
+      const oficina = calcularOficina(implFiltrados);
+      const inspetores = calcularInspetores(implFiltrados, itensFiltrados, implPorId);
+
+      return {
+        implFiltrados,
+        itensFiltrados,
+        implPorId,
+        metricas: {
+          totalInspecoes: implFiltrados.length,
+          abertas: abertas.length,
+          finalizadas: finalizadas.length,
+          tempoInicio,
+          tempoOficina,
+          disponibilidade,
+          emManutencao: emManutencao.length,
+          aguardandoBox: aguardandoBox.length,
+          liberadas: finalizadas.length,
+          totalItens: itensFiltrados.length,
+          avarias: itensFiltrados.filter(i => i.tipo === "avaria").length,
+          recorrentes: recorrencias.filter(r => r.total > 1).length
+        },
+        series: {
+          inspecoesDia: agruparPorDia(implFiltrados, "dataInspecao"),
+          manutencoesDia: agruparPorDia(implFiltrados.filter(i => i.inicioManutencao), "inicioManutencao"),
+          mensal: agruparPorMes(implFiltrados, "dataInspecao")
+        },
+        recorrencias,
+        frota,
+        componentes: componentesRank,
+        oficina,
+        inspetores,
+        heatmap: calcularHeatmap(recorrencias)
+      };
+    }
+
+    function calcularRecorrencias(itensBase, implPorId) {
       const grupos = new Map();
 
-      itensFiltrados.forEach(item => {
-        const chave = normalizarDescricao(item.descricao);
-        const impl = implementosPorId.get(item.inspecaoId);
+      itensBase.forEach(item => {
+        const impl = implPorId.get(item.inspecaoId);
+        const key = normalizarDescricao(item.descricao);
+        if (!impl || !key) return;
 
-        if (!chave || !impl) return;
-
-        if (!grupos.has(chave)) {
-          grupos.set(chave, {
-            key: chave,
+        if (!grupos.has(key)) {
+          grupos.set(key, {
+            key,
             descricao: item.descricao || "-",
             total: 0,
             avarias: 0,
             implementos: new Set(),
             tiposItem: new Map(),
             grupos: new Map(),
+            componentes: new Map(),
             ocorrencias: []
           });
         }
 
-        const grupo = grupos.get(chave);
+        const grupo = grupos.get(key);
+        const componente = classificarComponente(item);
         grupo.total++;
         if (item.tipo === "avaria") grupo.avarias++;
         grupo.implementos.add(impl.id);
         somarMap(grupo.tiposItem, item.tipo || "-");
         somarMap(grupo.grupos, item.grupo || "GERAL");
-        grupo.ocorrencias.push({ item, implemento: impl });
+        somarMap(grupo.componentes, componente);
+        grupo.ocorrencias.push({ item, implemento: impl, componente });
       });
 
-      resultadoAtual = Array.from(grupos.values())
-        .map(grupo => ({
-          ...grupo,
-          implementosQtd: grupo.implementos.size,
-          tiposItemLista: mapToSortedArray(grupo.tiposItem),
-          gruposLista: mapToSortedArray(grupo.grupos)
+      return Array.from(grupos.values())
+        .map(g => ({
+          ...g,
+          implementosQtd: g.implementos.size,
+          tiposItemLista: mapToSortedArray(g.tiposItem),
+          gruposLista: mapToSortedArray(g.grupos),
+          componentesLista: mapToSortedArray(g.componentes),
+          mtbfDias: calcularMTBF(g.ocorrencias)
         }))
-        .sort((a, b) => {
-          if (b.total !== a.total) return b.total - a.total;
-          return a.descricao.localeCompare(b.descricao);
-        });
-
-      atualizarMetricas(implementosFiltrados, itensFiltrados, resultadoAtual);
-      renderRanking();
-      renderDetalheSelecionado();
+        .sort((a, b) => b.total - a.total || a.descricao.localeCompare(b.descricao));
     }
 
-    function atualizarMetricas(implementosFiltrados, itensFiltrados, recorrencias) {
-      document.getElementById("totalInspecoes").innerText = implementosFiltrados.length;
-      document.getElementById("totalItens").innerText = itensFiltrados.length;
-      document.getElementById("totalAvarias").innerText =
-        itensFiltrados.filter(item => item.tipo === "avaria").length;
-      document.getElementById("totalRecorrentes").innerText =
-        recorrencias.filter(item => item.total > 1).length;
+    function calcularFrota(itensBase, implBase, implPorId) {
+      const porFrota = new Map();
+      implBase.forEach(impl => {
+        const placa = impl.placa || impl.id;
+        porFrota.set(placa, {
+          placa,
+          tipo: impl.tipo || "-",
+          inspecoes: 0,
+          totalItens: 0,
+          recorrencias: 0,
+          avarias: 0,
+          itens: new Map(),
+          ocorrencias: []
+        });
+      });
+
+      implBase.forEach(impl => {
+        const frota = porFrota.get(impl.placa || impl.id);
+        if (frota) frota.inspecoes++;
+      });
+
+      itensBase.forEach(item => {
+        const impl = implPorId.get(item.inspecaoId);
+        if (!impl) return;
+        const frota = porFrota.get(impl.placa || impl.id);
+        if (!frota) return;
+
+        const key = normalizarDescricao(item.descricao);
+        frota.totalItens++;
+        if (item.tipo === "avaria") frota.avarias++;
+        somarMap(frota.itens, key || item.descricao || "-");
+        frota.ocorrencias.push({ item, implemento: impl });
+      });
+
+      return Array.from(porFrota.values())
+        .map(f => {
+          const repetidos = Array.from(f.itens.values()).filter(v => v > 1).reduce((s, v) => s + v, 0);
+          const indice = f.inspecoes ? (repetidos / f.inspecoes) * 100 : 0;
+          const saude = Math.max(0, Math.round(100 - Math.min(95, indice)));
+          return {
+            ...f,
+            recorrencias: repetidos,
+            indice,
+            saude,
+            topItens: mapToSortedArray(f.itens).slice(0, 8)
+          };
+        })
+        .sort((a, b) => b.recorrencias - a.recorrencias || b.totalItens - a.totalItens);
     }
 
-    function renderRanking() {
-      if (!resultadoAtual.length) {
-        rankingEl.innerHTML = `<div class="empty">Nenhuma recorrência encontrada no filtro.</div>`;
-        return;
-      }
+    function calcularComponentes(itensBase) {
+      const map = new Map();
+      itensBase.forEach(item => {
+        const comp = classificarComponente(item);
+        if (!map.has(comp)) {
+          map.set(comp, { nome: comp, total: 0, avarias: 0, itens: new Map() });
+        }
+        const row = map.get(comp);
+        row.total++;
+        if (item.tipo === "avaria") row.avarias++;
+        somarMap(row.itens, item.descricao || "-");
+      });
 
-      const maior = resultadoAtual[0].total || 1;
-      rankingEl.innerHTML = "";
+      return Array.from(map.values())
+        .map(row => ({ ...row, topItens: mapToSortedArray(row.itens).slice(0, 6) }))
+        .sort((a, b) => b.total - a.total);
+    }
 
-      resultadoAtual.forEach((item, index) => {
-        const card = document.createElement("div");
-        card.className = "rank-card";
-        if (item.key === itemSelecionadoKey) card.classList.add("active");
+    function calcularOficina(implBase) {
+      const boxes = new Map();
+      const mecanicos = new Map();
 
-        const tipoResumo = item.tiposItemLista
-          .slice(0, 3)
-          .map(([tipo, total]) => `${tipo}: ${total}`)
-          .join(" | ");
+      implBase.forEach(impl => {
+        const box = impl.box || "Sem box";
+        if (!boxes.has(box)) boxes.set(box, { nome: box, total: 0, horas: [] });
+        boxes.get(box).total++;
+        boxes.get(box).horas.push(diffHoras(impl.inicioManutencao, impl.dataLiberacao));
 
-        card.innerHTML = `
-          <div class="rank-top">
-            <div class="rank-title">${index + 1}. ${escapeHTML(item.descricao)}</div>
-            <div class="rank-count">${item.total}</div>
-          </div>
-          <div class="rank-meta">
-            ${item.implementosQtd} implemento(s) | ${item.avarias} avaria(s)<br>
-            ${escapeHTML(tipoResumo || "-")}
-          </div>
-          <div class="bar"><span style="width:${Math.max(4, (item.total / maior) * 100)}%"></span></div>
-        `;
-
-        card.addEventListener("click", () => {
-          itemSelecionadoKey = item.key;
-          renderRanking();
-          renderDetalheSelecionado();
+        (impl.equipeManutencao || []).forEach(nome => {
+          if (!mecanicos.has(nome)) mecanicos.set(nome, { nome, total: 0, horas: [] });
+          mecanicos.get(nome).total++;
+          mecanicos.get(nome).horas.push(diffHoras(impl.inicioManutencao, impl.dataLiberacao));
         });
+      });
 
-        rankingEl.appendChild(card);
+      return {
+        boxes: Array.from(boxes.values())
+          .map(b => ({ ...b, mediaHoras: mediaHoras(b.horas) }))
+          .sort((a, b) => b.total - a.total),
+        mecanicos: Array.from(mecanicos.values())
+          .map(m => ({ ...m, mediaHoras: mediaHoras(m.horas) }))
+          .sort((a, b) => b.total - a.total)
+      };
+    }
+
+    function calcularInspetores(implBase, itensBase, implPorId) {
+      const map = new Map();
+
+      implBase.forEach(impl => {
+        const nome = impl.inspecionadoPor || "Não informado";
+        if (!map.has(nome)) {
+          map.set(nome, { nome, inspecoes: 0, defeitos: 0, avarias: 0 });
+        }
+        map.get(nome).inspecoes++;
+      });
+
+      itensBase.forEach(item => {
+        const impl = implPorId.get(item.inspecaoId);
+        if (!impl) return;
+        const nome = impl.inspecionadoPor || "Não informado";
+        if (!map.has(nome)) map.set(nome, { nome, inspecoes: 0, defeitos: 0, avarias: 0 });
+        map.get(nome).defeitos++;
+        if (item.tipo === "avaria") map.get(nome).avarias++;
+      });
+
+      return Array.from(map.values())
+        .map(i => ({ ...i, media: i.inspecoes ? i.defeitos / i.inspecoes : 0 }))
+        .sort((a, b) => b.inspecoes - a.inspecoes);
+    }
+
+    function calcularHeatmap(recorrencias) {
+      const top = recorrencias.slice(0, 8);
+      return top.map(row => {
+        const mesesMap = new Map();
+        row.ocorrencias.forEach(({ implemento }) => {
+          const data = toDate(implemento.dataInspecao);
+          if (!data) return;
+          const key = data.getMonth();
+          mesesMap.set(key, (mesesMap.get(key) || 0) + 1);
+        });
+        return { descricao: row.descricao, mesesMap };
       });
     }
 
-    function renderDetalheSelecionado() {
-      const item = resultadoAtual.find(r => r.key === itemSelecionadoKey);
+    function renderTudo() {
+      renderExecutivo();
+      renderRecorrencias();
+      renderFrota();
+      renderComponentes();
+      renderOficina();
+      renderInspetores();
+    }
 
-      if (!item) {
-        detalheEl.innerHTML = `<div class="empty">Selecione um item do ranking.</div>`;
-        return;
-      }
+    function renderExecutivo() {
+      const m = bi.metricas;
+      views.executivo.innerHTML = `
+        <section class="metrics">
+          ${metric("Inspeções", m.totalInspecoes, "No filtro atual")}
+          ${metric("Manutenções abertas", m.abertas, "Aguardando ou em manutenção", "warning")}
+          ${metric("Finalizadas", m.finalizadas, "Status liberado", "success")}
+          ${metric("Disponibilidade", `${m.disponibilidade.toFixed(1)}%`, "Liberados sobre registros filtrados", "success")}
+          ${metric("Tempo até oficina", formatarHoras(m.tempoInicio), "Inspeção até início da manutenção")}
+          ${metric("Permanência oficina", formatarHoras(m.tempoOficina), "Início até liberação", "warning")}
+          ${metric("Em manutenção", m.emManutencao, "Equipamentos na oficina", "danger")}
+          ${metric("Aguardando box", m.aguardandoBox, "Aguardando manutenção", "warning")}
+        </section>
 
-      const chipsTipo = item.tiposItemLista
-        .map(([tipo, total]) => `<span class="chip">${escapeHTML(tipo)}: ${total}</span>`)
-        .join("");
+        <section class="grid-balanced">
+          ${panel("Inspeções por dia", miniChart(bi.series.inspecoesDia))}
+          ${panel("Manutenções por dia", miniChart(bi.series.manutencoesDia))}
+        </section>
 
-      const chipsGrupo = item.gruposLista
-        .slice(0, 8)
-        .map(([grupo, total]) => `<span class="chip">${escapeHTML(grupo)}: ${total}</span>`)
-        .join("");
+        <section class="grid-balanced">
+          ${panel("Evolução mensal", miniChart(bi.series.mensal))}
+          ${panel("Insights rápidos", renderInsights())}
+        </section>
+      `;
+    }
 
-      const ocorrencias = item.ocorrencias
+    function renderRecorrencias() {
+      const top = bi.recorrencias.slice(0, 20);
+      const maior = top[0]?.total || 1;
+
+      views.recorrencias.innerHTML = `
+        <section class="metrics">
+          ${metric("Itens inspecionados", bi.metricas.totalItens, "Todos os itens do filtro", "warning")}
+          ${metric("Avarias", bi.metricas.avarias, "Itens marcados como avaria", "danger")}
+          ${metric("Itens recorrentes", bi.metricas.recorrentes, "Itens com mais de uma ocorrência", "success")}
+          ${metric("Top ocorrência", top[0]?.total || 0, top[0]?.descricao || "-")}
+        </section>
+
+        <section class="grid">
+          ${panel("Top 20 Defeitos Recorrentes", rankList(top, maior, "recurrence"))}
+          ${panel("Detalhe da Recorrência", renderRecurrenceDetail())}
+        </section>
+
+        ${panel("Mapa de Calor Mensal", renderHeatmap())}
+      `;
+
+      bindRankClicks("recurrence");
+    }
+
+    function renderFrota() {
+      const top = bi.frota.slice(0, 20);
+      const maior = top[0]?.recorrencias || 1;
+
+      views.frota.innerHTML = `
+        <section class="grid">
+          ${panel("Equipamentos com Maior Recorrência", rankList(top, maior, "fleet"))}
+          ${panel("Score de Saúde da Frota", renderFleetDetail())}
+        </section>
+      `;
+
+      bindRankClicks("fleet");
+    }
+
+    function renderComponentes() {
+      const total = bi.componentes.reduce((sum, row) => sum + row.total, 0) || 1;
+      const maior = bi.componentes[0]?.total || 1;
+
+      views.componentes.innerHTML = `
+        <section class="grid-balanced">
+          ${panel("Pareto por Componente", bi.componentes.map(row => `
+            <div class="rank-card">
+              <div class="rank-top">
+                <div class="rank-title">${escapeHTML(row.nome)}</div>
+                <div class="rank-count">${((row.total / total) * 100).toFixed(1)}%</div>
+              </div>
+              <div class="rank-meta">${row.total} ocorrência(s) | ${row.avarias} avaria(s)</div>
+              <div class="bar"><span style="width:${Math.max(4, (row.total / maior) * 100)}%"></span></div>
+            </div>
+          `).join("") || empty("Sem dados de componentes."))}
+
+          ${panel("Top Itens por Componente", bi.componentes.map(row => `
+            <div class="detail-card">
+              <strong>${escapeHTML(row.nome)}</strong>
+              <div class="chips">
+                ${row.topItens.map(([desc, qtd]) => `<span class="chip">${escapeHTML(desc)}: ${qtd}</span>`).join("")}
+              </div>
+            </div>
+          `).join("") || empty("Sem itens."))}
+        </section>
+      `;
+    }
+
+    function renderOficina() {
+      views.oficina.innerHTML = `
+        <section class="grid-balanced">
+          ${panel("BI por Box", simpleRank(bi.oficina.boxes, "total", row => `${row.total} serviço(s) | tempo médio ${formatarHoras(row.mediaHoras)}`))}
+          ${panel("Tempo Médio por Mecânico", simpleRank(bi.oficina.mecanicos, "total", row => `${row.total} serviço(s) | tempo médio ${formatarHoras(row.mediaHoras)}`))}
+        </section>
+      `;
+    }
+
+    function renderInspetores() {
+      const maior = bi.inspetores[0]?.inspecoes || 1;
+
+      views.inspetores.innerHTML = `
+        ${panel("BI dos Inspetores", bi.inspetores.map(row => `
+          <div class="rank-card">
+            <div class="rank-top">
+              <div class="rank-title">${escapeHTML(row.nome)}</div>
+              <div class="rank-count">${row.inspecoes}</div>
+            </div>
+            <div class="rank-meta">
+              ${row.defeitos} defeito(s) | ${row.avarias} avaria(s) | média ${row.media.toFixed(1)} item(ns)/inspeção
+            </div>
+            <div class="bar"><span style="width:${Math.max(4, (row.inspecoes / maior) * 100)}%"></span></div>
+          </div>
+        `).join("") || empty("Sem dados de inspetores."))}
+      `;
+    }
+
+    function rankList(rows, maior, type) {
+      if (!rows.length) return empty("Sem dados para o filtro.");
+
+      return rows.map((row, index) => {
+        const count = type === "fleet" ? row.recorrencias : row.total;
+        const title = type === "fleet" ? row.placa : row.descricao;
+        const meta = type === "fleet"
+          ? `${row.inspecoes} inspeção(ões) | ${row.totalItens} item(ns) | saúde ${row.saude}%`
+          : `${row.implementosQtd} implemento(s) | ${row.avarias} avaria(s) | MTBF ${formatarDias(row.mtbfDias)}`;
+
+        const active = type === "fleet"
+          ? selectedFleet === row.placa
+          : selectedRecurrence === row.key;
+
+        return `
+          <div class="rank-card ${active ? "active" : ""}" data-rank-type="${type}" data-key="${escapeAttr(type === "fleet" ? row.placa : row.key)}">
+            <div class="rank-top">
+              <div class="rank-title">${index + 1}. ${escapeHTML(title)}</div>
+              <div class="rank-count">${count}</div>
+            </div>
+            <div class="rank-meta">${escapeHTML(meta)}</div>
+            <div class="bar"><span style="width:${Math.max(4, (count / maior) * 100)}%"></span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function bindRankClicks(type) {
+      document.querySelectorAll(`[data-rank-type="${type}"]`).forEach(card => {
+        card.addEventListener("click", () => {
+          if (type === "fleet") selectedFleet = card.dataset.key;
+          else selectedRecurrence = card.dataset.key;
+          renderTudo();
+        });
+      });
+    }
+
+    function renderRecurrenceDetail() {
+      const row = bi.recorrencias.find(r => r.key === selectedRecurrence) || bi.recorrencias[0];
+      if (!row) return empty("Selecione um item do ranking.");
+
+      const ocorrencias = row.ocorrencias
         .slice()
-        .sort((a, b) => {
-          const da = toDate(a.implemento.dataInspecao)?.getTime() || 0;
-          const db = toDate(b.implemento.dataInspecao)?.getTime() || 0;
-          return db - da;
-        })
-        .map(({ item: checklist, implemento }) => `
+        .sort((a, b) => (toDate(b.implemento.dataInspecao)?.getTime() || 0) - (toDate(a.implemento.dataInspecao)?.getTime() || 0))
+        .slice(0, 25)
+        .map(({ item, implemento, componente }) => `
           <div class="detail-card">
             <strong>${escapeHTML(implemento.placa || "-")}</strong>
             <div class="detail-meta">
               ${escapeHTML(implemento.tipo || "-")} | ${escapeHTML(formatarTipoManutencao(implemento.tipoManutencao))}<br>
-              Status: ${escapeHTML(formatarStatus(implemento.status))}<br>
-              Inspeção: ${formatarData(implemento.dataInspecao)}<br>
-              Item: ${escapeHTML(checklist.tipo || "-")}
-              ${checklist.eixo ? ` | Eixo: ${escapeHTML(checklist.eixo)}` : ""}
-              ${checklist.lado ? ` | Lado: ${escapeHTML(checklist.lado)}` : ""}
-              ${checklist.compartimento ? ` | Comp: ${escapeHTML(checklist.compartimento)}` : ""}
+              ${formatarData(implemento.dataInspecao)} | ${escapeHTML(componente)}<br>
+              ${escapeHTML(item.tipo || "-")} ${item.eixo ? `| Eixo: ${escapeHTML(item.eixo)}` : ""} ${item.lado ? `| Lado: ${escapeHTML(item.lado)}` : ""}
             </div>
           </div>
-        `)
-        .join("");
+        `).join("");
 
-      detalheEl.innerHTML = `
+      return `
         <div class="detail-card">
-          <strong>${escapeHTML(item.descricao)}</strong>
+          <strong>${escapeHTML(row.descricao)}</strong>
           <div class="detail-meta">
-            Total: ${item.total}<br>
-            Implementos diferentes: ${item.implementosQtd}<br>
-            Avarias: ${item.avarias}
+            Total: ${row.total}<br>
+            Implementos diferentes: ${row.implementosQtd}<br>
+            Avarias: ${row.avarias}<br>
+            MTBF: ${formatarDias(row.mtbfDias)}
           </div>
-          <div class="chips">${chipsTipo}</div>
-          <div class="chips">${chipsGrupo}</div>
+          <div class="chips">
+            ${row.tiposItemLista.map(([tipo, qtd]) => `<span class="chip">${escapeHTML(tipo)}: ${qtd}</span>`).join("")}
+          </div>
         </div>
         ${ocorrencias}
       `;
     }
 
-    function exportarCSV() {
-      if (!resultadoAtual.length) {
-        alert("Não há dados para exportar.");
-        return;
-      }
+    function renderFleetDetail() {
+      const row = bi.frota.find(r => r.placa === selectedFleet) || bi.frota[0];
+      if (!row) return empty("Selecione uma frota do ranking.");
 
-      const linhas = [
-        ["descricao", "total", "implementos", "avarias", "tipos_item", "grupos"]
-      ];
+      const top = row.topItens[0];
+      const insight = top && row.totalItens
+        ? `${escapeHTML(top[0])} corresponde a ${((top[1] / row.totalItens) * 100).toFixed(1)}% das ocorrências desta frota.`
+        : "Sem item dominante para esta frota.";
 
-      resultadoAtual.forEach(item => {
-        linhas.push([
-          item.descricao,
-          item.total,
-          item.implementosQtd,
-          item.avarias,
-          item.tiposItemLista.map(([tipo, total]) => `${tipo}:${total}`).join(" | "),
-          item.gruposLista.map(([grupo, total]) => `${grupo}:${total}`).join(" | ")
-        ]);
+      return `
+        <div class="detail-card">
+          <strong>${escapeHTML(row.placa)}</strong>
+          <div class="detail-meta">
+            Tipo: ${escapeHTML(row.tipo)}<br>
+            Saúde estimada: ${row.saude}%<br>
+            Inspeções: ${row.inspecoes}<br>
+            Recorrências: ${row.recorrencias}<br>
+            Índice de reincidência: ${row.indice.toFixed(1)}%
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <strong>Insight automático</strong>
+          <div class="detail-meta">${insight}</div>
+        </div>
+
+        <div class="chips">
+          ${row.topItens.map(([item, qtd]) => `<span class="chip">${escapeHTML(item)}: ${qtd}</span>`).join("")}
+        </div>
+      `;
+    }
+
+    function renderHeatmap() {
+      if (!bi.heatmap.length) return empty("Sem dados para mapa de calor.");
+
+      const header = meses.map(m => `<th>${m}</th>`).join("");
+      const rows = bi.heatmap.map(row => {
+        const max = Math.max(1, ...Array.from(row.mesesMap.values()));
+        return `
+          <tr>
+            <td>${escapeHTML(row.descricao)}</td>
+            ${meses.map((_, index) => {
+              const val = row.mesesMap.get(index) || 0;
+              const cls = val === 0 ? "" : val / max >= 0.7 ? "high" : val / max >= 0.35 ? "mid" : "low";
+              return `<td><div class="heat ${cls}">${val}</div></td>`;
+            }).join("")}
+          </tr>
+        `;
+      }).join("");
+
+      return `<table class="heatmap"><thead><tr><th>Item</th>${header}</tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    function renderInsights() {
+      const topRec = bi.recorrencias[0];
+      const topFrota = bi.frota[0];
+      const topComp = bi.componentes[0];
+
+      return `
+        <div class="insight-card">
+          <strong>Principal recorrência</strong>
+          <div class="detail-meta">${topRec ? `${escapeHTML(topRec.descricao)} apareceu ${topRec.total} vez(es).` : "Sem recorrências no filtro."}</div>
+        </div>
+        <div class="insight-card">
+          <strong>Frota com maior atenção</strong>
+          <div class="detail-meta">${topFrota ? `${escapeHTML(topFrota.placa)} tem ${topFrota.recorrencias} recorrência(s), saúde estimada ${topFrota.saude}%.` : "Sem dados de frota."}</div>
+        </div>
+        <div class="insight-card">
+          <strong>Componente dominante</strong>
+          <div class="detail-meta">${topComp ? `${escapeHTML(topComp.nome)} concentra ${topComp.total} ocorrência(s).` : "Sem dados de componente."}</div>
+        </div>
+      `;
+    }
+
+    function miniChart(series) {
+      if (!series.length) return empty("Sem dados no período.");
+      const maior = Math.max(1, ...series.map(row => row.total));
+      return `
+        <div class="mini-chart">
+          ${series.slice(-18).map(row => `
+            <div class="mini-bar" title="${escapeHTML(row.label)}: ${row.total}">
+              <span style="height:${Math.max(3, (row.total / maior) * 140)}px"></span>
+              <small>${escapeHTML(row.short)}</small>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function simpleRank(rows, field, metaFn) {
+      if (!rows.length) return empty("Sem dados.");
+      const maior = Math.max(1, ...rows.map(row => row[field] || 0));
+      return rows.slice(0, 25).map((row, index) => `
+        <div class="rank-card">
+          <div class="rank-top">
+            <div class="rank-title">${index + 1}. ${escapeHTML(row.nome)}</div>
+            <div class="rank-count">${row[field] || 0}</div>
+          </div>
+          <div class="rank-meta">${escapeHTML(metaFn(row))}</div>
+          <div class="bar"><span style="width:${Math.max(4, ((row[field] || 0) / maior) * 100)}%"></span></div>
+        </div>
+      `).join("");
+    }
+
+    function panel(title, body) {
+      return `
+        <section class="panel">
+          <div class="panel-header"><h2>${escapeHTML(title)}</h2></div>
+          <div class="panel-body">${body}</div>
+        </section>
+      `;
+    }
+
+    function metric(label, value, foot, mode = "") {
+      return `
+        <div class="metric-card ${mode}">
+          <div class="metric-label">${escapeHTML(label)}</div>
+          <div class="metric-value">${escapeHTML(value)}</div>
+          <div class="metric-foot">${escapeHTML(foot || "")}</div>
+        </div>
+      `;
+    }
+
+    function empty(text) {
+      return `<div class="empty">${escapeHTML(text)}</div>`;
+    }
+
+    function agruparPorDia(rows, field) {
+      const map = new Map();
+      rows.forEach(row => {
+        const data = toDate(row[field]);
+        if (!data) return;
+        const key = toInputDate(data);
+        map.set(key, (map.get(key) || 0) + 1);
       });
 
-      const csv = linhas
-        .map(linha => linha.map(campo => `"${String(campo).replace(/"/g, '""')}"`).join(";"))
-        .join("\n");
+      return Array.from(map.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, total]) => {
+          const [, mes, dia] = key.split("-");
+          return { label: key, short: `${dia}/${mes}`, total };
+        });
+    }
 
-      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `bi_recorrencias_${Date.now()}.csv`;
-      link.click();
-      URL.revokeObjectURL(url);
+    function agruparPorMes(rows, field) {
+      const map = new Map();
+      rows.forEach(row => {
+        const data = toDate(row[field]);
+        if (!data) return;
+        const key = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, "0")}`;
+        map.set(key, (map.get(key) || 0) + 1);
+      });
+
+      return Array.from(map.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, total]) => {
+          const [, mes] = key.split("-");
+          return { label: key, short: meses[Number(mes) - 1], total };
+        });
+    }
+
+    function classificarComponente(item) {
+      const texto = normalizarDescricao(`${item.grupo || ""} ${item.descricao || ""}`);
+      const achado = componentes.find(comp => comp.termos.some(term => texto.includes(normalizarDescricao(term))));
+      return achado?.nome || "Outros";
+    }
+
+    function calcularMTBF(ocorrencias) {
+      const datas = ocorrencias
+        .map(o => toDate(o.implemento.dataInspecao))
+        .filter(Boolean)
+        .sort((a, b) => a - b);
+
+      if (datas.length < 2) return null;
+
+      const diffs = [];
+      for (let i = 1; i < datas.length; i++) {
+        diffs.push((datas[i] - datas[i - 1]) / 86400000);
+      }
+      return diffs.reduce((s, v) => s + v, 0) / diffs.length;
+    }
+
+    function diffHoras(inicio, fim) {
+      const a = toDate(inicio);
+      const b = toDate(fim);
+      if (!a || !b || b < a) return null;
+      return (b - a) / 3600000;
+    }
+
+    function mediaHoras(values) {
+      const validos = values.filter(v => Number.isFinite(v));
+      if (!validos.length) return null;
+      return validos.reduce((s, v) => s + v, 0) / validos.length;
+    }
+
+    function formatarHoras(value) {
+      if (!Number.isFinite(value)) return "-";
+      if (value < 24) return `${value.toFixed(1)}h`;
+      return `${(value / 24).toFixed(1)}d`;
+    }
+
+    function formatarDias(value) {
+      if (!Number.isFinite(value)) return "-";
+      return `${value.toFixed(1)} dias`;
     }
 
     function normalizarDescricao(descricao) {
@@ -739,12 +1303,12 @@
       ].join("-");
     }
 
-    function formatarStatus(status) {
-      return statusLabels[status] || status || "-";
-    }
-
     function formatarTipoManutencao(tipo) {
       return tipoManutencaoLabels[tipo] || tipo || "-";
+    }
+
+    function escapeAttr(value) {
+      return escapeHTML(value).replace(/"/g, "&quot;");
     }
 
     function escapeHTML(value) {
