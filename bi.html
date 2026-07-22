@@ -755,13 +755,9 @@
       return Array.from(porFrota.values())
         .map(f => {
           const repetidos = Array.from(f.itens.values()).filter(v => v > 1).reduce((s, v) => s + v, 0);
-          const indice = f.inspecoes ? (repetidos / f.inspecoes) * 100 : 0;
-          const saude = Math.max(0, Math.round(100 - Math.min(95, indice)));
           return {
             ...f,
             recorrencias: repetidos,
-            indice,
-            saude,
             topItens: mapToSortedArray(f.itens).slice(0, 8)
           };
         })
@@ -917,7 +913,7 @@
       views.frota.innerHTML = `
         <section class="grid">
           ${panel("Equipamentos com Maior Recorrência", rankList(top, maior, "fleet"))}
-          ${panel("Score de Saúde da Frota", renderFleetDetail())}
+          ${panel("Detalhe da Frota", renderFleetDetail())}
         </section>
       `;
 
@@ -988,7 +984,7 @@
         const count = type === "fleet" ? row.recorrencias : row.total;
         const title = type === "fleet" ? row.placa : row.descricao;
         const meta = type === "fleet"
-          ? `${row.inspecoes} inspeção(ões) | ${row.totalItens} item(ns) | saúde ${row.saude}%`
+          ? `${row.inspecoes} inspeção(ões) | ${row.totalItens} item(ns) | ${row.avarias} avaria(s)`
           : `${row.implementosQtd} implemento(s) | ${row.avarias} avaria(s) | MTBF ${formatarDias(row.mtbfDias)}`;
 
         const active = type === "fleet"
@@ -1068,10 +1064,10 @@
           <strong>${escapeHTML(row.placa)}</strong>
           <div class="detail-meta">
             Tipo: ${escapeHTML(row.tipo)}<br>
-            Saúde estimada: ${row.saude}%<br>
             Inspeções: ${row.inspecoes}<br>
             Recorrências: ${row.recorrencias}<br>
-            Índice de reincidência: ${row.indice.toFixed(1)}%
+            Itens registrados: ${row.totalItens}<br>
+            Avarias: ${row.avarias}
           </div>
         </div>
 
@@ -1119,7 +1115,7 @@
         </div>
         <div class="insight-card">
           <strong>Frota com maior atenção</strong>
-          <div class="detail-meta">${topFrota ? `${escapeHTML(topFrota.placa)} tem ${topFrota.recorrencias} recorrência(s), saúde estimada ${topFrota.saude}%.` : "Sem dados de frota."}</div>
+          <div class="detail-meta">${topFrota ? `${escapeHTML(topFrota.placa)} tem ${topFrota.recorrencias} recorrência(s) e ${topFrota.avarias} avaria(s).` : "Sem dados de frota."}</div>
         </div>
         <div class="insight-card">
           <strong>Componente dominante</strong>
