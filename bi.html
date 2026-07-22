@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BI de Inspeções</title>
+  <link rel="stylesheet" href="navbar.css">
+
+  <style>
+    :root {
+      --dark: #1f2937;
+      --primary: #2196f3;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --danger: #f44336;
+      --bg: #f1f3f6;
+      --line: rgba(6, 47, 43, 0.14);
+      --muted: #64748b;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #1f2937;
+      font-family: "Montserrat", Arial, sans-serif;
+      padding-bottom: 92px;
+    }
+
+    .page {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .toolbar,
+    .panel,
+    .metric-card,
+    .rank-card,
+    .detail-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(6, 47, 43, 0.08);
+    }
+
+    .toolbar {
+      padding: 14px;
+      margin-bottom: 14px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #52636f;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      box-sizing: border-box;
+    }
+
+    button {
+      min-height: 42px;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      background: var(--dark);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .btn-primary { background: var(--primary); }
+    .btn-success { background: var(--success); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric-card {
+      padding: 14px;
+      border-left: 6px solid var(--primary);
+    }
+
+    .metric-card.warning { border-left-color: var(--warning); }
+    .metric-card.success { border-left-color: var(--success); }
+    .metric-card.danger { border-left-color: var(--danger); }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      margin-top: 6px;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(310px, 0.65fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-body {
+      padding: 14px;
+    }
+
+    .rank-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .rank-card {
+      padding: 12px;
+      cursor: pointer;
+      border-left: 5px solid var(--primary);
+    }
+
+    .rank-card.active {
+      background: #e8f4ff;
+      border-color: #90caf9;
+    }
+
+    .rank-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .rank-title {
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .rank-count {
+      min-width: 56px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: #e3f2fd;
+      color: #0d47a1;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .rank-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .bar {
+      height: 9px;
+      margin-top: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+    }
+
+    .empty {
+      padding: 28px 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .detail-card {
+      padding: 12px;
+      margin-bottom: 10px;
+      border-left: 5px solid var(--warning);
+    }
+
+    .detail-card strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .detail-meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 105px;
+      transform: translateX(-50%);
+      display: none;
+      min-width: 240px;
+      max-width: calc(100vw - 28px);
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: white;
+      background: #1f2937;
+      text-align: center;
+      font-weight: 800;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.24);
+      z-index: 3000;
+    }
+
+    @media (max-width: 980px) {
+      .toolbar,
+      .metrics,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <span class="titulo-topbar">BI de Inspeções</span>
+    <img src="suzano-logo.png" class="logo-topbar">
+  </div>
+
+  <main class="page">
+    <section class="toolbar">
+      <div>
+        <label>Data inicial</label>
+        <input id="dataInicio" type="date">
+      </div>
+
+      <div>
+        <label>Data final</label>
+        <input id="dataFim" type="date">
+      </div>
+
+      <div>
+        <label>Equipamento</label>
+        <select id="filtroTipoEquipamento">
+          <option value="">Todos</option>
+          <option value="carreta">Carreta</option>
+          <option value="prancha">Prancha</option>
+          <option value="comboio">Comboio</option>
+          <option value="cavalo">Cavalo</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Manutenção</label>
+        <select id="filtroManutencao">
+          <option value="">Todas</option>
+          <option value="preventiva">Preventiva</option>
+          <option value="revisao">Revisão</option>
+          <option value="cnp">CNP</option>
+          <option value="gm">GM</option>
+          <option value="acidente">Acidente</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tipo do item</label>
+        <select id="filtroTipoItem">
+          <option value="">Todos</option>
+          <option value="normal">Normal</option>
+          <option value="avaria">Avaria</option>
+          <option value="vistoria">Vistoria</option>
+          <option value="troca">Troca</option>
+        </select>
+      </div>
+
+      <button id="btnAtualizar" class="btn-primary">Atualizar</button>
+    </section>
+
+    <section class="metrics">
+      <div class="metric-card">
+        <div class="metric-label">Inspeções no filtro</div>
+        <div id="totalInspecoes" class="metric-value">0</div>
+      </div>
+
+      <div class="metric-card warning">
+        <div class="metric-label">Itens inspecionados</div>
+        <div id="totalItens" class="metric-value">0</div>
+      </div>
+
+      <div class="metric-card danger">
+        <div class="metric-label">Avarias</div>
+        <div id="totalAvarias" class="metric-value">0</div>
+      </div>
+
+      <div class="metric-card success">
+        <div class="metric-label">Itens recorrentes</div>
+        <div id="totalRecorrentes" class="metric-value">0</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Recorrência por Item</h2>
+          <button id="btnExportar" class="btn-success">CSV</button>
+        </div>
+        <div id="ranking" class="panel-body rank-list">
+          <div class="empty">Carregando dados...</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Detalhe do Item</h2>
+        </div>
+        <div id="detalhe" class="panel-body">
+          <div class="empty">Selecione um item do ranking.</div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <script type="module">
+    import { protegerPagina } from "./auth.js";
+    protegerPagina(["tecnico"]);
+
+    import { db } from "./firebase.js";
+    import {
+      collection,
+      getDocs,
+      limit,
+      orderBy,
+      query
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { carregarNavbar } from "./navbar.js";
+
+    carregarNavbar();
+
+    const dataInicioEl = document.getElementById("dataInicio");
+    const dataFimEl = document.getElementById("dataFim");
+    const filtroTipoEquipamentoEl = document.getElementById("filtroTipoEquipamento");
+    const filtroManutencaoEl = document.getElementById("filtroManutencao");
+    const filtroTipoItemEl = document.getElementById("filtroTipoItem");
+    const btnAtualizar = document.getElementById("btnAtualizar");
+    const btnExportar = document.getElementById("btnExportar");
+    const rankingEl = document.getElementById("ranking");
+    const detalheEl = document.getElementById("detalhe");
+
+    let implementos = [];
+    let itens = [];
+    let resultadoAtual = [];
+    let itemSelecionadoKey = null;
+
+    const statusLabels = {
+      em_inspecao: "Em inspeção",
+      aguardando_manutencao: "Aguardando manutenção",
+      em_manutencao: "Em manutenção",
+      liberado: "Liberado"
+    };
+
+    const tipoManutencaoLabels = {
+      preventiva: "Preventiva",
+      revisao: "Revisão",
+      cnp: "CNP",
+      gm: "GM",
+      acidente: "Acidente"
+    };
+
+    btnAtualizar.addEventListener("click", carregarDados);
+    btnExportar.addEventListener("click", exportarCSV);
+
+    [
+      dataInicioEl,
+      dataFimEl,
+      filtroTipoEquipamentoEl,
+      filtroManutencaoEl,
+      filtroTipoItemEl
+    ].forEach(el => el.addEventListener("change", processar));
+
+    function aplicarPeriodoPadrao() {
+      const fim = new Date();
+      const inicio = new Date();
+      inicio.setDate(inicio.getDate() - 30);
+
+      dataInicioEl.value = toInputDate(inicio);
+      dataFimEl.value = toInputDate(fim);
+    }
+
+    async function carregarDados() {
+      btnAtualizar.disabled = true;
+      rankingEl.innerHTML = `<div class="empty">Carregando dados...</div>`;
+      detalheEl.innerHTML = `<div class="empty">Selecione um item do ranking.</div>`;
+
+      try {
+        const qImplementos = query(
+          collection(db, "implementos"),
+          orderBy("dataInspecao", "desc"),
+          limit(1000)
+        );
+
+        const qItens = query(
+          collection(db, "naoConformidades"),
+          limit(5000)
+        );
+
+        const [snapImplementos, snapItens] = await Promise.all([
+          getDocs(qImplementos),
+          getDocs(qItens)
+        ]);
+
+        implementos = snapImplementos.docs.map(d => ({ id: d.id, ...d.data() }));
+        itens = snapItens.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        processar();
+        showToast("BI atualizado.");
+      } catch (e) {
+        console.error(e);
+        rankingEl.innerHTML = `<div class="empty">Erro ao carregar dados do BI.</div>`;
+      } finally {
+        btnAtualizar.disabled = false;
+      }
+    }
+
+    function processar() {
+      const inicio = dataInicioEl.value ? new Date(dataInicioEl.value + "T00:00:00") : null;
+      const fim = dataFimEl.value ? new Date(dataFimEl.value + "T23:59:59") : null;
+      const tipoEquipamento = filtroTipoEquipamentoEl.value;
+      const tipoManutencao = filtroManutencaoEl.value;
+      const tipoItem = filtroTipoItemEl.value;
+
+      const implementosFiltrados = implementos.filter(impl => {
+        const data = toDate(impl.dataInspecao);
+
+        if (inicio && (!data || data < inicio)) return false;
+        if (fim && (!data || data > fim)) return false;
+        if (tipoEquipamento && impl.tipo !== tipoEquipamento) return false;
+        if (tipoManutencao && impl.tipoManutencao !== tipoManutencao) return false;
+
+        return true;
+      });
+
+      const implementosPorId = new Map(
+        implementosFiltrados.map(impl => [impl.id, impl])
+      );
+
+      const itensFiltrados = itens.filter(item => {
+        const impl = implementosPorId.get(item.inspecaoId);
+
+        if (!impl) return false;
+        if (tipoItem && item.tipo !== tipoItem) return false;
+
+        return true;
+      });
+
+      const grupos = new Map();
+
+      itensFiltrados.forEach(item => {
+        const chave = normalizarDescricao(item.descricao);
+        const impl = implementosPorId.get(item.inspecaoId);
+
+        if (!chave || !impl) return;
+
+        if (!grupos.has(chave)) {
+          grupos.set(chave, {
+            key: chave,
+            descricao: item.descricao || "-",
+            total: 0,
+            avarias: 0,
+            implementos: new Set(),
+            tiposItem: new Map(),
+            grupos: new Map(),
+            ocorrencias: []
+          });
+        }
+
+        const grupo = grupos.get(chave);
+        grupo.total++;
+        if (item.tipo === "avaria") grupo.avarias++;
+        grupo.implementos.add(impl.id);
+        somarMap(grupo.tiposItem, item.tipo || "-");
+        somarMap(grupo.grupos, item.grupo || "GERAL");
+        grupo.ocorrencias.push({ item, implemento: impl });
+      });
+
+      resultadoAtual = Array.from(grupos.values())
+        .map(grupo => ({
+          ...grupo,
+          implementosQtd: grupo.implementos.size,
+          tiposItemLista: mapToSortedArray(grupo.tiposItem),
+          gruposLista: mapToSortedArray(grupo.grupos)
+        }))
+        .sort((a, b) => {
+          if (b.total !== a.total) return b.total - a.total;
+          return a.descricao.localeCompare(b.descricao);
+        });
+
+      atualizarMetricas(implementosFiltrados, itensFiltrados, resultadoAtual);
+      renderRanking();
+      renderDetalheSelecionado();
+    }
+
+    function atualizarMetricas(implementosFiltrados, itensFiltrados, recorrencias) {
+      document.getElementById("totalInspecoes").innerText = implementosFiltrados.length;
+      document.getElementById("totalItens").innerText = itensFiltrados.length;
+      document.getElementById("totalAvarias").innerText =
+        itensFiltrados.filter(item => item.tipo === "avaria").length;
+      document.getElementById("totalRecorrentes").innerText =
+        recorrencias.filter(item => item.total > 1).length;
+    }
+
+    function renderRanking() {
+      if (!resultadoAtual.length) {
+        rankingEl.innerHTML = `<div class="empty">Nenhuma recorrência encontrada no filtro.</div>`;
+        return;
+      }
+
+      const maior = resultadoAtual[0].total || 1;
+      rankingEl.innerHTML = "";
+
+      resultadoAtual.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "rank-card";
+        if (item.key === itemSelecionadoKey) card.classList.add("active");
+
+        const tipoResumo = item.tiposItemLista
+          .slice(0, 3)
+          .map(([tipo, total]) => `${tipo}: ${total}`)
+          .join(" | ");
+
+        card.innerHTML = `
+          <div class="rank-top">
+            <div class="rank-title">${index + 1}. ${escapeHTML(item.descricao)}</div>
+            <div class="rank-count">${item.total}</div>
+          </div>
+          <div class="rank-meta">
+            ${item.implementosQtd} implemento(s) | ${item.avarias} avaria(s)<br>
+            ${escapeHTML(tipoResumo || "-")}
+          </div>
+          <div class="bar"><span style="width:${Math.max(4, (item.total / maior) * 100)}%"></span></div>
+        `;
+
+        card.addEventListener("click", () => {
+          itemSelecionadoKey = item.key;
+          renderRanking();
+          renderDetalheSelecionado();
+        });
+
+        rankingEl.appendChild(card);
+      });
+    }
+
+    function renderDetalheSelecionado() {
+      const item = resultadoAtual.find(r => r.key === itemSelecionadoKey);
+
+      if (!item) {
+        detalheEl.innerHTML = `<div class="empty">Selecione um item do ranking.</div>`;
+        return;
+      }
+
+      const chipsTipo = item.tiposItemLista
+        .map(([tipo, total]) => `<span class="chip">${escapeHTML(tipo)}: ${total}</span>`)
+        .join("");
+
+      const chipsGrupo = item.gruposLista
+        .slice(0, 8)
+        .map(([grupo, total]) => `<span class="chip">${escapeHTML(grupo)}: ${total}</span>`)
+        .join("");
+
+      const ocorrencias = item.ocorrencias
+        .slice()
+        .sort((a, b) => {
+          const da = toDate(a.implemento.dataInspecao)?.getTime() || 0;
+          const db = toDate(b.implemento.dataInspecao)?.getTime() || 0;
+          return db - da;
+        })
+        .map(({ item: checklist, implemento }) => `
+          <div class="detail-card">
+            <strong>${escapeHTML(implemento.placa || "-")}</strong>
+            <div class="detail-meta">
+              ${escapeHTML(implemento.tipo || "-")} | ${escapeHTML(formatarTipoManutencao(implemento.tipoManutencao))}<br>
+              Status: ${escapeHTML(formatarStatus(implemento.status))}<br>
+              Inspeção: ${formatarData(implemento.dataInspecao)}<br>
+              Item: ${escapeHTML(checklist.tipo || "-")}
+              ${checklist.eixo ? ` | Eixo: ${escapeHTML(checklist.eixo)}` : ""}
+              ${checklist.lado ? ` | Lado: ${escapeHTML(checklist.lado)}` : ""}
+              ${checklist.compartimento ? ` | Comp: ${escapeHTML(checklist.compartimento)}` : ""}
+            </div>
+          </div>
+        `)
+        .join("");
+
+      detalheEl.innerHTML = `
+        <div class="detail-card">
+          <strong>${escapeHTML(item.descricao)}</strong>
+          <div class="detail-meta">
+            Total: ${item.total}<br>
+            Implementos diferentes: ${item.implementosQtd}<br>
+            Avarias: ${item.avarias}
+          </div>
+          <div class="chips">${chipsTipo}</div>
+          <div class="chips">${chipsGrupo}</div>
+        </div>
+        ${ocorrencias}
+      `;
+    }
+
+    function exportarCSV() {
+      if (!resultadoAtual.length) {
+        alert("Não há dados para exportar.");
+        return;
+      }
+
+      const linhas = [
+        ["descricao", "total", "implementos", "avarias", "tipos_item", "grupos"]
+      ];
+
+      resultadoAtual.forEach(item => {
+        linhas.push([
+          item.descricao,
+          item.total,
+          item.implementosQtd,
+          item.avarias,
+          item.tiposItemLista.map(([tipo, total]) => `${tipo}:${total}`).join(" | "),
+          item.gruposLista.map(([grupo, total]) => `${grupo}:${total}`).join(" | ")
+        ]);
+      });
+
+      const csv = linhas
+        .map(linha => linha.map(campo => `"${String(campo).replace(/"/g, '""')}"`).join(";"))
+        .join("\n");
+
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `bi_recorrencias_${Date.now()}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function normalizarDescricao(descricao) {
+      return String(descricao || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .replace(/[^\w\s]/g, "");
+    }
+
+    function somarMap(map, chave) {
+      map.set(chave, (map.get(chave) || 0) + 1);
+    }
+
+    function mapToSortedArray(map) {
+      return Array.from(map.entries()).sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        return String(a[0]).localeCompare(String(b[0]));
+      });
+    }
+
+    function toDate(ts) {
+      if (!ts) return null;
+      try {
+        return ts.toDate ? ts.toDate() : new Date(ts);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function formatarData(ts) {
+      const data = toDate(ts);
+      return data ? data.toLocaleString("pt-BR") : "-";
+    }
+
+    function toInputDate(data) {
+      return [
+        data.getFullYear(),
+        String(data.getMonth() + 1).padStart(2, "0"),
+        String(data.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function formatarStatus(status) {
+      return statusLabels[status] || status || "-";
+    }
+
+    function formatarTipoManutencao(tipo) {
+      return tipoManutencaoLabels[tipo] || tipo || "-";
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.style.display = "block";
+
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.style.display = "none";
+      }, 1800);
+    }
+
+    aplicarPeriodoPadrao();
+    carregarDados();
+  </script>
+</body>
+</html>
