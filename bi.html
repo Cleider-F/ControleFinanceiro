@@ -729,7 +729,7 @@
           totalItens: 0,
           recorrencias: 0,
           avarias: 0,
-          itens: new Map(),
+          itensRecorrentes: new Map(),
           ocorrencias: []
         });
       });
@@ -745,20 +745,45 @@
         const frota = porFrota.get(impl.placa || impl.id);
         if (!frota) return;
 
-        const key = normalizarDescricao(item.descricao);
+        const key = chaveItemLocalizado(item);
         frota.totalItens++;
         if (item.tipo === "avaria") frota.avarias++;
-        somarMap(frota.itens, key || item.descricao || "-");
+
+        if (!frota.itensRecorrentes.has(key)) {
+          frota.itensRecorrentes.set(key, {
+            key,
+            label: labelItemLocalizado(item),
+            total: 0,
+            inspecoes: new Set(),
+            avarias: 0,
+            ocorrencias: []
+          });
+        }
+
+        const recorrencia = frota.itensRecorrentes.get(key);
+        recorrencia.total++;
+        recorrencia.inspecoes.add(impl.id);
+        if (item.tipo === "avaria") recorrencia.avarias++;
+        recorrencia.ocorrencias.push({ item, implemento: impl });
         frota.ocorrencias.push({ item, implemento: impl });
       });
 
       return Array.from(porFrota.values())
         .map(f => {
-          const repetidos = Array.from(f.itens.values()).filter(v => v > 1).reduce((s, v) => s + v, 0);
+          const topItens = Array.from(f.itensRecorrentes.values())
+            .filter(item => item.inspecoes.size > 1)
+            .sort((a, b) => {
+              if (b.inspecoes.size !== a.inspecoes.size) return b.inspecoes.size - a.inspecoes.size;
+              if (b.total !== a.total) return b.total - a.total;
+              return a.label.localeCompare(b.label);
+            });
+
+          const repetidos = topItens.reduce((sum, item) => sum + item.total, 0);
+
           return {
             ...f,
             recorrencias: repetidos,
-            topItens: mapToSortedArray(f.itens).slice(0, 8)
+            topItens: topItens.slice(0, 8).map(item => [item.label, item.total, item.inspecoes.size, item.avarias])
           };
         })
         .sort((a, b) => b.recorrencias - a.recorrencias || b.totalItens - a.totalItens);
@@ -1064,8 +1089,8 @@
           <strong>${escapeHTML(row.placa)}</strong>
           <div class="detail-meta">
             Tipo: ${escapeHTML(row.tipo)}<br>
-            Inspeções: ${row.inspecoes}<br>
-            Recorrências: ${row.recorrencias}<br>
+            Inspeções no período: ${row.inspecoes}<br>
+            Ocorrências reincidentes: ${row.recorrencias}<br>
             Itens registrados: ${row.totalItens}<br>
             Avarias: ${row.avarias}
           </div>
@@ -1077,7 +1102,9 @@
         </div>
 
         <div class="chips">
-          ${row.topItens.map(([item, qtd]) => `<span class="chip">${escapeHTML(item)}: ${qtd}</span>`).join("")}
+          ${row.topItens.length
+            ? row.topItens.map(([item, qtd, inspecoes, avarias]) => `<span class="chip">${escapeHTML(item)}: ${qtd}x em ${inspecoes} inspeções${avarias ? ` | ${avarias} avaria(s)` : ""}</span>`).join("")
+            : `<span class="chip">Sem item localizado recorrente em inspeções diferentes</span>`}
         </div>
       `;
     }
@@ -1115,7 +1142,7 @@
         </div>
         <div class="insight-card">
           <strong>Frota com maior atenção</strong>
-          <div class="detail-meta">${topFrota ? `${escapeHTML(topFrota.placa)} tem ${topFrota.recorrencias} recorrência(s) e ${topFrota.avarias} avaria(s).` : "Sem dados de frota."}</div>
+          <div class="detail-meta">${topFrota ? `${escapeHTML(topFrota.placa)} tem ${topFrota.recorrencias} ocorrência(s) de itens repetidos em inspeções diferentes.` : "Sem dados de frota."}</div>
         </div>
         <div class="insight-card">
           <strong>Componente dominante</strong>
@@ -1264,6 +1291,27 @@
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/\s+/g, " ")
         .replace(/[^\w\s]/g, "");
+    }
+
+    function chaveItemLocalizado(item) {
+      return [
+        normalizarDescricao(item.descricao),
+        normalizarDescricao(item.eixo || "sem eixo"),
+        normalizarDescricao(item.lado || "sem lado"),
+        normalizarDescricao(item.compartimento ?? "sem compartimento")
+      ].join("|");
+    }
+
+    function labelItemLocalizado(item) {
+      const partes = [item.descricao || "-"];
+
+      if (item.eixo) partes.push(`Eixo: ${item.eixo}`);
+      if (item.lado) partes.push(`Lado: ${item.lado}`);
+      if (item.compartimento !== null && item.compartimento !== undefined && item.compartimento !== "") {
+        partes.push(`Comp: ${item.compartimento}`);
+      }
+
+      return partes.join(" | ");
     }
 
     function somarMap(map, chave) {
