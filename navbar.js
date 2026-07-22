@@ -23,6 +23,11 @@ export function carregarNavbar() {
         <small>Técnico</small>
       </div>
 
+      <div class="nav-item" data-page="admin.html">
+        <div>🛠️</div>
+        <small>Admin</small>
+      </div>
+
     </div>
 
     <!-- Botão de Engrenagem Flutuante -->

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrador</title>
+  <link rel="stylesheet" href="navbar.css">
+
+  <style>
+    :root {
+      --dark: #1f2937;
+      --primary: #2196f3;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --danger: #f44336;
+      --bg: #f1f3f6;
+      --line: rgba(6, 47, 43, 0.14);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #1f2937;
+      font-family: "Montserrat", Arial, sans-serif;
+      padding-bottom: 92px;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(6, 47, 43, 0.08);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fafc;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-body {
+      padding: 14px;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #52636f;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 42px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      min-height: 42px;
+      padding: 10px 12px;
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--dark);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .btn-primary { background: var(--primary); }
+    .btn-success { background: var(--success); }
+    .btn-danger { background: var(--danger); }
+    .btn-muted { background: #64748b; }
+
+    .list {
+      max-height: calc(100vh - 265px);
+      overflow: auto;
+      padding: 10px;
+    }
+
+    .inspection-card {
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--primary);
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .inspection-card.active {
+      background: #e8f4ff;
+      border-color: #90caf9;
+    }
+
+    .inspection-card strong {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .inspection-meta {
+      color: #52636f;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .status-pill {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      background: #64748b;
+    }
+
+    .status-pill.em_inspecao { background: var(--primary); }
+    .status-pill.aguardando_manutencao { background: var(--warning); }
+    .status-pill.em_manutencao { background: #d4a600; color: #1f2937; }
+    .status-pill.liberado { background: var(--success); }
+
+    .empty {
+      padding: 24px 14px;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: var(--dark);
+      text-transform: uppercase;
+    }
+
+    .item-card {
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--warning);
+      border-radius: 14px;
+      background: white;
+    }
+
+    .item-card.automatico {
+      border-left-color: var(--primary);
+    }
+
+    .item-card.concluido {
+      border-left-color: var(--success);
+    }
+
+    .item-card.nao-realizado {
+      border-left-color: var(--danger);
+    }
+
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: #52636f;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .item-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 105px;
+      transform: translateX(-50%);
+      display: none;
+      min-width: 240px;
+      max-width: calc(100vw - 28px);
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: white;
+      background: #1f2937;
+      text-align: center;
+      font-weight: 800;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.24);
+      z-index: 3000;
+    }
+
+    @media (max-width: 860px) {
+      .layout,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .list {
+        max-height: 420px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <span class="titulo-topbar">Painel Administrador</span>
+    <img src="suzano-logo.png" class="logo-topbar">
+  </div>
+
+  <main class="page">
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Inspeções</h2>
+        </div>
+        <div class="panel-body">
+          <div class="filters">
+            <input id="busca" placeholder="Buscar por GO/Placa">
+            <div class="grid-2">
+              <select id="filtroStatus">
+                <option value="">Todos os status</option>
+                <option value="em_inspecao">Em inspeção</option>
+                <option value="aguardando_manutencao">Aguardando manutenção</option>
+                <option value="em_manutencao">Em manutenção</option>
+                <option value="liberado">Liberado</option>
+              </select>
+
+              <select id="filtroTipo">
+                <option value="">Todos os tipos</option>
+                <option value="carreta">Carreta</option>
+                <option value="prancha">Prancha</option>
+                <option value="comboio">Comboio</option>
+                <option value="cavalo">Cavalo</option>
+              </select>
+            </div>
+            <button id="btnRecarregar" class="btn-primary">Recarregar</button>
+          </div>
+        </div>
+        <div id="lista" class="list">
+          <div class="empty">Carregando inspeções...</div>
+        </div>
+      </section>
+
+      <section class="details-grid">
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Dados e Status</h2>
+          </div>
+          <div id="detalhes" class="panel-body">
+            <div class="empty">Selecione uma inspeção para editar.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Adicionar Item</h2>
+          </div>
+          <div id="novoItemBox" class="panel-body">
+            <div class="empty">Selecione uma inspeção antes de adicionar itens.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Checklist</h2>
+          </div>
+          <div id="itens" class="panel-body">
+            <div class="empty">Nenhum checklist carregado.</div>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast"></div>
+
+  <script type="module">
+    import { protegerPagina } from "./auth.js";
+    protegerPagina(["tecnico"]);
+
+    import { db } from "./firebase.js";
+    import {
+      addDoc,
+      collection,
+      deleteDoc,
+      doc,
+      getDoc,
+      getDocs,
+      limit,
+      orderBy,
+      query,
+      serverTimestamp,
+      Timestamp,
+      updateDoc,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { carregarNavbar } from "./navbar.js";
+
+    carregarNavbar();
+
+    const listaEl = document.getElementById("lista");
+    const detalhesEl = document.getElementById("detalhes");
+    const novoItemBox = document.getElementById("novoItemBox");
+    const itensEl = document.getElementById("itens");
+    const buscaEl = document.getElementById("busca");
+    const filtroStatusEl = document.getElementById("filtroStatus");
+    const filtroTipoEl = document.getElementById("filtroTipo");
+    const btnRecarregar = document.getElementById("btnRecarregar");
+
+    let implementos = [];
+    let implementoAtual = null;
+    let inspecaoAtual = null;
+    let itensAtuais = [];
+
+    const statusLabels = {
+      em_inspecao: "Em inspeção",
+      aguardando_manutencao: "Aguardando manutenção",
+      em_manutencao: "Em manutenção",
+      liberado: "Liberado"
+    };
+
+    const tipoManutencaoLabels = {
+      preventiva: "Preventiva",
+      revisao: "Revisão",
+      cnp: "CNP",
+      gm: "GM",
+      acidente: "Acidente"
+    };
+
+    btnRecarregar.addEventListener("click", carregarImplementos);
+    buscaEl.addEventListener("input", renderLista);
+    filtroStatusEl.addEventListener("change", renderLista);
+    filtroTipoEl.addEventListener("change", renderLista);
+
+    async function carregarImplementos() {
+      listaEl.innerHTML = `<div class="empty">Carregando inspeções...</div>`;
+      btnRecarregar.disabled = true;
+
+      try {
+        const q = query(
+          collection(db, "implementos"),
+          orderBy("dataInspecao", "desc"),
+          limit(150)
+        );
+
+        const snap = await getDocs(q);
+        implementos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderLista();
+      } catch (e) {
+        console.error(e);
+        listaEl.innerHTML = `<div class="empty">Erro ao carregar inspeções.</div>`;
+      } finally {
+        btnRecarregar.disabled = false;
+      }
+    }
+
+    function renderLista() {
+      const busca = buscaEl.value.trim().toLowerCase();
+      const status = filtroStatusEl.value;
+      const tipo = filtroTipoEl.value;
+
+      let filtrados = implementos;
+
+      if (busca) {
+        filtrados = filtrados.filter(item =>
+          String(item.placa || "").toLowerCase().includes(busca)
+        );
+      }
+
+      if (status) {
+        filtrados = filtrados.filter(item => item.status === status);
+      }
+
+      if (tipo) {
+        filtrados = filtrados.filter(item => item.tipo === tipo);
+      }
+
+      if (!filtrados.length) {
+        listaEl.innerHTML = `<div class="empty">Nenhuma inspeção encontrada.</div>`;
+        return;
+      }
+
+      listaEl.innerHTML = "";
+
+      filtrados.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "inspection-card";
+        if (implementoAtual?.id === item.id) card.classList.add("active");
+
+        card.innerHTML = `
+          <strong>${escapeHTML(item.placa || "-")}</strong>
+          <div class="inspection-meta">
+            Tipo: ${escapeHTML(item.tipo || "-")}<br>
+            Manutenção: ${escapeHTML(formatarTipoManutencao(item.tipoManutencao))}<br>
+            Inspeção: ${formatarData(item.dataInspecao)}
+          </div>
+          <span class="status-pill ${item.status || ""}">
+            ${escapeHTML(formatarStatus(item.status))}
+          </span>
+        `;
+
+        card.addEventListener("click", () => selecionarImplemento(item.id));
+        listaEl.appendChild(card);
+      });
+    }
+
+    async function selecionarImplemento(id) {
+      detalhesEl.innerHTML = `<div class="empty">Carregando dados...</div>`;
+      itensEl.innerHTML = `<div class="empty">Carregando checklist...</div>`;
+      novoItemBox.innerHTML = `<div class="empty">Carregando...</div>`;
+
+      try {
+        const snapImpl = await getDoc(doc(db, "implementos", id));
+
+        if (!snapImpl.exists()) {
+          detalhesEl.innerHTML = `<div class="empty">Implemento não encontrado.</div>`;
+          return;
+        }
+
+        implementoAtual = { id: snapImpl.id, ...snapImpl.data() };
+        inspecaoAtual = await buscarInspecao(id);
+        itensAtuais = await buscarItens(inspecaoAtual?.id);
+
+        renderLista();
+        renderDetalhes();
+        renderNovoItem();
+        renderItens();
+      } catch (e) {
+        console.error(e);
+        detalhesEl.innerHTML = `<div class="empty">Erro ao carregar a inspeção.</div>`;
+      }
+    }
+
+    async function buscarInspecao(implementoId) {
+      const q = query(
+        collection(db, "inspecoes"),
+        where("implementoId", "==", implementoId)
+      );
+      const snap = await getDocs(q);
+
+      if (!snap.empty) {
+        const primeiro = snap.docs[0];
+        return { id: primeiro.id, ...primeiro.data() };
+      }
+
+      const direto = await getDoc(doc(db, "inspecoes", implementoId));
+      return direto.exists() ? { id: direto.id, ...direto.data() } : null;
+    }
+
+    async function buscarItens(inspecaoId) {
+      if (!inspecaoId) return [];
+
+      const q = query(
+        collection(db, "naoConformidades"),
+        where("inspecaoId", "==", inspecaoId)
+      );
+
+      const snap = await getDocs(q);
+      return snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const grupo = String(a.grupo || "").localeCompare(String(b.grupo || ""));
+          if (grupo !== 0) return grupo;
+          return String(a.descricao || "").localeCompare(String(b.descricao || ""));
+        });
+    }
+
+    function renderDetalhes() {
+      const dataLiberacao = toDatetimeLocal(implementoAtual.dataLiberacao);
+
+      detalhesEl.innerHTML = `
+        <div class="grid-2">
+          <div>
+            <label>GO/Placa</label>
+            <input id="editPlaca" value="${attr(implementoAtual.placa || "")}">
+          </div>
+
+          <div>
+            <label>Tipo</label>
+            <select id="editTipo">
+              ${option("", "Selecione", implementoAtual.tipo)}
+              ${option("carreta", "Carreta", implementoAtual.tipo)}
+              ${option("prancha", "Prancha", implementoAtual.tipo)}
+              ${option("comboio", "Comboio", implementoAtual.tipo)}
+              ${option("cavalo", "Cavalo", implementoAtual.tipo)}
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:10px;">
+          <div>
+            <label>Manutenção</label>
+            <select id="editTipoManutencao">
+              ${option("", "Selecione", implementoAtual.tipoManutencao)}
+              ${option("preventiva", "Preventiva", implementoAtual.tipoManutencao)}
+              ${option("revisao", "Revisão", implementoAtual.tipoManutencao)}
+              ${option("cnp", "CNP", implementoAtual.tipoManutencao)}
+              ${option("gm", "GM", implementoAtual.tipoManutencao)}
+              ${option("acidente", "Acidente", implementoAtual.tipoManutencao)}
+            </select>
+          </div>
+
+          <div>
+            <label>Status</label>
+            <select id="editStatus">
+              ${option("em_inspecao", "Em inspeção", implementoAtual.status)}
+              ${option("aguardando_manutencao", "Aguardando manutenção", implementoAtual.status)}
+              ${option("em_manutencao", "Em manutenção", implementoAtual.status)}
+              ${option("liberado", "Liberado", implementoAtual.status)}
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:10px;">
+          <div>
+            <label>Data e hora de liberação</label>
+            <input id="editDataLiberacao" type="datetime-local" value="${attr(dataLiberacao)}">
+          </div>
+
+          <div>
+            <label>Box</label>
+            <input id="editBox" value="${attr(implementoAtual.box || "")}" placeholder="Ex: Box 1">
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button id="btnSalvarStatus" class="btn-success">Salvar dados/status</button>
+        </div>
+
+        <div class="inspection-meta" style="margin-top:10px;">
+          ID: ${escapeHTML(implementoAtual.id)}<br>
+          Inspeção vinculada: ${escapeHTML(inspecaoAtual?.id || "não encontrada")}
+        </div>
+      `;
+
+      document
+        .getElementById("btnSalvarStatus")
+        .addEventListener("click", salvarDadosImplemento);
+    }
+
+    function renderNovoItem() {
+      if (!inspecaoAtual) {
+        novoItemBox.innerHTML = `<div class="empty">Esta inspeção não possui documento vinculado.</div>`;
+        return;
+      }
+
+      novoItemBox.innerHTML = `
+        <div class="grid-2">
+          <div>
+            <label>Grupo</label>
+            <input id="novoGrupo" value="MANUAL">
+          </div>
+          <div>
+            <label>Tipo</label>
+            <select id="novoTipo">
+              <option value="normal">Normal</option>
+              <option value="avaria">Avaria</option>
+              <option value="vistoria">Vistoria</option>
+              <option value="troca">Troca</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <label>Descrição</label>
+          <textarea id="novaDescricao"></textarea>
+        </div>
+
+        <div class="grid-3" style="margin-top:10px;">
+          <div>
+            <label>Eixo</label>
+            <input id="novoEixo" value="N/A">
+          </div>
+          <div>
+            <label>Lado</label>
+            <select id="novoLado">
+              <option value="N/A">N/A</option>
+              <option value="esquerdo">Esquerdo</option>
+              <option value="direito">Direito</option>
+              <option value="ambos">Ambos</option>
+            </select>
+          </div>
+          <div>
+            <label>Compartimento</label>
+            <input id="novoCompartimento" type="number" placeholder="Opcional">
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button id="btnAdicionarItem" class="btn-primary">Adicionar ao checklist</button>
+        </div>
+      `;
+
+      document
+        .getElementById("btnAdicionarItem")
+        .addEventListener("click", adicionarItem);
+    }
+
+    function renderItens() {
+      if (!inspecaoAtual) {
+        itensEl.innerHTML = `<div class="empty">Nenhuma inspeção vinculada a este implemento.</div>`;
+        return;
+      }
+
+      if (!itensAtuais.length) {
+        itensEl.innerHTML = `<div class="empty">Nenhum item no checklist.</div>`;
+        return;
+      }
+
+      itensEl.innerHTML = "";
+
+      itensAtuais.forEach((item, index) => {
+        const card = document.createElement("div");
+        const statusClasse =
+          item.status_manutencao === "concluido"
+            ? "concluido"
+            : item.status_manutencao === "nao_realizado"
+              ? "nao-realizado"
+              : "";
+
+        card.className = `item-card ${item.origem === "automatico" ? "automatico" : ""} ${statusClasse}`;
+        card.innerHTML = `
+          <div class="item-head">
+            <span>${escapeHTML(item.origem || "manual")}</span>
+            <span>${escapeHTML(item.id)}</span>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label>Grupo</label>
+              <input id="grupo-${index}" value="${attr(item.grupo || "")}">
+            </div>
+            <div>
+              <label>Tipo</label>
+              <select id="tipo-${index}">
+                ${option("normal", "Normal", item.tipo)}
+                ${option("avaria", "Avaria", item.tipo)}
+                ${option("vistoria", "Vistoria", item.tipo)}
+                ${option("troca", "Troca", item.tipo)}
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label>Descrição</label>
+            <textarea id="descricao-${index}">${escapeHTML(item.descricao || "")}</textarea>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px;">
+            <div>
+              <label>Eixo</label>
+              <input id="eixo-${index}" value="${attr(item.eixo || "")}">
+            </div>
+            <div>
+              <label>Lado</label>
+              <select id="lado-${index}">
+                ${option("N/A", "N/A", item.lado)}
+                ${option("esquerdo", "Esquerdo", item.lado)}
+                ${option("direito", "Direito", item.lado)}
+                ${option("ambos", "Ambos", item.lado)}
+              </select>
+            </div>
+            <div>
+              <label>Compartimento</label>
+              <input id="compartimento-${index}" type="number" value="${attr(item.compartimento ?? "")}">
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:10px;">
+            <div>
+              <label>Status manutenção</label>
+              <select id="statusManut-${index}">
+                ${option("", "Sem marcação", item.status_manutencao || "")}
+                ${option("concluido", "Concluído", item.status_manutencao)}
+                ${option("nao_realizado", "Não realizado", item.status_manutencao)}
+              </select>
+            </div>
+            <div>
+              <label>Fotos</label>
+              <input value="${(item.fotos || []).length} foto(s)" disabled>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label>Justificativa</label>
+            <textarea id="justificativa-${index}">${escapeHTML(item.justificativa || "")}</textarea>
+          </div>
+
+          <div class="item-actions">
+            <button class="btn-success" data-action="save" data-index="${index}">Salvar item</button>
+            <button class="btn-danger" data-action="delete" data-index="${index}">Excluir item</button>
+          </div>
+        `;
+
+        card
+          .querySelector('[data-action="save"]')
+          .addEventListener("click", () => salvarItem(index));
+
+        card
+          .querySelector('[data-action="delete"]')
+          .addEventListener("click", () => excluirItem(index));
+
+        itensEl.appendChild(card);
+      });
+    }
+
+    async function salvarDadosImplemento() {
+      if (!implementoAtual) return;
+
+      const btn = document.getElementById("btnSalvarStatus");
+      const status = document.getElementById("editStatus").value;
+      const dataLiberacaoInput = document.getElementById("editDataLiberacao").value;
+
+      btn.disabled = true;
+
+      try {
+        const dados = {
+          placa: document.getElementById("editPlaca").value.trim(),
+          tipo: document.getElementById("editTipo").value,
+          tipoManutencao: document.getElementById("editTipoManutencao").value,
+          status,
+          box: document.getElementById("editBox").value.trim()
+        };
+
+        if (status === "liberado") {
+          dados.dataLiberacao = dataLiberacaoInput
+            ? Timestamp.fromDate(new Date(dataLiberacaoInput))
+            : serverTimestamp();
+        } else {
+          dados.dataLiberacao = null;
+        }
+
+        await updateDoc(doc(db, "implementos", implementoAtual.id), dados);
+        showToast("Dados salvos.");
+        await refreshAtual();
+        await carregarImplementos();
+      } catch (e) {
+        console.error(e);
+        alert("Erro ao salvar dados/status.");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function adicionarItem() {
+      if (!inspecaoAtual) return;
+
+      const btn = document.getElementById("btnAdicionarItem");
+      const descricao = document.getElementById("novaDescricao").value.trim();
+
+      if (!descricao) {
+        alert("Informe a descrição do item.");
+        return;
+      }
+
+      btn.disabled = true;
+
+      try {
+        const compartimento = document.getElementById("novoCompartimento").value;
+
+        await addDoc(collection(db, "naoConformidades"), {
+          inspecaoId: inspecaoAtual.id,
+          grupo: document.getElementById("novoGrupo").value.trim() || "MANUAL",
+          descricao,
+          tipo: document.getElementById("novoTipo").value,
+          eixo: document.getElementById("novoEixo").value.trim() || "N/A",
+          lado: document.getElementById("novoLado").value,
+          compartimento: compartimento ? Number(compartimento) : null,
+          origem: "manual",
+          fotos: [],
+          resolvido: false,
+          status_manutencao: null,
+          criadoEm: serverTimestamp()
+        });
+
+        showToast("Item adicionado.");
+        await refreshAtual();
+      } catch (e) {
+        console.error(e);
+        alert("Erro ao adicionar item.");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function salvarItem(index) {
+      const item = itensAtuais[index];
+      if (!item) return;
+
+      const btn = document.querySelector(`[data-action="save"][data-index="${index}"]`);
+      btn.disabled = true;
+
+      try {
+        const compartimento = document.getElementById(`compartimento-${index}`).value;
+        const statusManutencao = document.getElementById(`statusManut-${index}`).value || null;
+
+        await updateDoc(doc(db, "naoConformidades", item.id), {
+          grupo: document.getElementById(`grupo-${index}`).value.trim(),
+          descricao: document.getElementById(`descricao-${index}`).value.trim(),
+          tipo: document.getElementById(`tipo-${index}`).value,
+          eixo: document.getElementById(`eixo-${index}`).value.trim(),
+          lado: document.getElementById(`lado-${index}`).value,
+          compartimento: compartimento ? Number(compartimento) : null,
+          status_manutencao: statusManutencao,
+          resolvido: statusManutencao === "concluido",
+          justificativa: document.getElementById(`justificativa-${index}`).value.trim() || null
+        });
+
+        showToast("Item salvo.");
+        await refreshAtual();
+      } catch (e) {
+        console.error(e);
+        alert("Erro ao salvar item.");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirItem(index) {
+      const item = itensAtuais[index];
+      if (!item) return;
+
+      if (!confirm("Deseja excluir este item do checklist?")) return;
+
+      try {
+        await deleteDoc(doc(db, "naoConformidades", item.id));
+        showToast("Item excluído.");
+        await refreshAtual();
+      } catch (e) {
+        console.error(e);
+        alert("Erro ao excluir item.");
+      }
+    }
+
+    async function refreshAtual() {
+      if (!implementoAtual) return;
+      await selecionarImplemento(implementoAtual.id);
+    }
+
+    function formatarStatus(status) {
+      return statusLabels[status] || status || "-";
+    }
+
+    function formatarTipoManutencao(tipo) {
+      return tipoManutencaoLabels[tipo] || tipo || "-";
+    }
+
+    function formatarData(ts) {
+      if (!ts) return "-";
+      try {
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleString("pt-BR");
+      } catch (e) {
+        return "-";
+      }
+    }
+
+    function toDatetimeLocal(ts) {
+      if (!ts) return "";
+
+      try {
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        const pad = n => String(n).padStart(2, "0");
+
+        return [
+          d.getFullYear(),
+          "-",
+          pad(d.getMonth() + 1),
+          "-",
+          pad(d.getDate()),
+          "T",
+          pad(d.getHours()),
+          ":",
+          pad(d.getMinutes())
+        ].join("");
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function option(value, label, selected) {
+      const isSelected = String(value) === String(selected ?? "");
+      return `<option value="${attr(value)}" ${isSelected ? "selected" : ""}>${escapeHTML(label)}</option>`;
+    }
+
+    function attr(value) {
+      return escapeHTML(String(value ?? "")).replace(/"/g, "&quot;");
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.style.display = "block";
+
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.style.display = "none";
+      }, 1800);
+    }
+
+    carregarImplementos();
+  </script>
+</body>
+</html>

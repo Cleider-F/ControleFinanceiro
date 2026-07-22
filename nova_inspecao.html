@@ -184,23 +184,6 @@
     background: #f44336;
     border-color: #f44336;
 }
-
-.linha-item-manutencao {
-    display: grid;
-    grid-template-columns: minmax(130px, 0.42fr) minmax(180px, 1fr);
-    gap: 10px;
-}
-
-.linha-item-manutencao select,
-.linha-item-manutencao input {
-    min-width: 0;
-}
-
-@media (max-width: 640px) {
-    .linha-item-manutencao {
-        grid-template-columns: 1fr;
-    }
-}
     </style>
 </head>
 
@@ -266,18 +249,7 @@
             <h3>Novo Item</h3>
             <div class="form-group">
                 <label>Descrição do Item</label>
-                <div class="linha-item-manutencao">
-                    <select id="acaoManutencaoSelect">
-                        <option value="">Selecionar</option>
-                        <option value="corrigir">Corrigir</option>
-                        <option value="substituir">Substituir</option>
-                        <option value="avaliar">Avaliar</option>
-                        <option value="instalar">Instalar</option>
-                        <option value="retirar">Retirar</option>
-                    </select>
-                    <input id="descricao" list="sugestoesItensManutencao" placeholder="Inserir item de manutenção">
-                </div>
-                <datalist id="sugestoesItensManutencao"></datalist>
+                <input id="descricao" placeholder="Ex: Lâmpada queimada">
             </div>
 
 <!-- EIXO -->
@@ -400,9 +372,8 @@
     protegerPagina(["inspetor","tecnico"]);
 
     import { db, storage, auth } from "./firebase.js";
-    import { collection, addDoc, setDoc, doc, getDocs, query, orderBy, startAt, endAt, limit, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { collection, addDoc, setDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-    import { salvarNaoConformidadeComRecorrencia } from "./recorrencia.js";
     
     import { carregarNavbar } from "./navbar.js";
     carregarNavbar();
@@ -413,9 +384,6 @@
     const horimetroField = document.getElementById("horimetroField");
     const compartimentosField = document.getElementById("compartimentosField");
     const compartimentoItem = document.getElementById("compartimentoItem");
-    const acaoManutencaoSelect = document.getElementById("acaoManutencaoSelect");
-    const descricaoInput = document.getElementById("descricao");
-    const sugestoesItensManutencao = document.getElementById("sugestoesItensManutencao");
     const foto = document.getElementById("foto");
     const preview = document.getElementById("preview");
 
@@ -461,80 +429,6 @@
 
     document.getElementById("tipoManutencao").addEventListener("change", verificarChecklistAutomatico);
     document.getElementById("horimetro").addEventListener("input", verificarChecklistAutomatico);
-    descricaoInput.addEventListener("input", () => {
-        carregarSugestoesPorTexto(descricaoInput.value);
-    });
-
-    function normalizarTextoItem(texto) {
-        return String(texto || "")
-            .trim()
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/\s+/g, " ");
-    }
-
-    function criarIdItemManutencao(descricao) {
-        return normalizarTextoItem(descricao)
-            .replace(/[^a-z0-9]+/g, "_")
-            .replace(/^_+|_+$/g, "")
-            .slice(0, 120) || "item_manutencao";
-    }
-
-    function montarDadosCatalogo(descricao, tipoEquipamento = "") {
-        const descricaoPadronizada = descricao.trim().replace(/\s+/g, " ");
-        return {
-            id: criarIdItemManutencao(descricaoPadronizada),
-            descricaoPadronizada,
-            descricaoBusca: normalizarTextoItem(descricaoPadronizada),
-            tipoEquipamento: tipoEquipamento || null
-        };
-    }
-
-    async function salvarItemNoCatalogo(descricao, tipoEquipamento) {
-        const dados = montarDadosCatalogo(descricao, tipoEquipamento);
-        if (!dados.descricaoBusca) return dados;
-
-        await setDoc(
-            doc(db, "itensManutencao", dados.id),
-            {
-                descricao: dados.descricaoPadronizada,
-                descricaoPadronizada: dados.descricaoPadronizada,
-                descricaoBusca: dados.descricaoBusca,
-                tiposEquipamento: tipoEquipamento ? arrayUnion(tipoEquipamento) : arrayUnion("geral"),
-                atualizadoEm: serverTimestamp()
-            },
-            { merge: true }
-        );
-
-        return dados;
-    }
-
-    async function carregarSugestoesPorTexto(texto) {
-        const termo = normalizarTextoItem(texto);
-        sugestoesItensManutencao.innerHTML = "";
-        if (termo.length < 2) return;
-
-        try {
-            const snap = await getDocs(
-                query(
-                    collection(db, "itensManutencao"),
-                    orderBy("descricaoBusca"),
-                    startAt(termo),
-                    endAt(termo + "\uf8ff"),
-                    limit(10)
-                )
-            );
-            snap.docs.forEach(docSnap => {
-                const item = docSnap.data();
-                const option = document.createElement("option");
-                option.value = item.descricao || item.descricaoPadronizada || "";
-                sugestoesItensManutencao.appendChild(option);
-            });
-        } catch (e) {
-            console.warn("Nao foi possivel buscar sugestoes de manutencao.", e);
-        }
-    }
 
     function verificarChecklistAutomatico() {
         if (!planoCarregado) return;
@@ -701,24 +595,13 @@ document.querySelectorAll(".btn-opcao").forEach(btn => {
 
     window.adicionarItem = async function() {
         const desc = document.getElementById("descricao").value.trim();
-        const acaoManutencao = acaoManutencaoSelect.value;
         const eixo = eixoSelecionado;
         const lado = ladoSelecionado;
         const tipo = tipoSelecionado;
         const comp = compartimentoSelecionado;
-        if (!acaoManutencao) return alert("Selecione a ação do item.");
         if (!desc || !eixo || !lado) return alert("Preencha Descrição, Eixo e Lado");
 
         let fotos = [];
-        const tipoEquipamento = document.getElementById("tipo").value;
-        const itemCatalogo = montarDadosCatalogo(desc, tipoEquipamento);
-
-        try {
-            await salvarItemNoCatalogo(desc, tipoEquipamento);
-        } catch (e) {
-            console.warn("Nao foi possivel salvar o item no catalogo de sugestoes.", e);
-        }
-
 // Localize este trecho dentro de window.adicionarItem e substitua:
 if (fotoFile) {
     const storageRef = ref(storage, "avarias/" + Date.now() + ".jpg");
@@ -733,11 +616,6 @@ if (fotoFile) {
 }
         naoConformidades.push({
             grupo: "MANUAL", descricao: desc, eixo: eixo, lado: lado, tipo: tipo,
-            acaoManutencao,
-            itemManutencaoId: itemCatalogo.id,
-            descricaoPadronizada: itemCatalogo.descricaoPadronizada,
-            descricaoBusca: itemCatalogo.descricaoBusca,
-            tipoEquipamento: tipoEquipamento || null,
             compartimento: comp ? Number(comp) : null,
             fotos: fotos, resolvido: false, origem: "manual"
         });
@@ -968,7 +846,6 @@ await setDoc(inspecaoRef, {
 let contadorNc = 1;
 
 for (const item of naoConformidades) {
-  const itemCatalogo = await salvarItemNoCatalogo(item.descricao, tipoVal);
 
   const descLimpa = item.descricao
     .toLowerCase()
@@ -980,15 +857,10 @@ for (const item of naoConformidades) {
   const ncId =
     `${implementoId}_${descLimpa}_${String(contadorNc).padStart(3, "0")}`;
 
-  await salvarNaoConformidadeComRecorrencia(
-    db,
+  await setDoc(
     doc(db, "naoConformidades", ncId),
     {
       ...item,
-      itemManutencaoId: item.itemManutencaoId || itemCatalogo.id,
-      descricaoPadronizada: item.descricaoPadronizada || itemCatalogo.descricaoPadronizada,
-      descricaoBusca: item.descricaoBusca || itemCatalogo.descricaoBusca,
-      tipoEquipamento: tipoVal,
       inspecaoId: implementoId
     }
   );

@@ -345,65 +345,6 @@
         "tipo": "T"
       }
     ]
-  },  
-  {
-    "codigo": 5,
-    "grupo": "CABINE",
-    "descricao": "Verificar funcionamento do ar condicionado",
-    "horas": [
-      {
-        "hora": 11000,
-        "tipo": "T"
-      },
-      {
-        "hora": 22000,
-        "tipo": "T"
-      },
-      {
-        "hora": 33000,
-        "tipo": "T"
-      },
-      {
-        "hora": 44000,
-        "tipo": "T"
-      },
-      {
-        "hora": 55000,
-        "tipo": "T"
-      },
-      {
-        "hora": 66000,
-        "tipo": "T"
-      },
-      {
-        "hora": 77000,
-        "tipo": "T"
-      },
-      {
-        "hora": 88000,
-        "tipo": "T"
-      },
-      {
-        "hora": 99000,
-        "tipo": "T"
-      },
-      {
-        "hora": 110000,
-        "tipo": "T"
-      },
-      {
-        "hora": 121000,
-        "tipo": "T"
-      },
-      {
-        "hora": 132000,
-        "tipo": "T"
-      },
-      {
-        "hora": 143000,
-        "tipo": "T"
-      }
-    ]
   },
   {
     "codigo": 6,
@@ -1477,7 +1418,7 @@
   },
   {
     "codigo": 20,
-    "grupo": "CAIXA DE MARCHA",
+    "grupo": "CAIXA I-SHIFT",
     "descricao": "Troca de óleo e filtro",
     "horas": [
       {
@@ -1488,7 +1429,7 @@
   },
   {
     "codigo": 21,
-    "grupo": "CAIXA DE MARCHA",
+    "grupo": "CAIXA I-SHIFT",
     "descricao": "Verificar o nível de óleo e vazamentos",
     "horas": [
       {
@@ -1547,7 +1488,7 @@
   },
   {
     "codigo": 22,
-    "grupo": "CAIXA DE MARCHA",
+    "grupo": "CAIXA I-SHIFT",
     "descricao": "Verificar folga do flange do eixo de saída da caixa",
     "horas": [
       {
@@ -1606,7 +1547,7 @@
   },
   {
     "codigo": 23,
-    "grupo": "CAIXA DE MARCHA",
+    "grupo": "CAIXA I-SHIFT",
     "descricao": "Verificar o torque das porcas de fixação da caixa",
     "horas": [
       {
@@ -1665,7 +1606,7 @@
   },
   {
     "codigo": 24,
-    "grupo": "CAIXA DE MARCHA",
+    "grupo": "CAIXA I-SHIFT",
     "descricao": "Verificar os códigos de falhas",
     "horas": [
       {
@@ -1776,7 +1717,7 @@
   },
   {
     "codigo": 25,
-    "grupo": "CAIXA DE MARCHA",
+    "grupo": "CAIXA I-SHIFT",
     "descricao": "Trocar o óleo da caixa de mudanças (marchas) e inspecionar os bujões magnéticos quanto a limalhas. ",
     "horas": [
       {
@@ -2087,29 +2028,6 @@
       }
     ]
   },
-    {
-    "codigo": 31,
-    "grupo": "CARDAN",
-    "descricao": "Verificar se há empenamento no cardan",
-    "horas": [
-      {
-        "hora": 33000,
-        "tipo": "V"
-      },
-      {
-        "hora": 66000,
-        "tipo": "V"
-      },
-      {
-        "hora": 99000,
-        "tipo": "V"
-      },
-      {
-        "hora": 132000,
-        "tipo": "V"
-      }
-    ]
-  },
   {
     "codigo": 32,
     "grupo": "CHASSIS",
@@ -2319,7 +2237,7 @@
   {
     "codigo": 37,
     "grupo": "CHASSIS",
-    "descricao": "Verificar tricas e amassados no chassi",
+    "descricao": "Verifacar a trava e pino de engate para carreta auxíliar + estado da borracha interna e externa + porca e coupilha ('trava')",
     "horas": [
       {
         "hora": 11000,
@@ -3233,65 +3151,6 @@
       }
     ]
   },
-    {
-    "codigo": 54,
-    "grupo": "DIREÇÃO",
-    "descricao": "Verificar alinhamento do volante",
-    "horas": [
-      {
-        "hora": 11000,
-        "tipo": "V"
-      },
-      {
-        "hora": 22000,
-        "tipo": "V"
-      },
-      {
-        "hora": 33000,
-        "tipo": "V"
-      },
-      {
-        "hora": 44000,
-        "tipo": "V"
-      },
-      {
-        "hora": 55000,
-        "tipo": "V"
-      },
-      {
-        "hora": 66000,
-        "tipo": "V"
-      },
-      {
-        "hora": 77000,
-        "tipo": "V"
-      },
-      {
-        "hora": 88000,
-        "tipo": "V"
-      },
-      {
-        "hora": 99000,
-        "tipo": "V"
-      },
-      {
-        "hora": 110000,
-        "tipo": "V"
-      },
-      {
-        "hora": 121000,
-        "tipo": "V"
-      },
-      {
-        "hora": 132000,
-        "tipo": "V"
-      },
-      {
-        "hora": 143000,
-        "tipo": "V"
-      }
-    ]
-  },
   {
     "codigo": 55,
     "grupo": "DIREÇÃO",
@@ -3653,13 +3512,13 @@
   {
     "codigo": 61,
     "grupo": "EMBREAGEM",
-    "descricao": "Verificar o curso do pedal da embreagem",
+    "descricao": "Verificar o curso do pedal da embreagem (folga de 6  cm)",
     "horas": []
   },
   {
     "codigo": 62,
     "grupo": "FREIO",
-    "descricao": "Verificar se não existe folga nas alavancas e articulações das cuicas de freio",
+    "descricao": "Verificar se não existe folga nas alavancas e articulações dos cilindros de freio",
     "horas": [
       {
         "hora": 11000,
@@ -3777,7 +3636,7 @@
   {
     "codigo": 64,
     "grupo": "FREIO",
-    "descricao": "Verificar quanto a desgastes das lonas de freio através da janela de inspeção",
+    "descricao": "Verificar quanto a desgastes das lonas de freio através da janela de inspeção (a espessura mínima permitida é 5mm)",
     "horas": [
       {
         "hora": 11000,
@@ -3992,7 +3851,7 @@
   {
     "codigo": 69,
     "grupo": "FREIO",
-    "descricao": "Drenar a água/óleo do balão de ar - DRENAR DIARIAMENTE",
+    "descricao": "Drenar a água/óleo do tanque úmido - DRENAR DIARIAMENTE",
     "horas": [
       {
         "hora": 5500,
@@ -4103,7 +3962,7 @@
   {
     "codigo": 70,
     "grupo": "FREIO",
-    "descricao": "Verificar estado dos mangotes das cuicas de freios",
+    "descricao": "Verificar estado dos flexíveis dos cilindros de freios",
     "horas": [
       {
         "hora": 11000,
@@ -4280,7 +4139,7 @@
   {
     "codigo": 73,
     "grupo": "FREIO",
-    "descricao": "Vericar vazamento de ar nas cuicas de freio entre camaras",
+    "descricao": "Vericar vazamento de ar nos cilindros de freio entre camaras",
     "horas": [
       {
         "hora": 5500,
@@ -4391,7 +4250,7 @@
   {
     "codigo": 74,
     "grupo": "FREIO",
-    "descricao": "Verificar alavanca de freio estacionario",
+    "descricao": "Verificar o funcionamento da tecla de freio de estacionamento",
     "horas": [
       {
         "hora": 5500,
@@ -4614,6 +4473,65 @@
     "codigo": 76,
     "grupo": "FREIO",
     "descricao": "Efetuar a regulagem/ajustagem dos sistemas de freios (Catracas de freios)",
+    "horas": [
+      {
+        "hora": 11000,
+        "tipo": "V"
+      },
+      {
+        "hora": 22000,
+        "tipo": "V"
+      },
+      {
+        "hora": 33000,
+        "tipo": "V"
+      },
+      {
+        "hora": 44000,
+        "tipo": "V"
+      },
+      {
+        "hora": 55000,
+        "tipo": "V"
+      },
+      {
+        "hora": 66000,
+        "tipo": "V"
+      },
+      {
+        "hora": 77000,
+        "tipo": "V"
+      },
+      {
+        "hora": 88000,
+        "tipo": "V"
+      },
+      {
+        "hora": 99000,
+        "tipo": "V"
+      },
+      {
+        "hora": 110000,
+        "tipo": "V"
+      },
+      {
+        "hora": 121000,
+        "tipo": "V"
+      },
+      {
+        "hora": 132000,
+        "tipo": "V"
+      },
+      {
+        "hora": 143000,
+        "tipo": "V"
+      }
+    ]
+  },
+  {
+    "codigo": 77,
+    "grupo": "MOTOR",
+    "descricao": "Verificar o nível de óleo da caixa de mudanças (marchas) e tomada de força, completar se necessário",
     "horas": [
       {
         "hora": 11000,
@@ -5079,6 +4997,117 @@
       {
         "hora": 143000,
         "tipo": "V"
+      }
+    ]
+  },
+  {
+    "codigo": 85,
+    "grupo": "MOTOR",
+    "descricao": "Efetuar limpeza e teste com lâmpada dos filtros de ar primário e secundário",
+    "horas": [
+      {
+        "hora": 5500,
+        "tipo": "T"
+      },
+      {
+        "hora": 11000,
+        "tipo": "T"
+      },
+      {
+        "hora": 16500,
+        "tipo": "T"
+      },
+      {
+        "hora": 22000,
+        "tipo": "T"
+      },
+      {
+        "hora": 27500,
+        "tipo": "T"
+      },
+      {
+        "hora": 33000,
+        "tipo": "T"
+      },
+      {
+        "hora": 38500,
+        "tipo": "T"
+      },
+      {
+        "hora": 44000,
+        "tipo": "T"
+      },
+      {
+        "hora": 49500,
+        "tipo": "T"
+      },
+      {
+        "hora": 55000,
+        "tipo": "T"
+      },
+      {
+        "hora": 60500,
+        "tipo": "T"
+      },
+      {
+        "hora": 66000,
+        "tipo": "T"
+      },
+      {
+        "hora": 71500,
+        "tipo": "T"
+      },
+      {
+        "hora": 77000,
+        "tipo": "T"
+      },
+      {
+        "hora": 82500,
+        "tipo": "T"
+      },
+      {
+        "hora": 88000,
+        "tipo": "T"
+      },
+      {
+        "hora": 93500,
+        "tipo": "T"
+      },
+      {
+        "hora": 99000,
+        "tipo": "T"
+      },
+      {
+        "hora": 104500,
+        "tipo": "T"
+      },
+      {
+        "hora": 110000,
+        "tipo": "T"
+      },
+      {
+        "hora": 115500,
+        "tipo": "T"
+      },
+      {
+        "hora": 121000,
+        "tipo": "T"
+      },
+      {
+        "hora": 126500,
+        "tipo": "T"
+      },
+      {
+        "hora": 132000,
+        "tipo": "T"
+      },
+      {
+        "hora": 137500,
+        "tipo": "T"
+      },
+      {
+        "hora": 143000,
+        "tipo": "T"
       }
     ]
   },
@@ -5920,6 +5949,65 @@
     "horas": []
   },
   {
+    "codigo": 100,
+    "grupo": "MOTOR",
+    "descricao": "Verificar os sensores e controles do motor através do Tech Tool",
+    "horas": [
+      {
+        "hora": 11000,
+        "tipo": "V"
+      },
+      {
+        "hora": 22000,
+        "tipo": "V"
+      },
+      {
+        "hora": 33000,
+        "tipo": "V"
+      },
+      {
+        "hora": 44000,
+        "tipo": "V"
+      },
+      {
+        "hora": 55000,
+        "tipo": "V"
+      },
+      {
+        "hora": 66000,
+        "tipo": "V"
+      },
+      {
+        "hora": 77000,
+        "tipo": "V"
+      },
+      {
+        "hora": 88000,
+        "tipo": "V"
+      },
+      {
+        "hora": 99000,
+        "tipo": "V"
+      },
+      {
+        "hora": 110000,
+        "tipo": "V"
+      },
+      {
+        "hora": 121000,
+        "tipo": "V"
+      },
+      {
+        "hora": 132000,
+        "tipo": "V"
+      },
+      {
+        "hora": 143000,
+        "tipo": "V"
+      }
+    ]
+  },
+  {
     "codigo": 101,
     "grupo": "MOTOR",
     "descricao": "Teste de funcionamento da borboleta do freio motor",
@@ -6755,7 +6843,7 @@
   {
     "codigo": 115,
     "grupo": "MOTOR",
-    "descricao": "Verificar o tanque de combustível, quanto a fixação, vazamento ou sujidade ",
+    "descricao": "Verificar o suporte de suspensão do tanque de combustível ",
     "horas": [
       {
         "hora": 11000,
@@ -7192,7 +7280,7 @@
   {
     "codigo": 126,
     "grupo": "SISTEMA ELÉTRICO",
-    "descricao": "Verificar baterias",
+    "descricao": "Verificar o nível do eletrólito das baterias (deve estar entre 18 e 28 mm acima das placas)",
     "horas": [
       {
         "hora": 11000,
@@ -8105,7 +8193,7 @@
   {
     "codigo": 140,
     "grupo": "SRC",
-    "descricao": "Verificar catalisador (Troca do catalisador mediante avaliação)",
+    "descricao": "Verificar o torque do suporte e contrapressão do catalisador - Troca do catalisador - mediante avaliação",
     "horas": [
       {
         "hora": 11000,
@@ -8164,7 +8252,7 @@
   {
     "codigo": 141,
     "grupo": "SUSPENSÃO",
-    "descricao": "Verificar/medir altura dos sulcos dos pneus (utilizar somente pneus de mesmo tipo em rodado duplo)",
+    "descricao": "Verificar/medir altura dos sulcos dos pneus (utilizar somente pneus de mesmo tipo em rodado duplo – diferença máxima de altura de 6 mm)",
     "horas": [
       {
         "hora": 11000,
@@ -8708,7 +8796,7 @@
   {
     "codigo": 149,
     "grupo": "SUSPENSÃO",
-    "descricao": "Verificar os batentes de suporte/borracha de final de curso das molas dianteira e traseiras",
+    "descricao": "Verificar os batentes de borracha de final de curso das molas dianteira",
     "horas": [
       {
         "hora": 11000,
@@ -10210,7 +10298,7 @@
   {
     "codigo": 171,
     "grupo": "IMPLEMENTO ",
-    "descricao": "Filtros de diesel do implemento e ultima troca ",
+    "descricao": "Filtros do implementos ultima troca ",
     "horas": [
       {
         "hora": 5500,
@@ -11668,7 +11756,7 @@
   {
     "codigo": 185,
     "grupo": "IMPLEMENTO ",
-    "descricao": "Verificar folga nas cruzetas da tomada de força ",
+    "descricao": "Cardan folga nas cruzetas da tomada de força ",
     "horas": [
       {
         "hora": 5500,
@@ -11780,117 +11868,6 @@
     "codigo": 186,
     "grupo": "IMPLEMENTO ",
     "descricao": "Tomada de força ",
-    "horas": [
-      {
-        "hora": 5500,
-        "tipo": "V"
-      },
-      {
-        "hora": 11000,
-        "tipo": "V"
-      },
-      {
-        "hora": 16500,
-        "tipo": "V"
-      },
-      {
-        "hora": 22000,
-        "tipo": "V"
-      },
-      {
-        "hora": 27500,
-        "tipo": "V"
-      },
-      {
-        "hora": 33000,
-        "tipo": "V"
-      },
-      {
-        "hora": 38500,
-        "tipo": "V"
-      },
-      {
-        "hora": 44000,
-        "tipo": "V"
-      },
-      {
-        "hora": 49500,
-        "tipo": "V"
-      },
-      {
-        "hora": 55000,
-        "tipo": "V"
-      },
-      {
-        "hora": 60500,
-        "tipo": "V"
-      },
-      {
-        "hora": 66000,
-        "tipo": "V"
-      },
-      {
-        "hora": 71500,
-        "tipo": "V"
-      },
-      {
-        "hora": 77000,
-        "tipo": "V"
-      },
-      {
-        "hora": 82500,
-        "tipo": "V"
-      },
-      {
-        "hora": 88000,
-        "tipo": "V"
-      },
-      {
-        "hora": 93500,
-        "tipo": "V"
-      },
-      {
-        "hora": 99000,
-        "tipo": "V"
-      },
-      {
-        "hora": 104500,
-        "tipo": "V"
-      },
-      {
-        "hora": 110000,
-        "tipo": "V"
-      },
-      {
-        "hora": 115500,
-        "tipo": "V"
-      },
-      {
-        "hora": 121000,
-        "tipo": "V"
-      },
-      {
-        "hora": 126500,
-        "tipo": "V"
-      },
-      {
-        "hora": 132000,
-        "tipo": "V"
-      },
-      {
-        "hora": 137500,
-        "tipo": "V"
-      },
-      {
-        "hora": 143000,
-        "tipo": "T"
-      }
-    ]
-  },
-    {
-    "codigo": 186,
-    "grupo": "IMPLEMENTO ",
-    "descricao": "Verificar botão da tomada de força ",
     "horas": [
       {
         "hora": 5500,
